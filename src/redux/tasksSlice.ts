@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import firestore, { firebase } from '@react-native-firebase/firestore'
+import firestore from '@react-native-firebase/firestore'
 import { Task } from '../types/types';
 
 interface MyState {
@@ -10,11 +10,6 @@ interface MyState {
 
 export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
   let tasksList: Array<Task> = []
-  const user = firebase.auth().currentUser;
-
-if (user) {
- console.log('User email: ', user);
-}
 
   await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').get()
   .then(querySnapshot => { 

@@ -123,6 +123,9 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.5.0')
 
     implementation 'com.google.firebase:firebase-analytics'
+
+    implementation project(':react-native-vector-icons')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")

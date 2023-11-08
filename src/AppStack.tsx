@@ -1,26 +1,26 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
-import BottomTab from "./navigation/BottomTab"
 import Login from "./screens/Login"
+import TopTabs from "./navigation/TopTabs"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
 export type RootStackParamsList = {
     Login: undefined,
-    BottomTab: undefined
+    TopTabs: undefined
 }
 
 const AppStack = () => {
   return(
     <Stack.Navigator>
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
-          name="BottomTab"
-          component={BottomTab}
+          name="TopTabs"
+          component={TopTabs}
           options={{ headerShown: false }}
         />
     </Stack.Navigator>
