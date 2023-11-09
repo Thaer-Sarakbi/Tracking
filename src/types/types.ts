@@ -3,5 +3,8 @@ export type Task = {
     location: string,
     title: string,
     description: string,
-    progress: number
+    status: number,
+    duration: number,
+    creationDate: string,
+    assignedTo: string
 }

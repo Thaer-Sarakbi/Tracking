@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npx typesync"
   },
   "dependencies": {
     "@react-native-firebase/app": "^18.6.1",
@@ -38,7 +39,12 @@
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
     "@tsconfig/react-native": "^3.0.0",
+    "@types/babel__core": "^7.20.4",
+    "@types/babel__preset-env": "^7.9.5",
+    "@types/eslint": "^8.44.7",
+    "@types/prettier": "^2.7.3",
     "@types/react": "^18.0.24",
+    "@types/react-native-vector-icons": "^6.4.17",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
