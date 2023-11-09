@@ -2,12 +2,14 @@ import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
 import Login from "./screens/Login"
 import TopTabs from "./navigation/TopTabs"
+import DrawerNav from "./navigation/DrawerNav"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
 export type RootStackParamsList = {
     Login: undefined,
-    TopTabs: undefined
+    TopTabs: undefined,
+    DrawerNav: undefined
 }
 
 const AppStack = () => {
@@ -23,6 +25,11 @@ const AppStack = () => {
           component={TopTabs}
           options={{ headerShown: false }}
         />
+        {/* <Stack.Screen
+          name="DrawerNav"
+          component={DrawerNav}
+          // options={{ headerShown: false }}
+        /> */}
     </Stack.Navigator>
   )
 }

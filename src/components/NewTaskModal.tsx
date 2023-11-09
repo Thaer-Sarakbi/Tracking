@@ -6,8 +6,18 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../assets/Colors';
+import { SelectList } from 'react-native-dropdown-select-list'
+import { useDispatch, useSelector } from 'react-redux';
+import { User } from '../types/types';
+import { AppDispatch } from '../redux/store';
+import { getUsers } from '../redux/usersSlice';
+import { getTasks } from '../redux/tasksSlice';
 // import Geolocation from '@react-native-community/geolocation';
 // import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+
+interface MyState {
+    users: {data: Array<User>}
+}
 
 interface Props {
   changeModalVisible: (boole: boolean) => void
@@ -16,29 +26,31 @@ interface Props {
 const NewTaskModal = ({ changeModalVisible }: Props) => {
   const [title, setTitle] = useState<string>()
   const [decription, setDecription] = useState<string>()
-  const [assignTo, setAssignTo] = useState<string>()
+  const [assignedTo, setAssignedTo] = useState<string>()
   const [duration, setDuration] = useState<string>()
   const [location, setLocation] = useState<string>()
 
-  const submit = async() => {
-    // await firestore().collection('cars').add({
-    //   name,
-    //   price,
-    //   priceBefore,
-    //   image,
-    //   fuel,
-    //   distance,
-    //   per,
-    //   status: 'active',
-    //   latitude: Number(latitude),
-    //   longitude: Number(latitude)
-    // }).then(res => {
-    //   changeModalVisible(false)
-    // }).catch(err => {
-    //   changeModalVisible(false)
-    // })
+  const users = useSelector((state: MyState) => state.users.data)
 
+  const dispatch = useDispatch<AppDispatch>()
+
+  const submit = async () => {
+
+  await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').add({
+    title, 
+    decription, 
+    assignedTo, 
+    duration, 
+    location,
+    status: 'Not Started'
+  }).then(res => {
     changeModalVisible(false)
+    dispatch(getTasks())
+  }).catch(err => {
+    changeModalVisible(false)
+    console.log(err)
+  })
+    // dispatch(addTask(title, decription, assignTo, duration, location))
   }
 
 const getLocation = () => {
@@ -58,6 +70,10 @@ const getLocation = () => {
 //         });
 //   }); 
 }
+
+  useEffect(() => {
+    dispatch(getUsers())
+  },[])
 
   return (
     <ScrollView style={styles.container}>
@@ -85,10 +101,11 @@ const getLocation = () => {
       />
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Assign To</Text>
-      <TextInput
-        style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-        onChangeText={(text) => setAssignTo(text)}
-      />
+      <SelectList 
+        setSelected={(val: string) => setAssignedTo(val)} 
+        data={users} 
+        save="value"
+    />
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Duration</Text>
       <View style = {{ flexDirection: 'row', alignItems: 'center' }}>
@@ -121,7 +138,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     height: '100%',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    paddingBottom: 50
   },
   touchableOpacity: {
     paddingVertical: 10,

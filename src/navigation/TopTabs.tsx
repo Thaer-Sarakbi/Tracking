@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TasksListScreen from '../screens/TasksListScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Header from '../components/Header';
@@ -6,6 +6,9 @@ import { Colors } from '../assets/Colors';
 import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
+import { getTasks } from '../redux/tasksSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -15,6 +18,12 @@ export default function TopTabs() {
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
   }
+
+  const dispatch = useDispatch<AppDispatch>()
+
+  useEffect(() => {
+    dispatch(getTasks)
+   },[isModalVisible])
 
   return (
     <>

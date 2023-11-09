@@ -13,7 +13,7 @@ interface MyState {
 const TasksListScreen = () => {
 
   const tasks = useSelector((state: MyState) => state.tasks.data)
-  console.log(tasks)
+
   const [isFetching, setIsFetching] = useState(false)
 
   const dispatch = useDispatch<AppDispatch>()

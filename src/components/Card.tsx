@@ -4,14 +4,29 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Task } from '../types/types';
 
 const Card = ({item}: {item: Task}) => {
+
+  const getStyle = (status: string) => {
+    if(status === 'In Progress'){
+      return{
+        borderColor: '#64DD17',
+        color: '#64DD17',
+      }
+    } else if(status === 'Not Started'){
+      return{
+        borderColor: '#5C6BC0',
+        color: '#5C6BC0',
+      }
+    }
+  }
+
     return(
       <TouchableOpacity style ={styles.container}>
         <Text style={styles.date}>{item.creationDate}</Text>
         <View style={styles.seperator}/>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>{item.title}</Text>
-          <View style={styles.status}>
-            <Text style={styles.statusText}>{item.status}</Text>
+          <View style={[styles.status, getStyle(item.status)]}>
+            <Text style={[styles.statusText, getStyle(item.status)]}>{item.status}</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', marginVertical: 5 }}>
@@ -56,7 +71,7 @@ const Card = ({item}: {item: Task}) => {
     },
     status: {
       borderWidth: 2,
-      borderColor: '#5C6BC0',
+      // borderColor: '#5C6BC0',
       paddingHorizontal: 5,
       borderRadius: 5,
       alignItems: 'center',

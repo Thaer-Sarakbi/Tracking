@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
-import { Task } from '../types/types';
+import { Task, User } from '../types/types';
 
 interface MyState {
   data: Array<Task>
@@ -13,6 +13,7 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
 
   await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').get()
   .then(querySnapshot => { 
+    console.log(querySnapshot)
     querySnapshot.docs.forEach(documentSnapshot => {
       documentSnapshot.data().id = documentSnapshot.id
       tasksList.push(documentSnapshot.data() as any) 
@@ -21,6 +22,23 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
 
   return tasksList
 })
+
+// export const addTask = createAsyncThunk("tasks/addTask", async (title, decription, assignTo, duration, location) => {
+//   console.log('hekl')
+//   await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').add({
+//     title, 
+//     decription, 
+//     assignTo, 
+//     duration, 
+//     location
+//   }).then(res => {
+//     // changeModalVisible(false)
+//     console.log(res)
+//   }).catch(err => {
+//     // changeModalVisible(false)
+//     console.log(err)
+//   })
+// })
 
 const tasksSlice = createSlice({
   name: 'tasks',
