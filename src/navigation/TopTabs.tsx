@@ -6,24 +6,23 @@ import { Colors } from '../assets/Colors';
 import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
-import { getTasks } from '../redux/tasksSlice';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../redux/store';
+import { useSelector } from 'react-redux';
+import { Task } from '../types/types';
 
 const Tab = createMaterialTopTabNavigator();
+
+interface MyState {
+  tasks: {data: Array<Task>}
+}
 
 export default function TopTabs() {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
+  const tasks = useSelector((state: MyState) => state.tasks.data)
+
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
   }
-
-  const dispatch = useDispatch<AppDispatch>()
-
-  useEffect(() => {
-    dispatch(getTasks)
-   },[isModalVisible])
 
   return (
     <>
@@ -33,12 +32,16 @@ export default function TopTabs() {
           // tabBarActiveTintColor: Colors.main,
           tabBarLabelStyle: { fontSize: 12 },
           // tabBarStyle: { backgroundColor: 'powderblue' },
-          tabBarIndicatorStyle: { backgroundColor: Colors.main }
+          tabBarIndicatorStyle: { backgroundColor: Colors.main },
+         
         }}
       >
         <Tab.Screen 
           name="Open" 
           component={TasksListScreen} 
+          options={{
+            tabBarBadge:()=> { return (  <View style={{ position: 'relative', top: 14, left: -60 }}><Text>({tasks.length})</Text></View> ) }
+          }}
         />
         <Tab.Screen 
           name="Completed" 

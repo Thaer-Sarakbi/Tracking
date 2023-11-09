@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 const TaskDetailsScreen = () => {
 

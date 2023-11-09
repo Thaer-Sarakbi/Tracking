@@ -4,7 +4,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 // import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../assets/Colors';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +11,7 @@ import { User } from '../types/types';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import { getTasks } from '../redux/tasksSlice';
+import moment from 'moment';
 // import Geolocation from '@react-native-community/geolocation';
 // import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 
@@ -42,7 +42,8 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     assignedTo, 
     duration, 
     location,
-    status: 'Not Started'
+    status: 'Not Started',
+    creationDate: moment().format('MMM Do YYYY, hh:mm a')
   }).then(res => {
     changeModalVisible(false)
     dispatch(getTasks())
