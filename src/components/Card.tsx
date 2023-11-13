@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, Text, View, TextInput, Button, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Task } from '../types/types';
 
-const Card = ({item}: {item: Task}) => {
+const Card = ({item}: { item: Task }  ) => {
 
   const getStyle = (status: string) => {
     if(status === 'In Progress'){
@@ -20,7 +20,7 @@ const Card = ({item}: {item: Task}) => {
   }
 
     return(
-      <TouchableOpacity style ={styles.container}>
+      <View style ={styles.container}>
         <Text style={styles.date}>{item.creationDate}</Text>
         <View style={styles.seperator}/>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -41,7 +41,7 @@ const Card = ({item}: {item: Task}) => {
           <Icon name="location-outline" size={20} color={'#BDBDBD'} />
           <Text style={{ fontSize: 15, marginLeft: 5 }}>{item.location}</Text>
         </View>
-      </TouchableOpacity>
+      </View>
     )
   }
 

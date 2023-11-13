@@ -3,13 +3,20 @@ import React from "react"
 import Login from "./screens/Login"
 import TopTabs from "./navigation/TopTabs"
 import DrawerNav from "./navigation/DrawerNav"
+import TaskDetailsScreen from "./screens/TaskDetailsScreen"
+import TasksListScreen from "./screens/TasksListScreen"
+import Card from "./components/Card"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
 export type RootStackParamsList = {
     Login: undefined,
     TopTabs: undefined,
-    DrawerNav: undefined
+    DrawerNav: undefined,
+    TaskDetails: {
+      taskId: string
+    },
+    TasksList: undefined,
 }
 
 const AppStack = () => {
@@ -25,6 +32,21 @@ const AppStack = () => {
           component={TopTabs}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="TaskDetails"
+          component={TaskDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        {/* <Stack.Screen
+          name="TasksList"
+          component={TasksListScreen}
+          options={{ headerShown: false }}
+        /> */}
+        {/* <Stack.Screen
+          name="Card"
+          component={Card}
+          options={{ headerShown: false }}
+        /> */}
         {/* <Stack.Screen
           name="DrawerNav"
           component={DrawerNav}

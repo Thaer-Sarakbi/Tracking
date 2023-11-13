@@ -14,3 +14,25 @@ export type User = {
     name: string,
     email: string
 }
+
+export type  tasks = {
+    data: Array<Task>,
+    task: Task | string,
+    status: string,
+    error: string | undefined
+}
+
+// export type  task = {
+//     task: Task | undefined,
+//     status: string,
+//     error: string | undefined,
+// }
+
+export interface TasksState {
+  tasks: {
+    data: Array<Task>,
+    task: Task,
+    status: string,
+    error: string
+  }
+  }
