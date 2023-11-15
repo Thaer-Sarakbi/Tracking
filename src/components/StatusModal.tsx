@@ -2,9 +2,8 @@ import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 
 const StatusModal = ({ changeModalVisible, isModalVisible, setData }) => {
-   console.log(isModalVisible)
 
-   const closeModal = (bool, data) => {
+   const closeModal = (bool: boolean, data: string) => {
      changeModalVisible(bool)
      setData(data)
    }

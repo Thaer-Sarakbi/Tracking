@@ -17,7 +17,7 @@ export type User = {
 
 export type  tasks = {
     data: Array<Task>,
-    task: Task | string,
+    // task: Task | undefined,
     status: string,
     error: string | undefined
 }
@@ -35,4 +35,4 @@ export interface TasksState {
     status: string,
     error: string
   }
-  }
+}

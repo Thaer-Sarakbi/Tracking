@@ -15,6 +15,11 @@ const Card = ({item}: { item: Task }  ) => {
       return{
         borderColor: '#5C6BC0',
         color: '#5C6BC0',
+      } 
+    } else if(status === 'Completed'){
+      return{
+        borderColor: 'red',
+        color: 'red',
       }
     }
   }

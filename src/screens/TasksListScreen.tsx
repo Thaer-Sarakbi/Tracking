@@ -36,11 +36,9 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
             keyExtractor={(item) => item.id.toString()}
             data={tasks}
             renderItem={(item) => (
-              // Card(item)
               <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                 taskId: item.item.id
               })}} >
-                {/* <ListEmployee employee={item} navigation={this.props.navigation} /> */}
                 <Card item={item.item} />
               </TouchableOpacity>
             )}

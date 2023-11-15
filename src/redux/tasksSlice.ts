@@ -1,13 +1,28 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Task, tasks, TasksState } from '../types/types';
+import moment from 'moment';
 
-// interface MyState {
-//   data: Array<Task>
-//   task: Task,
-//   status: string,
-//   error: string | undefined
-// }
+export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string}) => {
+
+  await firestore()
+  .collection('users')
+  .doc('ArBP1hNGf2ScyBjdiDfE')
+  .collection('tasks')
+  .doc(task.id)
+  .update({
+    status: task.status
+  })
+  .then(() => {
+    console.log('updated')
+    firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(task.id).collection('history').add({
+    status: task.status,
+    updatDate: moment().format('MMM Do YYYY, hh:mm a')
+    }).then(() => {
+      console.log('history created')
+    })
+  });
+})
 
 export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
   let tasksList: Array<Task> = []
@@ -26,15 +41,16 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
   return tasksList
 })
 
-export const getTask = createAsyncThunk("tasks/getTask", async (id: string) => {
+// export const getTask = createAsyncThunk("tasks/getTask", async (id: string) => {
 
-  const taskDetails = await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).get()
-  .then(querySnapshot => { 
-    return querySnapshot.data()
-  });
+//   const taskDetails = await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).get()
+//   .then(querySnapshot => { 
+//     return querySnapshot.data()
+//   });
 
-  return taskDetails
-})
+//   return taskDetails
+// })
+
 // export const addTask = createAsyncThunk("tasks/addTask", async (title, decription, assignTo, duration, location) => {
 //   console.log('hekl')
 //   await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').add({
@@ -56,7 +72,7 @@ const tasksSlice = createSlice({
   name: 'tasks',
   initialState: {
     data: [],
-    task: '',
+    // task: undefined,
     status: '',
     error: undefined
   } as tasks,
@@ -74,18 +90,6 @@ const tasksSlice = createSlice({
         state.data = payload
       })
       .addCase(getTasks.rejected, (state, action) => {
-        console.log(action)
-        state.status = 'failed'
-        state.error = action.error.message
-      })
-      .addCase(getTask.pending, (state, action) => {
-        state.status = 'loading'
-      })
-      .addCase(getTask.fulfilled, (state, { payload }) => {
-        state.status = 'succeeded'
-        state.task = payload
-      })
-      .addCase(getTask.rejected, (state, action) => {
         console.log(action)
         state.status = 'failed'
         state.error = action.error.message
