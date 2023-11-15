@@ -1,22 +1,33 @@
 import { RouteProp } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View, Button } from 'react-native';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamsList } from '../AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { Task } from '../types/types';
+import { History, Task } from '../types/types';
 import { StyleSheet } from 'react-native';
 import StatusModal from '../components/StatusModal';
 import firestore from '@react-native-firebase/firestore'
 import { getTasks, updateTask } from '../redux/tasksSlice';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getHistory } from '../redux/historySlice';
+import { FlatList } from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view'
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
   navigation: StackNavigationProp<RootStackParamsList, "TaskDetails">
+}
+
+interface historyState {
+  history: {
+    data: Array<History>,
+    status: string,
+    error: string
+  }
 }
 
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
@@ -25,6 +36,10 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [taskStatus, setTaskStatus] = useState()
   const [task, setTask] = useState<Task | null>(null)
   const [showAlert, setShowAlert] = useState<boolean>(false)
+
+  const history = useSelector((state: historyState) => state.history.data)
+  const status = useSelector((state: historyState) => state.history.status)
+  console.log(status)
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -37,6 +52,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         setTask(documentSnapshot.data())
       }
     });
+
+    dispatch(getHistory(id))
   },[])
 
   useEffect(() => {
@@ -74,7 +91,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     return <View/>
   } else {
     return (
-      <>
+      <ScrollView>
         <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrow-back-outline" size={30} color={'white'} />
@@ -111,6 +128,29 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           <Text style={{ fontSize: 20, color: 'white' }}>Update</Text>
         </TouchableOpacity>
           </View>
+
+          {status === 'loading' ? (
+            <View />
+          ) : (history.length === 0 ? (
+            null) : (
+              <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
+                <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>History</Text>
+                <FlatList
+                  data={history}
+                  ItemSeparatorComponent={() => <View style={{ height: 1, width: '100%',backgroundColor: 'black', marginVertical: 5 }} />}
+                  renderItem={(item) => {
+                    return(
+                      <View>
+                        <Text>{item.item.updatDate}</Text>
+                        <Text>{item.item.status}</Text>
+                      </View>
+                    )
+                  }}
+                />
+              </View>
+            )
+          )}
+          
         </View>
 
           <Modal
@@ -146,6 +186,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           onConfirmPressed={() => {
             dispatch(updateTask({ id, status: task?.status }))
             dispatch(getTasks())
+            dispatch(getHistory(id))
             setShowAlert(false)
           }}
           contentContainerStyle={{
@@ -176,14 +217,15 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           }}
         />
       </View>
-      </>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container:{
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    paddingBottom: 15
   },
   title: {
     fontSize: 30,
