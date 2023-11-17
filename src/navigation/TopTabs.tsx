@@ -7,7 +7,9 @@ import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
 import { useSelector } from 'react-redux';
-import { Task } from '../types/types';
+import { Task, notificationsState } from '../types/types';
+import { RootStackParamsList } from '../AppStack';
+import { StackScreenProps } from '@react-navigation/stack';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -15,7 +17,7 @@ interface MyState {
   tasks: {data: Array<Task>}
 }
 
-export default function TopTabs() {
+export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const tasks = useSelector((state: MyState) => state.tasks.data)
@@ -26,7 +28,7 @@ export default function TopTabs() {
 
   return (
     <>
-      <Header />
+      <Header navigation={navigation}/>
       <Tab.Navigator 
         screenOptions={{
           // tabBarActiveTintColor: Colors.main,

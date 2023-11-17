@@ -9,6 +9,7 @@ export const getHistory = createAsyncThunk("history/getHistory", async (id: stri
   await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).collection('history').get()
   .then(querySnapshot => { 
     querySnapshot.docs.forEach(documentSnapshot => {
+      console.log('got')
         // documentSnapshot.data().id = documentSnapshot.id
         historyList.push(documentSnapshot.data() as any) 
     });

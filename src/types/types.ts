@@ -47,3 +47,26 @@ export type historyList = {
   status: string,
   error: string | undefined
 }
+
+export type Notification = {
+  taskId: string,
+  read: boolean,
+  title: string,
+  message: string,
+  task: string
+}
+
+export type notificationsList = {
+  data: Array<Notification>,
+  status: string,
+  error: string | undefined
+}
+
+export interface notificationsState {
+  notifications: {
+    data: Array<Notification>,
+    notification: Notification,
+    status: string,
+    error: string
+  }
+}

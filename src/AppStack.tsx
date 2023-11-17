@@ -4,8 +4,8 @@ import Login from "./screens/Login"
 import TopTabs from "./navigation/TopTabs"
 import DrawerNav from "./navigation/DrawerNav"
 import TaskDetailsScreen from "./screens/TaskDetailsScreen"
-import TasksListScreen from "./screens/TasksListScreen"
-import Card from "./components/Card"
+import NotificationsScreen from "./screens/NotificationsScreen"
+import Header from "./components/Header"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -17,6 +17,8 @@ export type RootStackParamsList = {
       taskId: string
     },
     TasksList: undefined,
+    Notifications: undefined,
+    Header: undefined
 }
 
 const AppStack = () => {
@@ -35,6 +37,16 @@ const AppStack = () => {
         <Stack.Screen
           name="TaskDetails"
           component={TaskDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        {/* <Stack.Screen
+          name="Header"
+          component={Header}
+          options={{ headerShown: false }}
+        /> */}
+        <Stack.Screen
+          name="Notifications"
+          component={NotificationsScreen}
           options={{ headerShown: false }}
         />
         {/* <Stack.Screen

@@ -7,9 +7,9 @@ import { Task, tasks, TasksState } from '../types/types';
 import Card from '../components/Card';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../AppStack';
+import PushNotification from 'react-native-push-notification';
 
 const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
-  // console.log(navigation)
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
 
@@ -25,7 +25,19 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
 
   useEffect(() => {
     dispatch(getTasks())
+
+    createChannels()
   },[])
+
+  const createChannels = () => {
+    PushNotification.createChannel(
+      {
+          channelId: "update-status", // (required)
+          channelName: "update status", // (required)
+      },
+      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+  );
+  }
 
   if(status === 'loading'){
     return <View/>

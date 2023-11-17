@@ -1,4 +1,4 @@
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamsList } from '../AppStack';
@@ -16,6 +16,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { getHistory } from '../redux/historySlice';
 import { FlatList } from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view'
+import PushNotification from 'react-native-push-notification';
+import { getNotifications, updateNotifications } from '../redux/notificationsSlice';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -39,11 +41,16 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
-  console.log(status)
 
   const dispatch = useDispatch<AppDispatch>()
 
+  if(status === 'succeeded'){
+    //  dispatch(updateNotifications(id))
+  }
+
+  console.log(route.params)
   const id = route.params.taskId
+
   useEffect(() => {
     firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).get()
     .then(documentSnapshot => { 
@@ -53,7 +60,11 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       }
     });
 
-    dispatch(getHistory(id))
+    dispatch(getHistory(id)).then(() => {
+      // if(route.params.notificationId){
+      //    dispatch(updateNotifications(id))
+      // }
+    })
   },[])
 
   useEffect(() => {
@@ -77,6 +88,42 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         color: 'red',
       }
     }
+  }
+
+  const addNotification = async (message: string, title: string) => {
+
+    await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('notifications').add({
+      message,
+      reade: false,
+      task: task?.title,
+      title,
+      taskId: id
+    }).then(res => {
+      dispatch(getNotifications())
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+  const handleNotification = (status: string) => {
+    const message = `Status Updated to ${status}`
+    const title = task?.title
+
+    PushNotification.localNotification({
+      channelId: "update-status",
+      title: "Update Status",
+      message: message,
+      task: title,
+      vibrate: true, // (optional) default: true
+      vibration: 300,
+      screen: 'TaskDetails' 
+    });
+
+    PushNotification.popInitialNotification((notification) => {
+      console.log('Initial Notification', notification);
+    });
+
+    addNotification(message, title)
   }
 
   const changeModalVisible = (bool: boolean) => {
@@ -188,6 +235,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             dispatch(getTasks())
             dispatch(getHistory(id))
             setShowAlert(false)
+            handleNotification(taskStatus)
           }}
           contentContainerStyle={{
             width: '70%'

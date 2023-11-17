@@ -1,17 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { notificationsState } from '../types/types';
+import { getNotifications } from '../redux/notificationsSlice';
+import { AppDispatch } from '../redux/store';
 
-const Header = () => {
+const Header = ({ navigation }) => {
+  const notifications = useSelector((state: notificationsState) => state.notifications.data)
 
+  const dispatch = useDispatch<AppDispatch>()
+ 
   const icons = [
     { name: "search-outline", size: 30, color: 'white' },
     { name: "notifications-outline", size: 30, color: 'white' },
     { name: "chatbubbles-outline", size: 30, color: 'white'} 
   ]
 
+  const handleNav = (name: string) => {
+    if(name === 'notifications-outline'){
+      navigation.navigate('Notifications')
+    }
+  }
+
+  useEffect(() => {
+    dispatch(getNotifications())
+  },[])
   return (
     <View style={styles.container}>
       <View style={styles.left}>
@@ -23,7 +39,12 @@ const Header = () => {
       <View style={styles.right}>
         {
           icons.map((icon, i) => (
-            <TouchableOpacity key={i}>
+            <TouchableOpacity key={i} onPress={() => handleNav(icon.name)}>
+              {icon.name === 'notifications-outline' && (
+                <View style={{ width: 20, backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+                  <Text style={{ color: 'white' }}>{notifications.length}</Text>
+                </View>
+              )}
               <Icon name= {icon.name} size={icon.size} color={icon.color} />
             </TouchableOpacity>
           ))

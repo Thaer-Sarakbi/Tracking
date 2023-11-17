@@ -41,33 +41,6 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
   return tasksList
 })
 
-// export const getTask = createAsyncThunk("tasks/getTask", async (id: string) => {
-
-//   const taskDetails = await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).get()
-//   .then(querySnapshot => { 
-//     return querySnapshot.data()
-//   });
-
-//   return taskDetails
-// })
-
-// export const addTask = createAsyncThunk("tasks/addTask", async (title, decription, assignTo, duration, location) => {
-//   console.log('hekl')
-//   await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').add({
-//     title, 
-//     decription, 
-//     assignTo, 
-//     duration, 
-//     location
-//   }).then(res => {
-//     // changeModalVisible(false)
-//     console.log(res)
-//   }).catch(err => {
-//     // changeModalVisible(false)
-//     console.log(err)
-//   })
-// })
-
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState: {
