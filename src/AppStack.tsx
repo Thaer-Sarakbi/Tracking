@@ -2,10 +2,8 @@ import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
 import Login from "./screens/Login"
 import TopTabs from "./navigation/TopTabs"
-import DrawerNav from "./navigation/DrawerNav"
 import TaskDetailsScreen from "./screens/TaskDetailsScreen"
 import NotificationsScreen from "./screens/NotificationsScreen"
-import Header from "./components/Header"
 import SignUpScreen from "./screens/SignupScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
@@ -19,7 +17,8 @@ export type RootStackParamsList = {
     },
     TasksList: undefined,
     Notifications: undefined,
-    Header: undefined
+    Header: undefined,
+    Signup: undefined
 }
 
 const AppStack = () => {

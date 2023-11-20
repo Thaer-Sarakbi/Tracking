@@ -8,8 +8,11 @@ import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
 import { Colors } from '../assets/Colors';
 import { useForm, Controller } from "react-hook-form"
+import { ErrorMessage } from "@hookform/error-message"
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamsList } from '../AppStack';
 
-const Login = ({ navigation }) => {
+const Login = ({ navigation } : StackScreenProps<RootStackParamsList, 'Login'>) => {
 
   const {
     control,
@@ -38,11 +41,14 @@ const Login = ({ navigation }) => {
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: {
+                value: true,
+                message: 'Email is required'
+              },
               pattern:{
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                 message: "invalid email address"
-              }
+              } 
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput 
@@ -58,15 +64,18 @@ const Login = ({ navigation }) => {
           />
          
         </View>
-        {errors.email && <Text style={{ color: 'red', fontSize: 15 }}>{errors.email.message}</Text>}
-        
+        {errors.email && <Text style={{ color: 'red', fontSize: 15 }}>{errors.email?.message}</Text>} 
+       
         <Text style={[styles.text_footer,{marginTop: 35}]}>Password</Text>
         <View style={styles.action}>
           <FontAwesome name='lock' color='#05375a' size={20} />
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: {
+                value: true,
+                message: 'Password is required'
+              },
               minLength: {
                 value: 8,
                 message: 'Your Password is too short'
@@ -86,7 +95,8 @@ const Login = ({ navigation }) => {
             name="password"
           />
         </View>
-        {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password.message}</Text>}
+        {/* {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password.message}</Text>} */}
+        {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
 
         <View style={styles.button}>
           

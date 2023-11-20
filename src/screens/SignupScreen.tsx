@@ -1,12 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { Text, View, StyleSheet, Dimensions, TextInput, Image, TouchableOpacity, Platform, StatusBar, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import Feather from 'react-native-vector-icons/Feather'
 import LinearGradient from 'react-native-linear-gradient'
 import * as Animatable from 'react-native-animatable'
 import { useForm, Controller } from "react-hook-form"
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamsList } from '../AppStack';
 
-const SignUpScreen = ({ navigation }) => {
+const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Signup'>) => {
 
   const {
         control,
@@ -17,7 +18,9 @@ const SignUpScreen = ({ navigation }) => {
         defaultValues: {
           email: "",
           password: "",
-          confirmPassword: ""
+          confirmPassword: "",
+          firstName: "",
+          secondName: ""
         },
     })
 
@@ -34,16 +37,71 @@ const SignUpScreen = ({ navigation }) => {
       
       <Animatable.View style={styles.footer} animation='fadeInUpBig'>
        <ScrollView>
+       <Text style={styles.text_footer}>First Name</Text>
+        <View style={styles.action}>
+          <FontAwesome name='user-o' color='#05375a' size={20} />
+          <Controller
+            control={control}
+            rules={{
+              required: {
+                value: true,
+                message: 'First Name is required'
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput 
+                placeholder='First Name' 
+                style={styles.textInput} 
+                autoCapitalize='none'  
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="firstName"
+          />
+        </View>
+        {errors.firstName && <Text style={{ color: 'red', fontSize: 15 }}>{errors.firstName.message}</Text>}
+
+        <Text style={styles.text_footer}>Second Name</Text>
+        <View style={styles.action}>
+          <FontAwesome name='user-o' color='#05375a' size={20} />
+          <Controller
+            control={control}
+            rules={{
+              required: {
+                value: true,
+                message: 'Second Name is required'
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput 
+                placeholder='Second Name' 
+                style={styles.textInput} 
+                autoCapitalize='none'  
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="secondName"
+          />
+        </View>
+        {errors.secondName && <Text style={{ color: 'red', fontSize: 15 }}>{errors.secondName.message}</Text>}
+
         <Text style={styles.text_footer}>Email</Text>
         <View style={styles.action}>
           <FontAwesome name='user-o' color='#05375a' size={20} />
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: {
+                value: true,
+                message: 'Email is required'
+              },
               pattern:{
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "invalid email address"
+                message: "Invalid email address"
               }
             }}
             render={({ field: { onChange, onBlur, value } }) => (
@@ -59,7 +117,7 @@ const SignUpScreen = ({ navigation }) => {
             name="email"
           />
         </View>
-        {errors.email && <Text style={{ color: 'red', fontSize: 15 }}>{errors.email.message}</Text>}
+        {errors.email && <Text style={{ color: 'red', fontSize: 15 }}>{errors.email?.message}</Text>}
 
         <Text style={[styles.text_footer,{marginTop: 35}]}>Password</Text>
         <View style={styles.action}>
@@ -67,7 +125,10 @@ const SignUpScreen = ({ navigation }) => {
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: {
+                value: true,
+                message: 'Password is required'
+              },
               minLength: {
                 value: 8,
                 message: 'Your Password is too short'
@@ -87,7 +148,7 @@ const SignUpScreen = ({ navigation }) => {
             name="password"
           />      
         </View>
-        {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password.message}</Text>}
+        {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
 
         <Text style={[styles.text_footer,{marginTop: 35}]}>Confirm Password</Text>
         <View style={styles.action}>
@@ -96,7 +157,10 @@ const SignUpScreen = ({ navigation }) => {
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: {
+                value: true,
+                message: 'Password is required'
+              },
               validate: (val: string) => {
                 if (watch('password') != val) {
                   return "Your passwords doesn't match";
@@ -117,7 +181,7 @@ const SignUpScreen = ({ navigation }) => {
             name="confirmPassword"
           />     
         </View>
-        {errors.confirmPassword && <Text style={{ color: 'red', fontSize: 15 }}>{errors.confirmPassword.message}</Text>}
+        {errors.confirmPassword && <Text style={{ color: 'red', fontSize: 15 }}>{errors.confirmPassword?.message}</Text>}
 
         <View style={styles.button}>
           <LinearGradient colors={['#FF8A65', '#FF5722']} style={styles.signIn}>
