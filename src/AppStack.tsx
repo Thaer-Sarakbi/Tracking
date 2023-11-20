@@ -6,6 +6,7 @@ import DrawerNav from "./navigation/DrawerNav"
 import TaskDetailsScreen from "./screens/TaskDetailsScreen"
 import NotificationsScreen from "./screens/NotificationsScreen"
 import Header from "./components/Header"
+import SignUpScreen from "./screens/SignupScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -24,11 +25,16 @@ export type RootStackParamsList = {
 const AppStack = () => {
   return(
     <Stack.Navigator>
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
-        /> */}
+        />
+        <Stack.Screen
+          name="Signup"
+          component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="TopTabs"
           component={TopTabs}

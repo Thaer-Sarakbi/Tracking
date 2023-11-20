@@ -1,37 +1,39 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Platform} from 'react-native';
-import auth from '@react-native-firebase/auth';
+import React, { useContext, useState } from 'react';
+import { Text, View, StyleSheet, Dimensions, TextInput, Image, TouchableOpacity, Platform, StatusBar, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { StatusBar } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather'
-import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
-import { Colors } from '../assets/Colors';
+import * as Animatable from 'react-native-animatable'
 import { useForm, Controller } from "react-hook-form"
 
-const Login = ({ navigation }) => {
+const SignUpScreen = ({ navigation }) => {
 
   const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
-  const onSubmit = (data) => console.log(data)
+        control,
+        handleSubmit,
+        formState: { errors },
+        watch
+    } = useForm({
+        defaultValues: {
+          email: "",
+          password: "",
+          confirmPassword: ""
+        },
+    })
 
-  console.log(errors)
+    const onSubmit = (data) => console.log(data)
+    
+    console.log(errors)
 
-  return (
+  return ( 
     <View style={styles.container}> 
-      <StatusBar backgroundColor= {Colors.main} barStyle='light-content' />
+      <StatusBar backgroundColor='#FF5722' barStyle='light-content' />
       <View style={styles.header}>
         <Text style={styles.text_header}>Welcome!</Text>
       </View>
+      
       <Animatable.View style={styles.footer} animation='fadeInUpBig'>
+       <ScrollView>
         <Text style={styles.text_footer}>Email</Text>
         <View style={styles.action}>
           <FontAwesome name='user-o' color='#05375a' size={20} />
@@ -56,10 +58,9 @@ const Login = ({ navigation }) => {
             )}
             name="email"
           />
-         
         </View>
         {errors.email && <Text style={{ color: 'red', fontSize: 15 }}>{errors.email.message}</Text>}
-        
+
         <Text style={[styles.text_footer,{marginTop: 35}]}>Password</Text>
         <View style={styles.action}>
           <FontAwesome name='lock' color='#05375a' size={20} />
@@ -84,32 +85,62 @@ const Login = ({ navigation }) => {
               />
             )}
             name="password"
-          />
+          />      
         </View>
         {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password.message}</Text>}
 
-        <View style={styles.button}>
-          
-            <LinearGradient colors={['#FF8A65', Colors.main]} style={styles.signIn}>
-              <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-                <Text style={[styles.textSign, { color: '#fff' }]}>Sign In</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-         
+        <Text style={[styles.text_footer,{marginTop: 35}]}>Confirm Password</Text>
+        <View style={styles.action}>
+          <FontAwesome name='lock' color='#05375a' size={20} />
 
-          <TouchableOpacity onPress={() => navigation.navigate('Signup')} style={[styles.signIn, { borderColor: Colors.main, borderWidth: 1, marginTop: 15 }]}>
-            <Text style={[styles.textSign, { color: Colors.main }]}>Sign Up</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+              validate: (val: string) => {
+                if (watch('password') != val) {
+                  return "Your passwords doesn't match";
+                }
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput 
+                placeholder='Confirm Your Password' 
+                style={styles.textInput} 
+                autoCapitalize='none'  
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={true}
+              />
+            )}
+            name="confirmPassword"
+          />     
+        </View>
+        {errors.confirmPassword && <Text style={{ color: 'red', fontSize: 15 }}>{errors.confirmPassword.message}</Text>}
+
+        <View style={styles.button}>
+          <LinearGradient colors={['#FF8A65', '#FF5722']} style={styles.signIn}>
+            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+              <Text style={[styles.textSign, { color: '#fff' }]}>Sign Up</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+
+          <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.signIn, { borderColor: '#FF5722', borderWidth: 1, marginTop: 15 }]}>
+            <Text style={[styles.textSign, { color: '#FF5722' }]}>Sign In</Text>
           </TouchableOpacity>
         </View>
+       </ScrollView>
       </Animatable.View>
+     
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: Colors.main
+    backgroundColor: '#FF5722'
   },
   header: {
       flex: 1,
@@ -153,6 +184,7 @@ const styles = StyleSheet.create({
       marginTop: Platform.OS === 'ios' ? 0 : -12,
       paddingLeft: 10,
       color: '#05375a',
+      fontSize: 17
   },
   errorMsg: {
       color: '#FF0000',
@@ -175,4 +207,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Login;
+export default SignUpScreen

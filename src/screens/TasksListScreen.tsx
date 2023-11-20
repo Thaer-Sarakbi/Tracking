@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
@@ -8,6 +8,7 @@ import Card from '../components/Card';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../AppStack';
 import PushNotification from 'react-native-push-notification';
+import AnimatedLottieView from 'lottie-react-native';
 
 const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   const tasks = useSelector((state: TasksState) => state.tasks.data)
@@ -40,7 +41,11 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
   }
 
   if(status === 'loading'){
-    return <View/>
+    return (
+      <View style={{ flex: 1 , justifyContent: 'center', alignItems: 'center'}}>
+        <AnimatedLottieView source={require('../assets/loading.json')} autoPlay loop />
+      </View>
+    )
   } else if(status === 'succeeded'){
     return (
       <View style={{ flex: 1 }}>
