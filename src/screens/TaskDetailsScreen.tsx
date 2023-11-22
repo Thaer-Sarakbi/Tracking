@@ -6,9 +6,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { History, Task } from '../types/types';
+import { History, Task, Updates } from '../types/types';
 import { StyleSheet } from 'react-native';
 import StatusModal from '../components/StatusModal';
+// import updateModal from '../components/updateModal';
 import firestore from '@react-native-firebase/firestore'
 import { getTasks, updateTask } from '../redux/tasksSlice';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -18,6 +19,12 @@ import { FlatList } from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view'
 import PushNotification from 'react-native-push-notification';
 import { getNotifications, updateNotifications } from '../redux/notificationsSlice';
+import moment from 'moment';
+import Timeline from 'react-native-timeline-flatlist';
+import { getUpdates } from '../redux/updatesSlice';
+import UpdateModal from '../components/UpdateModal';
+import Geolocation from '@react-native-community/geolocation';
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -32,15 +39,32 @@ interface historyState {
   }
 }
 
+interface updatesState {
+  updates: {
+    data: Array<Updates>,
+    status: string,
+    error: string
+  }
+}
+
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
   const [taskStatus, setTaskStatus] = useState()
   const [task, setTask] = useState<Task | null>(null)
   const [showAlert, setShowAlert] = useState<boolean>(false)
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
+  const [latitude, setLatitude] = useState('')
+  const [longitude, setLongitude] = useState('')
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
+
+  const updates = useSelector((state: updatesState) => state.updates?.data)
+  const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
+  console.log(updates)
+
+  updates.sort((a, b) => b.time - a.time)
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -65,6 +89,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       //    dispatch(updateNotifications(id))
       // }
     })
+
+    dispatch(getUpdates(id))
   },[])
 
   useEffect(() => {
@@ -128,10 +154,32 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
+
+    Geolocation.getCurrentPosition(info => {
+      setLatitude(info.coords.latitude)
+      setLongitude(info.coords.longitude)
+    }, (err) => {
+      // //console.log(err.code, err.message);
+      //   setEnable(false)
+      //   RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+      //     interval: 10000,
+      //     fastInterval: 5000,
+      //   })
+      //     .then((data) => {
+      //       setEnable(true)
+      //     })
+      //     .catch((err) => {
+      //       setEnable(true)
+      //     });
+    }); 
   }
 
   const onChangeStatus = () => {
     setShowAlert(true)
+  }
+
+  const onAddUpdate = (bool: boolean) => {
+    setUpdateModalVisible(bool)
   }
 
   if(task === null){
@@ -172,9 +220,65 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.updateButton} onPress={() => onChangeStatus()}>
-          <Text style={{ fontSize: 20, color: 'white' }}>Update</Text>
-        </TouchableOpacity>
-          </View>
+              <Text style={{ fontSize: 20, color: 'white' }}>Update</Text>
+            </TouchableOpacity>
+        </View>
+
+        <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
+          <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Updates</Text>
+          {
+            statusUpdates === 'loading' ? (
+              <View/>
+            ) : (
+              <>
+                <Timeline
+                  onEventPress={(t) => console.log(t)}
+                  data={updates}
+                  circleSize={20}
+                  circleColor='rgb(45,156,219)'
+                  lineColor='rgb(45,156,219)'
+                  separator={true}
+                  timeContainerStyle={{minWidth:52, marginTop: 10 }}
+                  timeStyle={{textAlign: 'center', backgroundColor:'#ff9797', color:'white', padding:5, borderRadius:13}}
+                  descriptionStyle={{color:'gray'}}
+                  options={{
+                    style:{paddingTop:5}
+                  }}
+                  isUsingFlatlist={true}
+                />
+
+                <TouchableOpacity style={styles.updateButton} onPress={() => onAddUpdate(true)}>
+                  <Text style={{ fontSize: 20, color: 'white' }}>Add Update</Text>
+                </TouchableOpacity>
+
+                <Modal
+                  transparent= {true}
+                  animationType= 'fade'
+                  visible= {updateModalVisible}
+                  onRequestClose={() => onAddUpdate(false)}
+                >
+                  <UpdateModal 
+                    changeModalVisible= {onAddUpdate}
+                    isModalVisible={updateModalVisible}
+                    // setUpdateData={setUpdateData}
+                  />
+                </Modal>
+              </>
+            )
+          }
+        </View>
+
+        {/* <View style={{ width: '100%', height: 100 }}> */}
+        <MapView
+        style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
+  initialRegion={{
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  }}
+/>
+        {/* </View> */}
 
           {status === 'loading' ? (
             <View />
@@ -212,7 +316,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
               setData={setTaskStatus}
             />
           </Modal>
-
         <View>
 
         <AwesomeAlert
@@ -265,6 +368,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           }}
         />
       </View>
+
+     
       </ScrollView>
     );
   }
@@ -323,6 +428,11 @@ const styles = StyleSheet.create({
   alertText: {
     color: '#fff',
     fontSize: 15
+  },
+  map:{
+    ...StyleSheet.absoluteFillObject,
+    height: 100,
+    width: '100%'
   }
 })
 export default TaskDetailsScreen;

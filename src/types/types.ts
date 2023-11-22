@@ -70,3 +70,11 @@ export interface notificationsState {
     error: string
   }
 }
+
+export type Updates = {
+  id: string,
+  title: string,
+  description: string,
+  time: string,
+  images: Array<string>
+}

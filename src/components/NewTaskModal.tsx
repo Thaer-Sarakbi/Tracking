@@ -12,8 +12,6 @@ import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import { getTasks } from '../redux/tasksSlice';
 import moment from 'moment';
-// import Geolocation from '@react-native-community/geolocation';
-// import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 
 interface MyState {
     users: {data: Array<User>}

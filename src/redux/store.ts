@@ -3,12 +3,14 @@ import tasksSlice from './tasksSlice'
 import usersSlice from './usersSlice'
 import historySlice from './historySlice'
 import notificationsSlice from './notificationsSlice'
+import updatesSlice from './updatesSlice'
 
 export const store = configureStore({ reducer: {
     tasks: tasksSlice.reducer,
     users: usersSlice.reducer,
     history: historySlice.reducer,
-    notifications: notificationsSlice.reducer
+    notifications: notificationsSlice.reducer,
+    updates: updatesSlice.reducer
 } })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

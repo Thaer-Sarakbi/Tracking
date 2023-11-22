@@ -24,7 +24,7 @@ export type RootStackParamsList = {
 const AppStack = () => {
   return(
     <Stack.Navigator>
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
@@ -33,7 +33,7 @@ const AppStack = () => {
           name="Signup"
           component={SignUpScreen}
           options={{ headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
           name="TopTabs"
           component={TopTabs}
