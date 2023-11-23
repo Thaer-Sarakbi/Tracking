@@ -64,7 +64,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
   console.log(updates)
 
-  updates.sort((a, b) => b.time - a.time)
+  // updates.sort((a, b) => b.time - a.time)
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -232,7 +232,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             ) : (
               <>
                 <Timeline
-                  onEventPress={(t) => console.log(t)}
+                  onEventPress={(update) => navigation.navigate('UpdateDetails', { navigation, update })}
                   data={updates}
                   circleSize={20}
                   circleColor='rgb(45,156,219)'
@@ -260,7 +260,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                   <UpdateModal 
                     changeModalVisible= {onAddUpdate}
                     isModalVisible={updateModalVisible}
-                    // setUpdateData={setUpdateData}
+                    id={id}
                   />
                 </Modal>
               </>

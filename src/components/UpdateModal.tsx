@@ -8,11 +8,14 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Platform } from 'react-native';
+import storage from '@react-native-firebase/storage';
 
-const UpdateModal = ({ changeModalVisible, isModalVisible, setUpdateData  }) => {
+const UpdateModal = ({ changeModalVisible, isModalVisible, id  }) => {
     const [title, setTitle] = useState<string>()
     const [description, setDecription] = useState<string>()
     const [images, setImages] = useState<string[]>()
+    const [transferred, setTransferred] = useState(0);
 
     const dispatch = useDispatch<AppDispatch>()
 
@@ -23,14 +26,14 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, setUpdateData  }) => 
 
    const submit = async () => {
 
-    await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('updates').add({
+    await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).collection('updates').add({
       title, 
       description, 
       images,
       time: moment().format('MMM D')
     }).then(res => {
       changeModalVisible(false)
-      dispatch(getUpdates())
+      dispatch(getUpdates(id))
     }).catch(err => {
       changeModalVisible(false)
       console.log(err)
@@ -58,26 +61,39 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, setUpdateData  }) => 
   })
 
   const uploadImage = async () => {
-    // setUploading(true)
     {
         images?.map(async(image) => {
-            const response = await fetch(image.path)
-            const blob = response.blob()
-            const filename = image.path.substring(image.path.lastIndexOf('/')+1)
-            var ref = firebase.storage().ref().child(filename).put(blob)
+            console.log('333')
+            const { path } = image;
+            const filename = path.substring(path.lastIndexOf('/') + 1);
+            // console.log(filename)
+            const uploadUri = Platform.OS === 'ios' ? path.replace('file://', '') : path;
+            // console.log(uploadUri)
+            // setUploading(true);
+            setTransferred(0);
+            const task = storage()
+              .ref(filename)
+              .putFile(uploadUri);
+              console.log(task)
+            // set progress state
+            task.on('state_changed', snapshot => {
+              setTransferred(
+                Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 10000
+              );
+            });
             try {
-                await ref;
-            } catch (e){
-                console.log(e)
+              await task;
+            } catch (e) {
+              console.error(e);
             }
-            // setUploading(false)
-            Alert.alert(
-                'Photo uploaded!'
-            );
         })
     }
 
-    // setImage(null);
+    // setUploading(false);
+    // Alert.alert(
+    //   'Photo uploaded!',
+    //   'Your photo has been uploaded to Firebase Cloud Storage!'
+    // );
 } 
 
     return (
@@ -102,7 +118,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, setUpdateData  }) => 
                 textAlignVertical='top'
             />
 
-{images ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
+            {images ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
                
                 {renderMultiImages}
               

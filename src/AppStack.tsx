@@ -5,6 +5,7 @@ import TopTabs from "./navigation/TopTabs"
 import TaskDetailsScreen from "./screens/TaskDetailsScreen"
 import NotificationsScreen from "./screens/NotificationsScreen"
 import SignUpScreen from "./screens/SignupScreen"
+import UpdateDetailsScreen from "./screens/UpdateDetailsScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -18,7 +19,8 @@ export type RootStackParamsList = {
     TasksList: undefined,
     Notifications: undefined,
     Header: undefined,
-    Signup: undefined
+    Signup: undefined,
+    UpdateDetails: undefined
 }
 
 const AppStack = () => {
@@ -54,11 +56,11 @@ const AppStack = () => {
           component={NotificationsScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="TasksList"
-          component={TasksListScreen}
+        <Stack.Screen
+          name="UpdateDetails"
+          component={UpdateDetailsScreen}
           options={{ headerShown: false }}
-        /> */}
+        />
         {/* <Stack.Screen
           name="Card"
           component={Card}
