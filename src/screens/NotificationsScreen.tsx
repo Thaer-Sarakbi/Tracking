@@ -3,10 +3,11 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { useDispatch, useSelector } from 'react-redux';
 import { notificationsState } from '../types/types';
 import { AppDispatch } from '../redux/store';
-import { getNotifications } from '../redux/notificationsSlice';
+import { getNotifications, updateNotifications } from '../redux/notificationsSlice';
 import HeaderDetails from '../components/HeaderDetails';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../AppStack';
+import moment from 'moment';
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
   const notifications = useSelector((state: notificationsState) => state.notifications.data)
@@ -28,15 +29,19 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
             <View style={styles.container}>
                 <FlatList
                     data={notifications}
-                    renderItem={(item) => (
-                        <TouchableOpacity style={styles.card} onPress={() => { navigation.navigate('TaskDetails', {
+                    renderItem={(item) => {
+                      return(
+                        <TouchableOpacity style={[styles.card, item.item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
+                          navigation.navigate('TaskDetails', {
                             taskId: item.item.taskId,
-                            // notificationId: item.item
-                        })}}>
+                            userId: user.id
+                        })
+                          dispatch(getNotifications(user.id))
+                        }}>
                         <Text style={styles.title}>{item.item.task}</Text>
                         <Text style={styles.message}>{item.item.message}</Text>
                         </TouchableOpacity>
-                    )}
+                    )}}
                 />
             </View>
         </View>
@@ -50,7 +55,7 @@ const styles = StyleSheet.create({
       paddingTop: 10
     },
     card:{
-      backgroundColor: 'white',
+      // backgroundColor: 'white',
       height: 70,
       borderRadius: 5,
       padding: 10,

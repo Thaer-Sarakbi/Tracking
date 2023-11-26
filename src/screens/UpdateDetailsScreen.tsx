@@ -17,13 +17,13 @@ const UpdateDetailsScreen = ({ route }) => {
 
   const navigation = route.params.navigation
 
-  const images = route.params.update.images.map(image => {
+  const images = route.params.update.images?.map(image => {
     return(
         `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`
     )
   })
 
-  const images2 = route.params.update.images.map(image => {
+  const images2 = route.params.update.images?.map(image => {
     return(
         { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
     )
@@ -39,7 +39,7 @@ const UpdateDetailsScreen = ({ route }) => {
             <Text style={styles.decription}>{route.params.update.description}</Text>
           </View>
 
-          <SliderBox
+          {images && (<SliderBox
             images={images}
             sliderBoxHeight={400}
             firstItem={index}
@@ -47,15 +47,15 @@ const UpdateDetailsScreen = ({ route }) => {
               setIsVisible(true)
               setIndex(index)
             }}
-           />
+           />)}
 
-          <ImageView
+          {images && (<ImageView
             images={images2}
             imageIndex={index}
             visible={isVisible}
             onRequestClose={() => setIsVisible(false)}
             onImageIndexChange={(i) => setIndex(i)}
-           />
+           />)}
         </View>
       );
   } else {

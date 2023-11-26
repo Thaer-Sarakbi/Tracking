@@ -10,11 +10,10 @@ import { RootStackParamsList } from '../AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
 
-const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
+const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
   const user = useSelector(state => state.auth.user)
-  console.log()
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -55,20 +54,18 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
             keyExtractor={(item) => item.id.toString()}
             data={tasks}
             renderItem={(item) => {
-              if(item.item.status !== 'Completed'){
-                return(
-                  <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                    taskId: item.item.id,
-                    userId: user.id,
-                    userName: user.name
-                  })}} >
-                    <Card item={item.item} />
-                  </TouchableOpacity>
-                )
-              } else {
-                return null
-              }
-
+                if(item.item.status === 'Completed'){
+                    return(
+                        <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
+                            taskId: item.item.id,
+                            userId: user.id
+                        })}} >
+                          <Card item={item.item} />
+                        </TouchableOpacity>
+                    )
+                } else {
+                    return null
+                }
             }}
             onRefresh= {() => onRefresh()}
             refreshing={isFetching}
@@ -78,4 +75,4 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
   }
 }
 
-export default TasksListScreen;
+export default CompletedTaskScreen;

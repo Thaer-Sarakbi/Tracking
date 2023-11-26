@@ -9,7 +9,7 @@ export const getNotifications = createAsyncThunk("notifications/getNotifications
   .then(querySnapshot => { 
     console.log(querySnapshot)
     querySnapshot.docs.forEach(documentSnapshot => {
-        // documentSnapshot.data().id = documentSnapshot.id
+        documentSnapshot.data().id = documentSnapshot.id
         notificationsList.push(documentSnapshot.data() as any) 
     });
   }).catch((error) => {
@@ -19,12 +19,12 @@ export const getNotifications = createAsyncThunk("notifications/getNotifications
   return notificationsList
 })
 
-export const updateNotifications = createAsyncThunk("notifications/updateNotifications", async (notification: { id: string}) => {
+export const updateNotifications = createAsyncThunk("notifications/updateNotifications", async (id:{notificationId: string, userId: string}) => {
     await firestore()
     .collection('users')
-    .doc('ArBP1hNGf2ScyBjdiDfE')
+    .doc(id.userId)
     .collection('notifications')
-    .doc(notification.id)
+    .doc(id.notificationId)
     .update({
       read: true
     })

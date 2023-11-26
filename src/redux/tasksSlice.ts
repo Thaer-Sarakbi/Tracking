@@ -24,8 +24,7 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
   });
 })
 
-export const getTasks = createAsyncThunk("tasks/getTasks", async (userId) => {
-  console.log('userId' + userId)
+export const getTasks = createAsyncThunk("tasks/getTasks", async (userId: string) => {
   let tasksList: Array<Task> = []
 
   await firestore().collection('users').doc(userId).collection('tasks').get()

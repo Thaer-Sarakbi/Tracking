@@ -10,8 +10,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { User } from '../types/types';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
-import { getTasks } from '../redux/tasksSlice';
+import { Controller, useForm } from 'react-hook-form';
 import moment from 'moment';
+import { getTasks } from '../redux/tasksSlice';
 
 interface MyState {
     users: {data: Array<User>}
@@ -22,18 +23,30 @@ interface Props {
 }
 
 const NewTaskModal = ({ changeModalVisible }: Props) => {
-  const [title, setTitle] = useState<string>()
-  const [decription, setDecription] = useState<string>()
-  const [assignedTo, setAssignedTo] = useState<string>()
-  const [duration, setDuration] = useState<string>()
-  const [location, setLocation] = useState<string>()
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm({
+    defaultValues: {
+      title: "",
+      decription: "",
+      assignedTo: "",
+      duration: "",
+      location: "",
+    },
+  })
 
   const users = useSelector((state: MyState) => state.users.data)
   const user = useSelector(state => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
-  const submit = async () => {
+  const onSubmit = async () => {
+    const { title, decription, assignedTo, duration, location } = watch()
+    console.log('assignedTo ' + assignedTo)
 
   await firestore().collection('users').doc(user.id).collection('tasks').add({
     title, 
@@ -50,7 +63,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     changeModalVisible(false)
     console.log(err)
   })
-    // dispatch(addTask(title, decription, assignTo, duration, location))
   }
 
 const getLocation = () => {
@@ -84,46 +96,136 @@ const getLocation = () => {
       <View style = {{ height: 40 }} />
 
       <Text style = {{ fontSize: 20, color: Colors.titles }}>Task Title</Text>
-      <TextInput
-        style= {{ color: '#fff', width: '100%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-        onChangeText={(text) => setTitle(text)}
-        placeholder=""
-      />
+      <Controller
+            control={control}
+            rules={{
+              required: {
+                value: true,
+                message: 'Title is required'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => {
+             return(
+              <TextInput
+                style={styles.textInput} 
+                autoCapitalize='none'  
+                style= {{ color: '#fff', width: '100%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+                onChangeText={onChange}
+                // onChangeText={(text) => setTitle(text)}
+                onBlur={onBlur}
+                value={value}
+              />
+            )}}
+            name="title"
+          />
+      {errors.title && <Text style={{ color: 'red', fontSize: 15 }}>{errors.title?.message}</Text>}
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Description</Text>
-      <TextInput
-        style= {{  marginRight: 10, color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-        onChangeText={(text) => setDecription(text)}
-        editable
-        multiline
-        numberOfLines={5}
-        textAlignVertical='top'
-      />
+
+      <Controller
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Decription is required'
+          }
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style= {{  marginRight: 10, color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+            editable
+            multiline
+            numberOfLines={5}
+            textAlignVertical='top'
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+          />
+            )}
+            name="decription"
+          />
+      {errors.decription && <Text style={{ color: 'red', fontSize: 15 }}>{errors.decription?.message}</Text>}
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Assign To</Text>
-      <SelectList 
-        setSelected={(val: string) => setAssignedTo(val)} 
-        data={users} 
-        save="value"
-    />
+
+      <Controller
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'This feild is required'
+          }
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <SelectList 
+            setSelected={onChange} 
+            data={users} 
+            save="value"
+            value={value}
+          />
+            )}
+            name="assignedTo"
+        />
+      {errors.assignedTo && <Text style={{ color: 'red', fontSize: 15 }}>{errors.assignedTo?.message}</Text>}
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Duration</Text>
       <View style = {{ flexDirection: 'row', alignItems: 'center' }}>
-        <TextInput
+        {/* <TextInput
           style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
           onChangeText={(text) => setDuration(text)}
           keyboardType="numeric"
-        />
+        /> */}
+
+      <Controller
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Duration is required'
+          }
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+            keyboardType="numeric"
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+          />
+            )}
+            name="duration"
+          />
         <Text style = {{ fontSize: 15, color: Colors.texts }}>Days</Text>
       </View>
+      {errors.duration && <Text style={{ color: 'red', fontSize: 15 }}>{errors.duration?.message}</Text>}
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Location</Text>
-      <TextInput
+      {/* <TextInput
         style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
         onChangeText={(text) => setLocation(text)}
-      />
+      /> */}
 
-      <TouchableOpacity onPress={() => submit()} style = {{ width: '100%', backgroundColor: Colors.main, height: 60, alignItems: 'center', justifyContent: 'center', borderRadius: 10, marginVertical: 20 }}>
+      <Controller
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Location is required'
+          }
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+          />
+            )}
+            name="location"
+          />
+           {errors.location && <Text style={{ color: 'red', fontSize: 15 }}>{errors.location?.message}</Text>}
+
+      <TouchableOpacity onPress={handleSubmit(onSubmit)} style = {{ width: '100%', backgroundColor: Colors.main, height: 60, alignItems: 'center', justifyContent: 'center', borderRadius: 10, marginVertical: 20 }}>
         <Text style = {{ color: 'white', fontSize: 20 }}>Proceed</Text>
       </TouchableOpacity>
     </ScrollView>

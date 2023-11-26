@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { Task, notificationsState } from '../types/types';
 import { RootStackParamsList } from '../AppStack';
 import { StackScreenProps } from '@react-navigation/stack';
+import CompletedTaskScreen from '../screens/CompletedTaskScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -42,12 +43,22 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
           name="Open" 
           component={TasksListScreen} 
           options={{
-            tabBarBadge:()=> { return (  <View style={{ position: 'relative', top: 14, left: -60 }}><Text>({tasks.length})</Text></View> ) }
+            tabBarBadge:()=> { return (  
+              <View style={{ position: 'relative', top: 14, left: -60 }}>
+                {/* <Text>({tasks.length})</Text> */}
+                <Text>({
+                  tasks.filter(task => {
+                    if(task.status !== 'Completed'){
+                      return task
+                    }
+                  }).length
+                })</Text>
+              </View> ) }
           }}
         />
         <Tab.Screen 
           name="Completed" 
-          component={TasksListScreen} 
+          component={CompletedTaskScreen} 
         />
       </Tab.Navigator>
       <TouchableOpacity onPress={() => changeModalVisible(true)} style={{ backgroundColor: Colors.main, position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}>

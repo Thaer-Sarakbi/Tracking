@@ -10,12 +10,24 @@ import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Platform } from 'react-native';
 import storage from '@react-native-firebase/storage';
+import { Controller, useForm } from 'react-hook-form';
 
 const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
-    const [title, setTitle] = useState<string>()
-    const [description, setDecription] = useState<string>()
     const [images, setImages] = useState<string[]>()
     const [transferred, setTransferred] = useState(0);
+
+    const {
+      control,
+      handleSubmit,
+      formState: { errors },
+      watch
+    } = useForm({
+      defaultValues: {
+        title: "",
+        description: "",
+        images: ""
+      },
+    })
 
     const dispatch = useDispatch<AppDispatch>()
 
@@ -25,15 +37,16 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
    }
 
    const submit = async () => {
+    const { title, description } = watch()
 
     await firestore().collection('users').doc(userId).collection('tasks').doc(id).collection('updates').add({
       title, 
       description, 
-      images,
+      images: images ? images : null,
       time: moment().format('MMM D')
     }).then(res => {
       changeModalVisible(false)
-      dispatch(getUpdates(id))
+      dispatch(getUpdates({taskId: id, userId}))
     }).catch(err => {
       changeModalVisible(false)
       console.log(err)
@@ -101,22 +114,55 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
         style={[styles.container, isModalVisible ? { backgroundColor: 'rgba(0, 0, 0, 0.5)' } : '']}
       >
         <View style={styles.modal}>
-            <Text style = {{ fontSize: 20, color: Colors.titles }}>Title</Text>
-            <TextInput
+          <Text style = {{ fontSize: 20, color: Colors.titles }}>Title</Text>
+
+          <Controller
+            control={control}
+            rules={{
+              required: {
+                value: true,
+                message: 'Title is required'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => {
+             return(
+              <TextInput
+                autoCapitalize='none'  
                 style= {{ color: '#fff', width: '100%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-                onChangeText={(text) => setTitle(text)}
-                placeholder=""
-            />
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+              />
+            )}}
+            name="title"
+          />
+          {errors.title && <Text style={{ color: 'red', fontSize: 15 }}>{errors.title?.message}</Text>}
 
             <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Description</Text>
+
+        <Controller
+          control={control}
+          rules={{
+            required: {
+              value: true,
+              message: 'Description is required'
+            }
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-                style= {{  marginRight: 10, color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-                onChangeText={(text) => setDecription(text)}
-                editable
-                multiline
-                numberOfLines={5}
-                textAlignVertical='top'
+              style= {{  marginRight: 10, color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+              editable
+              multiline
+              numberOfLines={5}
+              textAlignVertical='top'
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
             />
+              )}
+              name="description"
+          />
+          {errors.description && <Text style={{ color: 'red', fontSize: 15 }}>{errors.description?.message}</Text>}
 
             {images ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
                
@@ -128,7 +174,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
                <Icon name='camera-outline' color={'black'} size = {30} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.updateButton} onPress={() => closeModal(false)}>
+            <TouchableOpacity style={styles.updateButton} onPress={handleSubmit(submit)}>
               <Text style={{ fontSize: 20, color: 'white' }}>Proceed</Text>
             </TouchableOpacity>
         </View> 

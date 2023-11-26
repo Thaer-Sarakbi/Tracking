@@ -11,6 +11,13 @@ import { AppDispatch } from '../redux/store';
 const Header = ({ navigation }) => {
   const notifications = useSelector((state: notificationsState) => state.notifications.data)
   const user = useSelector(state => state.auth.user)
+  const r = notifications.filter(notification => {
+    console.log(notification)
+     if(notification.read === "false"){
+       return notification
+     }
+  })
+  // console.log(r.length)
 
   const dispatch = useDispatch<AppDispatch>()
  
@@ -43,7 +50,11 @@ const Header = ({ navigation }) => {
             <TouchableOpacity key={i} onPress={() => handleNav(icon.name)}>
               {icon.name === 'notifications-outline' && (
                 <View style={{ width: 20, backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
-                  <Text style={{ color: 'white' }}>{notifications.length}</Text>
+                  <Text style={{ color: 'white' }}>{notifications.filter(notification => {
+                    if(notification.read === false){
+                      return notification
+                    }
+                  }).length}</Text>
                 </View>
               )}
               <Icon name= {icon.name} size={icon.size} color={icon.color} />

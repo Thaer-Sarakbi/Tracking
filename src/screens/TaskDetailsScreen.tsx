@@ -63,6 +63,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
 
+  console.log(updates.length)
+
   // updates.sort((a, b) => b.time - a.time)
 
   const dispatch = useDispatch<AppDispatch>()
@@ -71,14 +73,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     //  dispatch(updateNotifications(id))
   }
 
-  console.log(route.params)
   const id = route.params.taskId
   const userId = route.params.userId
+  const userName = route.params.userName
+  console.log(id, userId)
 
   useEffect(() => {
     firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
     .then(documentSnapshot => { 
-      
       if (documentSnapshot.exists) {
         setTask(documentSnapshot.data())
       }
@@ -91,7 +93,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     })
 
     dispatch(getUpdates({taskId: id, userId}))
-  },[])
+  },[isModalVisible])
 
   useEffect(() => {
     setTask({ ...task, status: taskStatus })
@@ -120,10 +122,12 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
     await firestore().collection('users').doc(userId).collection('notifications').add({
       message,
-      reade: false,
+      read: false,
       task: task?.title,
       title,
-      taskId: id
+      taskId: id,
+      // creationDate: moment().format('MMM Do YYYY, hh:mm a')
+      creationDate: new Date()
     }).then(res => {
       dispatch(getNotifications(userId))
     }).catch(err => {
@@ -194,6 +198,10 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         </View>
         <View style={styles.container}>
           <Text style={styles.title}>{task.title}</Text>
+          <View style={[styles.card, { marginBottom: 10 }]}>
+              <Text style={{ fontSize: 17, marginBottom: 10 }}>Assign To:</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{userName}</Text>
+            </View>
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.card}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Creation Date:</Text>
