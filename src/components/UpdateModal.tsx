@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Platform } from 'react-native';
 import storage from '@react-native-firebase/storage';
 
-const UpdateModal = ({ changeModalVisible, isModalVisible, id  }) => {
+const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
     const [title, setTitle] = useState<string>()
     const [description, setDecription] = useState<string>()
     const [images, setImages] = useState<string[]>()
@@ -26,7 +26,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id  }) => {
 
    const submit = async () => {
 
-    await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).collection('updates').add({
+    await firestore().collection('users').doc(userId).collection('tasks').doc(id).collection('updates').add({
       title, 
       description, 
       images,

@@ -8,9 +8,9 @@ import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
 import { Colors } from '../assets/Colors';
 import { useForm, Controller } from "react-hook-form"
-import { ErrorMessage } from "@hookform/error-message"
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../AppStack';
+import { User } from '../types/types';
 
 const Login = ({ navigation } : StackScreenProps<RootStackParamsList, 'Login'>) => {
 
@@ -24,9 +24,12 @@ const Login = ({ navigation } : StackScreenProps<RootStackParamsList, 'Login'>) 
       password: "",
     },
   })
-  const onSubmit = (data) => console.log(data)
-
-  console.log(errors)
+  
+  const onSubmit = async(data: User) => {
+    await auth().signInWithEmailAndPassword(data.email, data.password).then((res) => {
+      // user = res.user
+    })
+  }
 
   return (
     <View style={styles.container}> 

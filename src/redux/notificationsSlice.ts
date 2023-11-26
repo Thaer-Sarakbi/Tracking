@@ -2,10 +2,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Notification, notificationsList } from '../types/types';
 
-export const getNotifications = createAsyncThunk("notifications/getNotifications", async () => {
+export const getNotifications = createAsyncThunk("notifications/getNotifications", async (userId: string) => {
   let notificationsList: Array<Notification> = []
 
-  await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('notifications').get()
+  await firestore().collection('users').doc(userId).collection('notifications').get()
   .then(querySnapshot => { 
     console.log(querySnapshot)
     querySnapshot.docs.forEach(documentSnapshot => {
@@ -30,12 +30,6 @@ export const updateNotifications = createAsyncThunk("notifications/updateNotific
     })
     .then(() => {
       console.log('updated')
-    //   firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(task.id).collection('history').add({
-    //   status: task.status,
-    //   updatDate: moment().format('MMM Do YYYY, hh:mm a')
-    //   }).then(() => {
-    //     console.log('history created')
-    //   })
     }).catch((e) => {
       console.log(e)
     });

@@ -13,6 +13,7 @@ import AnimatedLottieView from 'lottie-react-native';
 const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
+  const user = useSelector(state => state.auth.user)
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -20,12 +21,12 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
 
   const onRefresh = () => {
     setIsFetching(true)
-    dispatch(getTasks())
+    dispatch(getTasks(user.id))
     setIsFetching(false)
   }
 
   useEffect(() => {
-    dispatch(getTasks())
+    dispatch(getTasks(user.id))
 
     createChannels()
   },[])
@@ -54,7 +55,8 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
             data={tasks}
             renderItem={(item) => (
               <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                taskId: item.item.id
+                taskId: item.item.id,
+                userId: user.id
               })}} >
                 <Card item={item.item} />
               </TouchableOpacity>

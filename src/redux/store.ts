@@ -4,13 +4,20 @@ import usersSlice from './usersSlice'
 import historySlice from './historySlice'
 import notificationsSlice from './notificationsSlice'
 import updatesSlice from './updatesSlice'
+import authSlice from './authSlice'
 
-export const store = configureStore({ reducer: {
-    tasks: tasksSlice.reducer,
-    users: usersSlice.reducer,
-    history: historySlice.reducer,
-    notifications: notificationsSlice.reducer,
-    updates: updatesSlice.reducer
+export const store = configureStore({    
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        immutableCheck: false,
+        serializableCheck: false,
+    }), 
+    reducer: {
+        tasks: tasksSlice.reducer,
+        users: usersSlice.reducer,
+        history: historySlice.reducer,
+        notifications: notificationsSlice.reducer,
+        updates: updatesSlice.reducer,
+        auth: authSlice.reducer
 } })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

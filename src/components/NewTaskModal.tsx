@@ -29,12 +29,13 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
   const [location, setLocation] = useState<string>()
 
   const users = useSelector((state: MyState) => state.users.data)
+  const user = useSelector(state => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
   const submit = async () => {
 
-  await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').add({
+  await firestore().collection('users').doc(user.id).collection('tasks').add({
     title, 
     decription, 
     assignedTo, 
@@ -44,7 +45,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     creationDate: moment().format('MMM Do YYYY, hh:mm a')
   }).then(res => {
     changeModalVisible(false)
-    dispatch(getTasks())
+    dispatch(getTasks(user.id))
   }).catch(err => {
     changeModalVisible(false)
     console.log(err)

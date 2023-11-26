@@ -10,6 +10,7 @@ import { AppDispatch } from '../redux/store';
 
 const Header = ({ navigation }) => {
   const notifications = useSelector((state: notificationsState) => state.notifications.data)
+  const user = useSelector(state => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
  
@@ -26,7 +27,7 @@ const Header = ({ navigation }) => {
   }
 
   useEffect(() => {
-    dispatch(getNotifications())
+    dispatch(getNotifications(user.id))
   },[])
   return (
     <View style={styles.container}>

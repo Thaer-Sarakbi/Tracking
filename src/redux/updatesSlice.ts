@@ -3,10 +3,11 @@ import firestore from '@react-native-firebase/firestore'
 import { History, historyList, Updates } from '../types/types';
 import moment from 'moment';
 
-export const getUpdates = createAsyncThunk("updates/getUpdates", async (id: string) => {
+export const getUpdates = createAsyncThunk("updates/getUpdates", async (id:{taskId: string, userId: string}) => {
     let updatesList: Array<Updates> = []
+    console.log()
 
-    await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).collection('updates').get()
+    await firestore().collection('users').doc(id.userId).collection('tasks').doc(id.taskId).collection('updates').get()
     .then(querySnapshot => { 
       querySnapshot.docs.forEach(documentSnapshot => {
           // documentSnapshot.data().id = documentSnapshot.id

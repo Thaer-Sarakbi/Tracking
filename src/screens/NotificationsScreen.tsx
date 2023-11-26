@@ -11,11 +11,12 @@ import { RootStackParamsList } from '../AppStack';
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
   const notifications = useSelector((state: notificationsState) => state.notifications.data)
   const status = useSelector((state: notificationsState) => state.notifications.status)
+  const user = useSelector(state => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-    dispatch(getNotifications())
+    dispatch(getNotifications(user.id))
   },[])
 
   if(status === 'loading'){

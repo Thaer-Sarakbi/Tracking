@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Dimensions, TextInput, Image, TouchableOpacity, Platform, StatusBar, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import LinearGradient from 'react-native-linear-gradient'
@@ -6,8 +6,22 @@ import * as Animatable from 'react-native-animatable'
 import { useForm, Controller } from "react-hook-form"
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../AppStack';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'
+import { User } from '../types/types';
+import { Colors } from '../assets/Colors';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Signup'>) => {
+
+  const [message, setMessage] = useState('')
+  const [showAlert, setShowAlert] = useState(false)
+
+  useEffect(() => {
+    if(message !== ''){
+      setShowAlert(true)
+    }
+  },[message])
 
   const {
         control,
@@ -19,14 +33,34 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
           email: "",
           password: "",
           confirmPassword: "",
-          firstName: "",
-          secondName: ""
+          name: ""
         },
     })
 
-    const onSubmit = (data) => console.log(data)
+    const onSubmit = async (data: User) => {
+      await auth().createUserWithEmailAndPassword(data.email, data.password).then((res) => {
+        setMessage('User account created!');
+        firestore().collection('users').add({
+          name: data.name,
+          email: data.email
+        }).then(() => {
+          console.log('User Added')
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          setMessage('That email address is already in use!');
+        }
     
-    console.log(errors)
+        if (error.code === 'auth/invalid-email') {
+          setMessage('That email address is invalid!');
+        }
+    
+        // setMessage(error);
+      });
+    }
 
   return ( 
     <View style={styles.container}> 
@@ -37,7 +71,7 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
       
       <Animatable.View style={styles.footer} animation='fadeInUpBig'>
        <ScrollView>
-       <Text style={styles.text_footer}>First Name</Text>
+       <Text style={styles.text_footer}>Name</Text>
         <View style={styles.action}>
           <FontAwesome name='user-o' color='#05375a' size={20} />
           <Controller
@@ -45,12 +79,12 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
             rules={{
               required: {
                 value: true,
-                message: 'First Name is required'
+                message: 'Name is required'
               },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput 
-                placeholder='First Name' 
+                placeholder='Name' 
                 style={styles.textInput} 
                 autoCapitalize='none'  
                 onBlur={onBlur}
@@ -58,36 +92,10 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
                 value={value}
               />
             )}
-            name="firstName"
+            name="name"
           />
         </View>
-        {errors.firstName && <Text style={{ color: 'red', fontSize: 15 }}>{errors.firstName.message}</Text>}
-
-        <Text style={styles.text_footer}>Second Name</Text>
-        <View style={styles.action}>
-          <FontAwesome name='user-o' color='#05375a' size={20} />
-          <Controller
-            control={control}
-            rules={{
-              required: {
-                value: true,
-                message: 'Second Name is required'
-              },
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput 
-                placeholder='Second Name' 
-                style={styles.textInput} 
-                autoCapitalize='none'  
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-            name="secondName"
-          />
-        </View>
-        {errors.secondName && <Text style={{ color: 'red', fontSize: 15 }}>{errors.secondName.message}</Text>}
+        {errors.name && <Text style={{ color: 'red', fontSize: 15 }}>{errors.name.message}</Text>}
 
         <Text style={styles.text_footer}>Email</Text>
         <View style={styles.action}>
@@ -196,6 +204,52 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
         </View>
        </ScrollView>
       </Animatable.View>
+
+      <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Alert"
+          message= {message}
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          // showConfirmButton={true}
+          cancelText="OK"
+          // confirmText="Yes"
+          confirmButtonColor= {Colors.main}
+          onCancelPressed={() => {
+            setShowAlert(false)
+            // if(message === 'User account created!'){
+            //   navigation.goBack()
+            // }
+          }}
+          contentContainerStyle={{
+            width: '70%'
+          }}
+          titleStyle={{
+            fontSize: 30,
+            fontWeight: 'bold'
+          }}
+          messageStyle={{
+            fontSize: 20,
+          }}
+          confirmButtonStyle={{
+            width: 60,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          cancelButtonStyle={{
+            width: 60,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          confirmButtonTextStyle={{
+            fontSize: 15
+          }}
+          cancelButtonTextStyle={{
+            fontSize: 15
+          }}
+        />
      
     </View>
   )

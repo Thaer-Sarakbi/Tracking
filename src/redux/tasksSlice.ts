@@ -3,11 +3,11 @@ import firestore from '@react-native-firebase/firestore'
 import { Task, tasks, TasksState } from '../types/types';
 import moment from 'moment';
 
-export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string}) => {
+export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string}) => {
 
   await firestore()
   .collection('users')
-  .doc('ArBP1hNGf2ScyBjdiDfE')
+  .doc(task.userId)
   .collection('tasks')
   .doc(task.id)
   .update({
@@ -15,7 +15,7 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
   })
   .then(() => {
     console.log('updated')
-    firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(task.id).collection('history').add({
+    firestore().collection('users').doc(task.userId).collection('tasks').doc(task.id).collection('history').add({
     status: task.status,
     updatDate: moment().format('MMM Do YYYY, hh:mm a')
     }).then(() => {
@@ -24,10 +24,11 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
   });
 })
 
-export const getTasks = createAsyncThunk("tasks/getTasks", async () => {
+export const getTasks = createAsyncThunk("tasks/getTasks", async (userId) => {
+  console.log('userId' + userId)
   let tasksList: Array<Task> = []
 
-  await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').get()
+  await firestore().collection('users').doc(userId).collection('tasks').get()
   .then(querySnapshot => { 
     // console.log(querySnapshot)
     querySnapshot.docs.forEach(documentSnapshot => {

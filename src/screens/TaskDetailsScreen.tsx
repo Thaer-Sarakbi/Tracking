@@ -62,7 +62,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
-  console.log(updates)
 
   // updates.sort((a, b) => b.time - a.time)
 
@@ -74,9 +73,10 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   console.log(route.params)
   const id = route.params.taskId
+  const userId = route.params.userId
 
   useEffect(() => {
-    firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('tasks').doc(id).get()
+    firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
     .then(documentSnapshot => { 
       
       if (documentSnapshot.exists) {
@@ -84,13 +84,13 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       }
     });
 
-    dispatch(getHistory(id)).then(() => {
+    dispatch(getHistory({taskId: id, userId})).then(() => {
       // if(route.params.notificationId){
       //    dispatch(updateNotifications(id))
       // }
     })
 
-    dispatch(getUpdates(id))
+    dispatch(getUpdates({taskId: id, userId}))
   },[])
 
   useEffect(() => {
@@ -118,14 +118,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const addNotification = async (message: string, title: string) => {
 
-    await firestore().collection('users').doc('ArBP1hNGf2ScyBjdiDfE').collection('notifications').add({
+    await firestore().collection('users').doc(userId).collection('notifications').add({
       message,
       reade: false,
       task: task?.title,
       title,
       taskId: id
     }).then(res => {
-      dispatch(getNotifications())
+      dispatch(getNotifications(userId))
     }).catch(err => {
       console.log(err)
     })
@@ -261,6 +261,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                     changeModalVisible= {onAddUpdate}
                     isModalVisible={updateModalVisible}
                     id={id}
+                    userId={userId}
                   />
                 </Modal>
               </>
@@ -334,9 +335,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            dispatch(updateTask({ id, status: task?.status }))
-            dispatch(getTasks())
-            dispatch(getHistory(id))
+            dispatch(updateTask({ id, status: task?.status, userId }))
+            dispatch(getTasks(userId))
+            dispatch(getHistory({taskId: id, userId}))
             setShowAlert(false)
             handleNotification(taskStatus)
           }}

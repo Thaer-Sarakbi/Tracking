@@ -6,8 +6,13 @@ import TaskDetailsScreen from "./screens/TaskDetailsScreen"
 import NotificationsScreen from "./screens/NotificationsScreen"
 import SignUpScreen from "./screens/SignupScreen"
 import UpdateDetailsScreen from "./screens/UpdateDetailsScreen"
+import { LogBox } from "react-native"
 
 const Stack = createStackNavigator<RootStackParamsList>()
+
+// LogBox.ignoreLogs([
+//   'Non-serializable values were found in the navigation state',
+// ]);
 
 export type RootStackParamsList = {
     Login: undefined,
