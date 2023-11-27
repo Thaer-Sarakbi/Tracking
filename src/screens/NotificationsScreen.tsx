@@ -6,14 +6,13 @@ import { AppDispatch } from '../redux/store';
 import { getNotifications, updateNotifications } from '../redux/notificationsSlice';
 import HeaderDetails from '../components/HeaderDetails';
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
-import moment from 'moment';
+import { RootStackParamsList } from '../navigation/AppStack';
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
   const notifications = useSelector((state: notificationsState) => state.notifications.data)
   const status = useSelector((state: notificationsState) => state.notifications.status)
-  const user = useSelector(state => state.auth.user)
-
+  const user = useSelector((state: notificationsState) => state.auth.user)
+  
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
@@ -34,8 +33,10 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                         <TouchableOpacity style={[styles.card, item.item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
                           navigation.navigate('TaskDetails', {
                             taskId: item.item.taskId,
-                            userId: user.id
+                            userId: user.id,
+                            userName: user.name
                         })
+                          dispatch(updateNotifications({notificationId: item.item.id, userId: user.id}))
                           dispatch(getNotifications(user.id))
                         }}>
                         <Text style={styles.title}>{item.item.task}</Text>

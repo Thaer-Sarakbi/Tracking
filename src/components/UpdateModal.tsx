@@ -50,7 +50,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId } : Props)
       title, 
       description, 
       images: images ? images : null,
-      time: moment().format('MMM D')
+      time: new Date()
     }).then(res => {
       changeModalVisible(false)
       dispatch(getUpdates({taskId: id, userId}))

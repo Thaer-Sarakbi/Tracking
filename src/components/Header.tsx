@@ -8,7 +8,7 @@ import { notificationsState } from '../types/types';
 import { getNotifications } from '../redux/notificationsSlice';
 import { AppDispatch } from '../redux/store';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
+import { RootStackParamsList } from '../navigation/AppStack';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "Header">

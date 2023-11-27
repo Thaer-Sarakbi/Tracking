@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import * as Animatable from 'react-native-animatable'
 import { useForm, Controller } from "react-hook-form"
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
+import { RootStackParamsList } from '../navigation/AppStack';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'
 import { User } from '../types/types';

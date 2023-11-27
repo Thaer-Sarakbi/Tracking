@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
+import { RootStackParamsList } from '../navigation/AppStack';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "HeaderDetails">

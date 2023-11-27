@@ -6,7 +6,7 @@ import { getTasks } from '../redux/tasksSlice';
 import { TasksState } from '../types/types';
 import Card from '../components/Card';
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
+import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
 

@@ -1,7 +1,7 @@
 import { RouteProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { RootStackParamsList } from '../AppStack';
+import { Modal, Text, TouchableOpacity, View, StyleSheet, FlatList } from 'react-native';
+import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,6 @@ import { getTasks, updateTask } from '../redux/tasksSlice';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getHistory } from '../redux/historySlice';
-import { FlatList } from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view'
 import PushNotification from 'react-native-push-notification';
 import { getNotifications } from '../redux/notificationsSlice';
@@ -46,12 +45,10 @@ interface updatesState {
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-  const [taskStatus, setTaskStatus] = useState<string>('')
   const [task, setTask] = useState<Task | null>(null)
+  const [taskStatus, setTaskStatus] = useState<string>(route.params.status)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
-  const [latitude, setLatitude] = useState('')
-  const [longitude, setLongitude] = useState('')
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
@@ -59,13 +56,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
 
-  // updates.sort((a, b) => b.time - a.time)
 
   const dispatch = useDispatch<AppDispatch>()
-
-  if(status === 'succeeded'){
-    //  dispatch(updateNotifications(id))
-  }
 
   const id = route.params.taskId
   const userId = route.params.userId
@@ -117,7 +109,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       task: task?.title,
       title,
       taskId: id,
-      // creationDate: moment().format('MMM Do YYYY, hh:mm a')
       creationDate: new Date()
     }).then(res => {
       dispatch(getNotifications(userId))
@@ -212,10 +203,10 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
             <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Status</Text>
             <TouchableOpacity 
-              style={[styles.button, getStyle(task.status)]}
+              style={[styles.button, getStyle(taskStatus)]}
               onPress={() => changeModalVisible(true)}
             >
-              <Text style={[styles.decription, getStyle(task.status)]}>{task.status}</Text>
+              <Text style={[styles.decription, getStyle(taskStatus)]}>{taskStatus}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.updateButton} onPress={() => onChangeStatus()}>
@@ -231,7 +222,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             ) : (
               <>
                 <Timeline
-                  onEventPress={(update) => navigation.navigate('UpdateDetails', { navigation, update })}
+                  onEventPress={(update) => navigation.navigate('UpdateDetails', { update })}
                   data={updates}
                   circleSize={20}
                   circleColor='rgb(45,156,219)'
@@ -292,7 +283,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                   renderItem={(item) => {
                     return(
                       <View>
-                        <Text>{item.item.updatDate}</Text>
+                        <Text>{item.item.updateDate}</Text>
                         <Text>{item.item.status}</Text>
                       </View>
                     )

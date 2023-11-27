@@ -5,17 +5,26 @@ import { StyleSheet } from 'react-native';
 import { SliderBox } from "react-native-image-slider-box";
 import { Colors } from '../assets/Colors';
 import ImageView from "react-native-image-viewing";
-import { TouchableOpacity } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamsList } from '../navigation/AppStack';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
   ]);
 
-const UpdateDetailsScreen = ({ route }) => {
+  
+interface Props {
+  route: RouteProp<RootStackParamsList, "UpdateDetails">
+  navigation: StackNavigationProp<RootStackParamsList, "UpdateDetails">
+}
+ 
+
+const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [isVisible, setIsVisible] = useState(false)
   const [index, setIndex] = useState(0)
 
-  const navigation = route.params.navigation
+  // const navigation = route.params.navigation
 
   const images = route.params.update.images?.map((image: string) => {
     return(

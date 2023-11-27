@@ -55,7 +55,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     duration, 
     location,
     status: 'Not Started',
-    creationDate: moment().format('MMM Do YYYY, hh:mm a')
+    creationDate: new Date()
   }).then(res => {
     changeModalVisible(false)
     dispatch(getTasks(user.id))

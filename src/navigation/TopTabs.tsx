@@ -7,8 +7,8 @@ import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
 import { useSelector } from 'react-redux';
-import { Task, notificationsState } from '../types/types';
-import { RootStackParamsList } from '../AppStack';
+import { Task } from '../types/types';
+import { RootStackParamsList } from './AppStack';
 import { StackScreenProps } from '@react-navigation/stack';
 import CompletedTaskScreen from '../screens/CompletedTaskScreen';
 

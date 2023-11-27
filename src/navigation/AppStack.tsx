@@ -1,29 +1,31 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
-import Login from "./screens/Login"
-import TopTabs from "./navigation/TopTabs"
-import TaskDetailsScreen from "./screens/TaskDetailsScreen"
-import NotificationsScreen from "./screens/NotificationsScreen"
-import SignUpScreen from "./screens/SignupScreen"
-import UpdateDetailsScreen from "./screens/UpdateDetailsScreen"
-import Header from "./components/Header"
-import HeaderDetails from "./components/HeaderDetails"
+import TopTabs from "./TopTabs"
+import TaskDetailsScreen from "../screens/TaskDetailsScreen"
+import NotificationsScreen from "../screens/NotificationsScreen"
+import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
+import Header from "../components/Header"
+import HeaderDetails from "../components/HeaderDetails"
+import { Updates } from "../types/types"
+import TasksListScreen from "../screens/TasksListScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
 export type RootStackParamsList = {
     TopTabs: undefined,
-    DrawerNav: undefined,
+    TasksList: undefined
     TaskDetails: {
       taskId: string,
       userId: string,
-      userName: string
+      userName: string,
+      status: string
     },
-    TasksList: undefined,
     Notifications: undefined,
     Header: undefined,
     HeaderDetails: undefined
-    UpdateDetails: undefined
+    UpdateDetails: {
+      update: Updates
+    }
 }
 
 const AppStack = () => {
@@ -32,6 +34,11 @@ const AppStack = () => {
         <Stack.Screen
           name="TopTabs"
           component={TopTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TasksList"
+          component={TasksListScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

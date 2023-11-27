@@ -45,11 +45,13 @@ export type historyList = {
 }
 
 export type Notification = {
+  id: string,
   taskId: string,
   read: boolean,
   title: string,
   message: string,
-  task: string
+  task: string,
+  creationDate: string
 }
 
 export type notificationsList = {

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AuthStack from './navigation/AuthStack';
-import AppStack from './AppStack';
+import AppStack from './navigation/AppStack';
 import { firebase } from '@react-native-firebase/firestore'
 import { AppDispatch } from './redux/store';
 import { setUser } from './redux/authSlice';

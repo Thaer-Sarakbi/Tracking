@@ -3,13 +3,13 @@ import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
-import { Task, tasks, TasksState } from '../types/types';
+import { TasksState } from '../types/types';
 import Card from '../components/Card';
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
+import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
-
+ 
 const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
@@ -59,7 +59,8 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
                   <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                     taskId: item.item.id,
                     userId: user.id,
-                    userName: user.name
+                    userName: user.name,
+                    status: item.item.status
                   })}} >
                     <Card item={item.item} />
                   </TouchableOpacity>
@@ -67,7 +68,6 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
               } else {
                 return null
               }
-
             }}
             onRefresh= {() => onRefresh()}
             refreshing={isFetching}
