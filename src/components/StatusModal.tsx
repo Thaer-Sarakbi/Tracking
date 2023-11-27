@@ -1,16 +1,27 @@
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 
-const StatusModal = ({ changeModalVisible, isModalVisible, setData }) => {
+interface Props {
+  changeModalVisible: (boole: boolean) => void,
+  isModalVisible: boolean,
+  setData: (data: string) => void
+}
+
+const StatusModal = ({ changeModalVisible, isModalVisible, setData } : Props) => {
 
    const closeModal = (bool: boolean, data: string) => {
      changeModalVisible(bool)
      setData(data)
    }
 
+   const containerStyle = {
+     ...styles.container,
+     ...isModalVisible ? { backgroundColor: 'rgba(0, 0, 0, 0.5)' } : ''
+   }
+
     return (
       <TouchableOpacity
-        style={[styles.container, isModalVisible ? { backgroundColor: 'rgba(0, 0, 0, 0.5)' } : '']}
+        style={containerStyle}
         onPress={() => changeModalVisible(false)}
       >
         <View style={styles.modal}>
@@ -38,14 +49,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modal: {
-        // height: 200,
         width: '100%',
         paddingTop: 10,
         backgroundColor: 'white',
         marginBottom: 10
     },
     close: {
-        // flex: 1,
         backgroundColor: 'white',
         width: '100%',
         justifyContent: 'center',

@@ -1,10 +1,14 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
-import { RootStackParamsList } from "../AppStack"
 import Login from "../screens/Login"
 import SignUpScreen from "../screens/SignupScreen"
 
-const Stack = createStackNavigator()
+const Stack = createStackNavigator<AuthStackParamsList>()
+
+export type AuthStackParamsList = {
+  Login: undefined,
+  Signup: undefined
+}
 
 const AuthStack = () => {
     return(

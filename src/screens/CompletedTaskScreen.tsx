@@ -3,7 +3,7 @@ import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
-import { Task, tasks, TasksState } from '../types/types';
+import { TasksState } from '../types/types';
 import Card from '../components/Card';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../AppStack';
@@ -13,7 +13,7 @@ import AnimatedLottieView from 'lottie-react-native';
 const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
-  const user = useSelector(state => state.auth.user)
+  const user = useSelector((state: TasksState) => state.auth.user)
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -58,7 +58,8 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
                     return(
                         <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                             taskId: item.item.id,
-                            userId: user.id
+                            userId: user.id,
+                            userName: user.name
                         })}} >
                           <Card item={item.item} />
                         </TouchableOpacity>

@@ -11,8 +11,9 @@ import firestore from '@react-native-firebase/firestore'
 import { User } from '../types/types';
 import { Colors } from '../assets/Colors';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { AuthStackParamsList } from '../navigation/AuthStack';
 
-const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Signup'>) => {
+const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Signup'>) => {
 
   const [message, setMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
@@ -37,12 +38,14 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
         },
     })
 
-    const onSubmit = async (data: User) => {
-      await auth().createUserWithEmailAndPassword(data.email, data.password).then((res) => {
+    const onSubmit = async () => {
+      const { email, password, name } = watch()
+
+      await auth().createUserWithEmailAndPassword(email, password).then((res) => {
         setMessage('User account created!');
         firestore().collection('users').add({
-          name: data.name,
-          email: data.email
+          name: name,
+          email: email
         }).then(() => {
           console.log('User Added')
         }).catch((e) => {
@@ -57,8 +60,6 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
         if (error.code === 'auth/invalid-email') {
           setMessage('That email address is invalid!');
         }
-    
-        // setMessage(error);
       });
     }
 
@@ -219,9 +220,6 @@ const SignUpScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'Si
           confirmButtonColor= {Colors.main}
           onCancelPressed={() => {
             setShowAlert(false)
-            // if(message === 'User account created!'){
-            //   navigation.goBack()
-            // }
           }}
           contentContainerStyle={{
             width: '70%'

@@ -7,17 +7,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { notificationsState } from '../types/types';
 import { getNotifications } from '../redux/notificationsSlice';
 import { AppDispatch } from '../redux/store';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamsList } from '../AppStack';
 
-const Header = ({ navigation }) => {
+interface Props {
+  navigation: StackNavigationProp<RootStackParamsList, "Header">
+}
+
+const Header = ({ navigation } : Props) => {
   const notifications = useSelector((state: notificationsState) => state.notifications.data)
-  const user = useSelector(state => state.auth.user)
-  const r = notifications.filter(notification => {
-    console.log(notification)
-     if(notification.read === "false"){
-       return notification
-     }
-  })
-  // console.log(r.length)
+  const user = useSelector((state: notificationsState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
  

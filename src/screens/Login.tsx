@@ -1,23 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Platform} from 'react-native';
+import React from 'react';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { StatusBar } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather'
 import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
 import { Colors } from '../assets/Colors';
 import { useForm, Controller } from "react-hook-form"
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../AppStack';
-import { User } from '../types/types';
+import { AuthStackParamsList } from '../navigation/AuthStack';
 
-const Login = ({ navigation } : StackScreenProps<RootStackParamsList, 'Login'>) => {
+const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) => {
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    watch
   } = useForm({
     defaultValues: {
       email: "",
@@ -25,9 +24,11 @@ const Login = ({ navigation } : StackScreenProps<RootStackParamsList, 'Login'>) 
     },
   })
   
-  const onSubmit = async(data: User) => {
-    await auth().signInWithEmailAndPassword(data.email, data.password).then((res) => {
-      // user = res.user
+  const onSubmit = async() => {
+    const { email, password } = watch()
+    
+    await auth().signInWithEmailAndPassword(email, password).then((res) => {
+
     })
   }
 
@@ -98,7 +99,6 @@ const Login = ({ navigation } : StackScreenProps<RootStackParamsList, 'Login'>) 
             name="password"
           />
         </View>
-        {/* {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password.message}</Text>} */}
         {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
 
         <View style={styles.button}>

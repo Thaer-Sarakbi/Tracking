@@ -22,19 +22,14 @@ export type  tasks = {
     error: string | undefined
 }
 
-// export type  task = {
-//     task: Task | undefined,
-//     status: string,
-//     error: string | undefined,
-// }
-
 export interface TasksState {
   tasks: {
     data: Array<Task>,
     task: Task,
     status: string,
     error: string
-  }
+  },
+  auth: {user: User}
 }
 
 export type History = {
@@ -69,7 +64,8 @@ export interface notificationsState {
     notification: Notification,
     status: string,
     error: string
-  }
+  },
+  auth: {user: User}
 }
 
 export type Updates = {

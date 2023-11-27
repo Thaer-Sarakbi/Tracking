@@ -15,7 +15,8 @@ import moment from 'moment';
 import { getTasks } from '../redux/tasksSlice';
 
 interface MyState {
-    users: {data: Array<User>}
+    users: {data: Array<User>},
+    auth: {user: User}
 }
 
 interface Props {
@@ -40,13 +41,12 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
   })
 
   const users = useSelector((state: MyState) => state.users.data)
-  const user = useSelector(state => state.auth.user)
+  const user = useSelector((state: MyState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
   const onSubmit = async () => {
     const { title, decription, assignedTo, duration, location } = watch()
-    console.log('assignedTo ' + assignedTo)
 
   await firestore().collection('users').doc(user.id).collection('tasks').add({
     title, 
@@ -107,11 +107,9 @@ const getLocation = () => {
             render={({ field: { onChange, onBlur, value } }) => {
              return(
               <TextInput
-                style={styles.textInput} 
                 autoCapitalize='none'  
                 style= {{ color: '#fff', width: '100%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
                 onChangeText={onChange}
-                // onChangeText={(text) => setTitle(text)}
                 onBlur={onBlur}
                 value={value}
               />
@@ -161,7 +159,7 @@ const getLocation = () => {
             setSelected={onChange} 
             data={users} 
             save="value"
-            value={value}
+            // value={value}
           />
             )}
             name="assignedTo"

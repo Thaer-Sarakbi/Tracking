@@ -12,7 +12,14 @@ import { Platform } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
 
-const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
+interface Props {
+  changeModalVisible: (boole: boolean) => void,
+  isModalVisible: boolean,
+  id: string,
+  userId: string
+}
+
+const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId } : Props) => {
     const [images, setImages] = useState<string[]>()
     const [transferred, setTransferred] = useState(0);
 
@@ -31,10 +38,10 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
 
     const dispatch = useDispatch<AppDispatch>()
 
-   const closeModal = (bool: boolean, data: string) => {
-     changeModalVisible(bool)
-     submit()
-   }
+  //  const closeModal = (bool: boolean, data: string) => {
+  //    changeModalVisible(bool)
+  //    submit()
+  //  }
 
    const submit = async () => {
     const { title, description } = watch()
@@ -76,7 +83,6 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId }) => {
   const uploadImage = async () => {
     {
         images?.map(async(image) => {
-            console.log('333')
             const { path } = image;
             const filename = path.substring(path.lastIndexOf('/') + 1);
             // console.log(filename)

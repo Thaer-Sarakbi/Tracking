@@ -17,13 +17,13 @@ const UpdateDetailsScreen = ({ route }) => {
 
   const navigation = route.params.navigation
 
-  const images = route.params.update.images?.map(image => {
+  const images = route.params.update.images?.map((image: string) => {
     return(
         `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`
     )
   })
 
-  const images2 = route.params.update.images?.map(image => {
+  const images2 = route.params.update.images?.map((image : string) => {
     return(
         { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
     )
@@ -43,7 +43,7 @@ const UpdateDetailsScreen = ({ route }) => {
             images={images}
             sliderBoxHeight={400}
             firstItem={index}
-            onCurrentImagePressed={(index) => {
+            onCurrentImagePressed={(index: number) => {
               setIsVisible(true)
               setIndex(index)
             }}

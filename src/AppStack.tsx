@@ -6,41 +6,29 @@ import TaskDetailsScreen from "./screens/TaskDetailsScreen"
 import NotificationsScreen from "./screens/NotificationsScreen"
 import SignUpScreen from "./screens/SignupScreen"
 import UpdateDetailsScreen from "./screens/UpdateDetailsScreen"
-import { LogBox } from "react-native"
+import Header from "./components/Header"
+import HeaderDetails from "./components/HeaderDetails"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
-// LogBox.ignoreLogs([
-//   'Non-serializable values were found in the navigation state',
-// ]);
-
 export type RootStackParamsList = {
-    Login: undefined,
     TopTabs: undefined,
     DrawerNav: undefined,
     TaskDetails: {
-      taskId: string
+      taskId: string,
+      userId: string,
+      userName: string
     },
     TasksList: undefined,
     Notifications: undefined,
     Header: undefined,
-    Signup: undefined,
+    HeaderDetails: undefined
     UpdateDetails: undefined
 }
 
 const AppStack = () => {
   return(
     <Stack.Navigator>
-        {/* <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Signup"
-          component={SignUpScreen}
-          options={{ headerShown: false }}
-        /> */}
         <Stack.Screen
           name="TopTabs"
           component={TopTabs}
@@ -51,11 +39,16 @@ const AppStack = () => {
           component={TaskDetailsScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Header"
           component={Header}
           options={{ headerShown: false }}
-        /> */}
+        />
+        <Stack.Screen
+          name="HeaderDetails"
+          component={HeaderDetails}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Notifications"
           component={NotificationsScreen}
@@ -66,16 +59,6 @@ const AppStack = () => {
           component={UpdateDetailsScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="Card"
-          component={Card}
-          options={{ headerShown: false }}
-        /> */}
-        {/* <Stack.Screen
-          name="DrawerNav"
-          component={DrawerNav}
-          // options={{ headerShown: false }}
-        /> */}
     </Stack.Navigator>
   )
 }

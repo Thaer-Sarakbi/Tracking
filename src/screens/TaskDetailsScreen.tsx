@@ -1,15 +1,13 @@
-import { RouteProp, useIsFocused } from '@react-navigation/native';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Modal, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { RootStackParamsList } from '../AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { History, Task, Updates } from '../types/types';
-import { StyleSheet } from 'react-native';
 import StatusModal from '../components/StatusModal';
-// import updateModal from '../components/updateModal';
 import firestore from '@react-native-firebase/firestore'
 import { getTasks, updateTask } from '../redux/tasksSlice';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -18,19 +16,17 @@ import { getHistory } from '../redux/historySlice';
 import { FlatList } from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view'
 import PushNotification from 'react-native-push-notification';
-import { getNotifications, updateNotifications } from '../redux/notificationsSlice';
-import moment from 'moment';
+import { getNotifications } from '../redux/notificationsSlice';
 import Timeline from 'react-native-timeline-flatlist';
 import { getUpdates } from '../redux/updatesSlice';
 import UpdateModal from '../components/UpdateModal';
-import Geolocation from '@react-native-community/geolocation';
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView from "react-native-maps";
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
   navigation: StackNavigationProp<RootStackParamsList, "TaskDetails">
 }
-
+ 
 interface historyState {
   history: {
     data: Array<History>,
@@ -50,7 +46,7 @@ interface updatesState {
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-  const [taskStatus, setTaskStatus] = useState()
+  const [taskStatus, setTaskStatus] = useState<string>('')
   const [task, setTask] = useState<Task | null>(null)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
@@ -63,8 +59,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
 
-  console.log(updates.length)
-
   // updates.sort((a, b) => b.time - a.time)
 
   const dispatch = useDispatch<AppDispatch>()
@@ -76,7 +70,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const id = route.params.taskId
   const userId = route.params.userId
   const userName = route.params.userName
-  console.log(id, userId)
 
   useEffect(() => {
     firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -87,9 +80,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     });
 
     dispatch(getHistory({taskId: id, userId})).then(() => {
-      // if(route.params.notificationId){
-      //    dispatch(updateNotifications(id))
-      // }
+
     })
 
     dispatch(getUpdates({taskId: id, userId}))
@@ -118,7 +109,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     }
   }
 
-  const addNotification = async (message: string, title: string) => {
+  const addNotification = async (message: string, title: string | undefined) => {
 
     await firestore().collection('users').doc(userId).collection('notifications').add({
       message,
@@ -159,10 +150,10 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
 
-    Geolocation.getCurrentPosition(info => {
-      setLatitude(info.coords.latitude)
-      setLongitude(info.coords.longitude)
-    }, (err) => {
+    // Geolocation.getCurrentPosition(info => {
+    //   setLatitude(info.coords.latitude)
+    //   setLongitude(info.coords.longitude)
+    // }, (err) => {
       // //console.log(err.code, err.message);
       //   setEnable(false)
       //   RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
@@ -175,7 +166,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       //     .catch((err) => {
       //       setEnable(true)
       //     });
-    }); 
+    // }); 
   }
 
   const onChangeStatus = () => {

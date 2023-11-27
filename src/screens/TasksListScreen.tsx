@@ -13,8 +13,7 @@ import AnimatedLottieView from 'lottie-react-native';
 const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
-  const user = useSelector(state => state.auth.user)
-  console.log()
+  const user = useSelector((state: TasksState) => state.auth.user)
 
   const [isFetching, setIsFetching] = useState(false)
 
