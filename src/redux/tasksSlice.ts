@@ -4,7 +4,7 @@ import { Task, tasks, TasksState } from '../types/types';
 import moment from 'moment';
 
 export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string}) => {
-
+  console.log(task)
   await firestore()
   .collection('users')
   .doc(task.userId)
@@ -27,7 +27,12 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
 export const getTasks = createAsyncThunk("tasks/getTasks", async (userId: string) => {
   let tasksList: Array<Task> = []
 
-  await firestore().collection('users').doc(userId).collection('tasks').orderBy('creationDate').get()
+  await firestore()
+        .collection('users')
+        .doc(userId)
+        .collection('tasks')
+        .orderBy('creationDate', "desc")
+        .get()
   .then(querySnapshot => { 
     // console.log(querySnapshot)
     querySnapshot.docs.forEach(documentSnapshot => {

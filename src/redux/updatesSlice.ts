@@ -5,7 +5,7 @@ import { Updates } from '../types/types';
 export const getUpdates = createAsyncThunk("updates/getUpdates", async (id:{taskId: string, userId: string}) => {
     let updatesList: Array<Updates> = []
 
-    await firestore().collection('users').doc(id.userId).collection('tasks').doc(id.taskId).collection('updates').orderBy('time').get()
+    await firestore().collection('users').doc(id.userId).collection('tasks').doc(id.taskId).collection('updates').orderBy('time', "desc").get()
     .then(querySnapshot => { 
       console.log(querySnapshot.docs)
       querySnapshot.docs.forEach(documentSnapshot => {

@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Task } from '../types/types';
+import moment from 'moment';
 
 const Card = ({item}: { item: Task }  ) => {
 
@@ -26,7 +27,7 @@ const Card = ({item}: { item: Task }  ) => {
 
     return(
       <View style ={styles.container}>
-        <Text style={styles.date}>{item.creationDate}</Text>
+        <Text style={styles.date}>{moment(new Date(item.creationDate._seconds * 1000)).format('MMMM Do YYYY, h:ss a')}</Text>
         <View style={styles.seperator}/>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>{item.title}</Text>

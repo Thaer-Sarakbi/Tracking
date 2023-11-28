@@ -60,7 +60,8 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
                     taskId: item.item.id,
                     userId: user.id,
                     userName: user.name,
-                    status: item.item.status
+                    status: item.item.status,
+                    creationDate: item.item.creationDate
                   })}} >
                     <Card item={item.item} />
                   </TouchableOpacity>

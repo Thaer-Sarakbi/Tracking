@@ -11,7 +11,6 @@ import { User } from '../types/types';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import { Controller, useForm } from 'react-hook-form';
-import moment from 'moment';
 import { getTasks } from '../redux/tasksSlice';
 
 interface MyState {

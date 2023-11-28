@@ -29,12 +29,15 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                 <FlatList
                     data={notifications}
                     renderItem={(item) => {
+                      console.log(item.item)
                       return(
                         <TouchableOpacity style={[styles.card, item.item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
                           navigation.navigate('TaskDetails', {
                             taskId: item.item.taskId,
                             userId: user.id,
-                            userName: user.name
+                            userName: user.name,
+                            status: item.item.status,
+                            creationDate: item.item.creationDate
                         })
                           dispatch(updateNotifications({notificationId: item.item.id, userId: user.id}))
                           dispatch(getNotifications(user.id))

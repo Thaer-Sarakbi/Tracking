@@ -18,7 +18,8 @@ export type RootStackParamsList = {
       taskId: string,
       userId: string,
       userName: string,
-      status: string
+      status: string,
+      creationDate: string
     },
     Notifications: undefined,
     Header: undefined,

@@ -9,7 +9,7 @@ export const getNotifications = createAsyncThunk("notifications/getNotifications
         .collection('users')
         .doc(userId)
         .collection('notifications')
-        .orderBy('creationDate')
+        .orderBy('creationDate', "desc")
         .get()
         .then(querySnapshot => { 
           querySnapshot.docs.forEach(documentSnapshot => {

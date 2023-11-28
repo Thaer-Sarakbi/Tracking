@@ -4,14 +4,14 @@ import { History, historyList } from '../types/types';
 
 export const getHistory = createAsyncThunk("history/getHistory", async (id:{taskId: string, userId: string}) => {
   let historyList: Array<History> = []
-  console.log(id.taskId, id.userId)
+
   await firestore()
         .collection('users')
         .doc(id.userId)
         .collection('tasks')
         .doc(id.taskId)
         .collection('history')
-        .orderBy('updateDate')
+        .orderBy('updateDate', "desc")
         .get()
         .then(querySnapshot => { 
           querySnapshot.docs.forEach(documentSnapshot => {

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground, Alert } from 'react-native';
 import { Colors } from '../assets/Colors';
 import firestore, { firebase } from '@react-native-firebase/firestore'
-import moment from 'moment';
 import { getUpdates } from '../redux/updatesSlice';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';

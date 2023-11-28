@@ -20,6 +20,7 @@ import Timeline from 'react-native-timeline-flatlist';
 import { getUpdates } from '../redux/updatesSlice';
 import UpdateModal from '../components/UpdateModal';
 import MapView from "react-native-maps";
+import moment from 'moment';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -62,6 +63,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const id = route.params.taskId
   const userId = route.params.userId
   const userName = route.params.userName
+  const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
 
   useEffect(() => {
     firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -109,6 +111,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       task: task?.title,
       title,
       taskId: id,
+      status: taskStatus,
       creationDate: new Date()
     }).then(res => {
       dispatch(getNotifications(userId))
@@ -187,7 +190,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.card}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Creation Date:</Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{task.creationDate}</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>
+                 {creationDate}
+              </Text>
             </View>
             <View style={styles.card}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Duration:</Text>
@@ -281,9 +286,11 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                   data={history}
                   ItemSeparatorComponent={() => <View style={{ height: 1, width: '100%',backgroundColor: 'black', marginVertical: 5 }} />}
                   renderItem={(item) => {
+                    console.log()
+                    
                     return(
                       <View>
-                        <Text>{item.item.updateDate}</Text>
+                        <Text>{moment(new Date(item.item.updateDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') }</Text>
                         <Text>{item.item.status}</Text>
                       </View>
                     )
@@ -325,7 +332,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            dispatch(updateTask({ id, status: task?.status, userId }))
+            dispatch(updateTask({ id, status: taskStatus, userId }))
             dispatch(getTasks(userId))
             dispatch(getHistory({taskId: id, userId}))
             setShowAlert(false)
