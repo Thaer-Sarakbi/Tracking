@@ -46,7 +46,7 @@ interface updatesState {
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-  const [task, setTask] = useState<Task | null>(null)
+  // const [task, setTask] = useState<Task | null>(null)
   const [taskStatus, setTaskStatus] = useState<string>(route.params.status)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
@@ -56,32 +56,36 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
-
+  const user = useSelector((state: TasksState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
   const id = route.params.taskId
-  const userId = route.params.userId
   const userName = route.params.userName
+  const title = route.params?.title
+  const description = route.params.description
+  const duration = route.params.duration
+  const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
+  console.log(assigenId)
 
   useEffect(() => {
-    firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
-    .then(documentSnapshot => { 
-      if (documentSnapshot.exists) {
-        setTask(documentSnapshot.data())
-      }
-    });
+    // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
+    // .then(documentSnapshot => { 
+    //   if (documentSnapshot.exists) {
+    //     setTask(documentSnapshot.data())
+    //   }
+    // });
 
-    dispatch(getHistory({taskId: id, userId})).then(() => {
+    dispatch(getHistory({taskId: id, userId: user.id})).then(() => {
 
     })
 
-    dispatch(getUpdates({taskId: id, userId}))
+    dispatch(getUpdates({taskId: id, userId: user.id}))
   },[isModalVisible])
 
   useEffect(() => {
-    setTask({ ...task, status: taskStatus })
+    // setTask({ ...task, status: taskStatus })
   },[taskStatus])
 
   const getStyle = (status: string) => {
@@ -105,16 +109,20 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const addNotification = async (message: string, title: string | undefined) => {
 
-    await firestore().collection('users').doc(userId).collection('notifications').add({
+    await firestore().collection('users').doc(assigenId).collection('notifications').add({
       message,
       read: false,
-      task: task?.title,
-      title,
+      task: title,
       taskId: id,
       status: taskStatus,
-      creationDate: new Date()
+      creationDate: new Date(route.params.creationDate.seconds * 1000),
+      creationDateNotification: new Date(),
+      title,
+      description,
+      assignTo: userName,
+      duration
     }).then(res => {
-      dispatch(getNotifications(userId))
+      dispatch(getNotifications({id: user.id, admin: user.admin}))
     }).catch(err => {
       console.log(err)
     })
@@ -122,16 +130,22 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const handleNotification = (status: string) => {
     const message = `Status Updated to ${status}`
-    const title = task?.title
+    // const title = title
 
     PushNotification.localNotification({
       channelId: "update-status",
       title: "Update Status",
+      status: taskStatus,
       message: message,
       task: title,
       vibrate: true, // (optional) default: true
       vibration: 300,
-      screen: 'TaskDetails' 
+      screen: 'TaskDetails',
+      duration,
+      assignTo: userName,
+      description,
+      creationDate: new Date(route.params.creationDate.seconds * 1000),
+
     });
 
     PushNotification.popInitialNotification((notification) => {
@@ -171,9 +185,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     setUpdateModalVisible(bool)
   }
 
-  if(task === null){
-    return <View/>
-  } else {
+  // if(task === null){
+  //   return <View/>
+  // } else {
     return (
       <ScrollView>
         <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
@@ -182,7 +196,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           </TouchableOpacity>
         </View>
         <View style={styles.container}>
-          <Text style={styles.title}>{task.title}</Text>
+          <Text style={styles.title}>{title}</Text>
           <View style={[styles.card, { marginBottom: 10 }]}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Assign To:</Text>
               <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{userName}</Text>
@@ -196,13 +210,13 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             </View>
             <View style={styles.card}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Duration:</Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{task.duration} days</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{duration} days</Text>
             </View>
           </View>
 
           <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
             <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Description</Text>
-            <Text style={styles.decription}>{task.description}</Text>
+            <Text style={styles.decription}>{description}</Text>
           </View>
 
           <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
@@ -256,7 +270,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                     changeModalVisible= {onAddUpdate}
                     isModalVisible={updateModalVisible}
                     id={id}
-                    userId={userId}
+                    userId={user.id}
                   />
                 </Modal>
               </>
@@ -286,7 +300,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                   data={history}
                   ItemSeparatorComponent={() => <View style={{ height: 1, width: '100%',backgroundColor: 'black', marginVertical: 5 }} />}
                   renderItem={(item) => {
-                    console.log()
                     
                     return(
                       <View>
@@ -332,9 +345,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            dispatch(updateTask({ id, status: taskStatus, userId }))
-            dispatch(getTasks(userId))
-            dispatch(getHistory({taskId: id, userId}))
+            dispatch(updateTask({ id, status: taskStatus, userId: assigenId }))
+            dispatch(getTasks({id: user.id, admin: user.admin}))
+            dispatch(getHistory({taskId: id, userId: user.id}))
             setShowAlert(false)
             handleNotification(taskStatus)
           }}
@@ -371,7 +384,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       </ScrollView>
     );
   }
-}
+// }
 
 const styles = StyleSheet.create({
   container:{

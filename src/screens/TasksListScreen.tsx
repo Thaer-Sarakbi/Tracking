@@ -21,12 +21,12 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
 
   const onRefresh = () => {
     setIsFetching(true)
-    dispatch(getTasks(user.id))
+    dispatch(getTasks({id: user.id, admin: user.admin}))
     setIsFetching(false)
   }
 
   useEffect(() => {
-    dispatch(getTasks(user.id))
+    dispatch(getTasks({id: user.id, admin: user.admin}))
 
     createChannels()
   },[])
@@ -51,17 +51,20 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
     return (
       <View style={{ flex: 1 }}>
           <FlatList
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item?.id.toString()}
             data={tasks}
             renderItem={(item) => {
-              if(item.item.status !== 'Completed'){
+              if(item.item?.status !== 'Completed'){
                 return(
                   <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                     taskId: item.item.id,
-                    userId: user.id,
-                    userName: user.name,
+                    userName: item.item.assignedTo,
                     status: item.item.status,
-                    creationDate: item.item.creationDate
+                    creationDate: item.item.creationDate,
+                    title: item.item.title,
+                    description: item.item.description,
+                    duration: item.item.duration,
+                    assigenId: item.item.assigenId
                   })}} >
                     <Card item={item.item} />
                   </TouchableOpacity>

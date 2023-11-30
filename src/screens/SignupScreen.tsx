@@ -45,7 +45,8 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
         setMessage('User account created!');
         firestore().collection('users').add({
           name: name,
-          email: email
+          email: email,
+          admin: false
         }).then(() => {
           console.log('User Added')
         }).catch((e) => {

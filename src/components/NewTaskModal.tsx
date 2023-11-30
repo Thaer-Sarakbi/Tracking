@@ -32,7 +32,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
   } = useForm({
     defaultValues: {
       title: "",
-      decription: "",
+      description: "",
       assignedTo: "",
       duration: "",
       location: "",
@@ -41,23 +41,34 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
   const users = useSelector((state: MyState) => state.users.data)
   const user = useSelector((state: MyState) => state.auth.user)
+  // console.log(users)
 
   const dispatch = useDispatch<AppDispatch>()
 
   const onSubmit = async () => {
-    const { title, decription, assignedTo, duration, location } = watch()
+    const { title, description, assignedTo, duration, location } = watch()
 
-  await firestore().collection('users').doc(user.id).collection('tasks').add({
+    const assigned = users.find(user => {
+      
+      if(user.value === assignedTo){
+        // console.log(user.id, assignedTo)
+        return user
+      }
+    })
+
+  await firestore().collection('users').doc(assigned.id).collection('tasks').add({
     title, 
-    decription, 
+    description, 
     assignedTo, 
     duration, 
     location,
     status: 'Not Started',
-    creationDate: new Date()
+    creationDate: new Date(),
+    assigenId: assigned.id
   }).then(res => {
+    console.log(res)
     changeModalVisible(false)
-    dispatch(getTasks(user.id))
+    dispatch(getTasks({id: user.id, admin: user.admin}))
   }).catch(err => {
     changeModalVisible(false)
     console.log(err)
@@ -124,7 +135,7 @@ const getLocation = () => {
         rules={{
           required: {
             value: true,
-            message: 'Decription is required'
+            message: 'Description is required'
           }
         }}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -139,9 +150,9 @@ const getLocation = () => {
             value={value}
           />
             )}
-            name="decription"
+            name="description"
           />
-      {errors.decription && <Text style={{ color: 'red', fontSize: 15 }}>{errors.decription?.message}</Text>}
+      {errors.description && <Text style={{ color: 'red', fontSize: 15 }}>{errors.description?.message}</Text>}
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Assign To</Text>
 
@@ -197,10 +208,6 @@ const getLocation = () => {
       {errors.duration && <Text style={{ color: 'red', fontSize: 15 }}>{errors.duration?.message}</Text>}
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Location</Text>
-      {/* <TextInput
-        style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-        onChangeText={(text) => setLocation(text)}
-      /> */}
 
       <Controller
         control={control}

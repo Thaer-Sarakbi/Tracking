@@ -7,10 +7,7 @@ export const getUpdates = createAsyncThunk("updates/getUpdates", async (id:{task
 
     await firestore().collection('users').doc(id.userId).collection('tasks').doc(id.taskId).collection('updates').orderBy('time', "desc").get()
     .then(querySnapshot => { 
-      console.log(querySnapshot.docs)
       querySnapshot.docs.forEach(documentSnapshot => {
-          // documentSnapshot.data().id = documentSnapshot.id
-          console.log(documentSnapshot.data())
           updatesList.push(documentSnapshot.data() as any) 
       });
     }).catch((error) => {

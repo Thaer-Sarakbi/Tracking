@@ -6,11 +6,13 @@ import { Colors } from '../assets/Colors';
 import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Task } from '../types/types';
 import { RootStackParamsList } from './AppStack';
 import { StackScreenProps } from '@react-navigation/stack';
 import CompletedTaskScreen from '../screens/CompletedTaskScreen';
+import { AppDispatch } from '../redux/store';
+import { getUsers } from '../redux/usersSlice';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -21,12 +23,18 @@ interface MyState {
 export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const tasks = useSelector((state: MyState) => state.tasks.data)
+  const tasks = useSelector((state: MyState) => state.tasks?.data)
+  const user = useSelector((state: TasksState) => state.auth.user)
 
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
   }
 
+  const dispatch = useDispatch<AppDispatch>()
+
+  useEffect(() => {
+    dispatch(getUsers())
+  },[])
   return (
     <>
       <Header navigation={navigation}/>
@@ -47,8 +55,8 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
               <View style={{ position: 'relative', top: 14, left: -60 }}>
                 {/* <Text>({tasks.length})</Text> */}
                 <Text>({
-                  tasks.filter(task => {
-                    if(task.status !== 'Completed'){
+                  tasks?.filter(task => {
+                    if(task?.status !== 'Completed'){
                       return task
                     }
                   }).length
@@ -61,9 +69,9 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
           component={CompletedTaskScreen} 
         />
       </Tab.Navigator>
-      <TouchableOpacity onPress={() => changeModalVisible(true)} style={{ backgroundColor: Colors.main, position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}>
+      {user.admin && (<TouchableOpacity onPress={() => changeModalVisible(true)} style={{ backgroundColor: Colors.main, position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}>
         <Icon name="add-outline" size={35} color={'white'} />
-      </TouchableOpacity>
+      </TouchableOpacity>)}
       <Modal 
            transparent= {true}
            animationType= 'slide'

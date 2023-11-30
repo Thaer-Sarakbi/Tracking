@@ -5,6 +5,7 @@ import { Task } from '../types/types';
 import moment from 'moment';
 
 const Card = ({item}: { item: Task }  ) => {
+  // console.log(item)
 
   const getStyle = (status: string) => {
     if(status === 'In Progress'){
@@ -27,12 +28,12 @@ const Card = ({item}: { item: Task }  ) => {
 
     return(
       <View style ={styles.container}>
-        <Text style={styles.date}>{moment(new Date(item.creationDate._seconds * 1000)).format('MMMM Do YYYY, h:ss a')}</Text>
+        <Text style={styles.date}>{moment(new Date(item.creationDate?._seconds * 1000)).format('MMMM Do YYYY, h:ss a')}</Text>
         <View style={styles.seperator}/>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>{item.title}</Text>
           <View style={[styles.status, getStyle(item.status)]}>
-            <Text style={[styles.statusText, getStyle(item.status)]}>{item.status}</Text>
+            <Text style={[styles.statusText, getStyle(item?.status)]}>{item.status}</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', marginVertical: 5 }}>

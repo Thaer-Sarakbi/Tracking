@@ -21,27 +21,56 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
     }).then(() => {
       console.log('history created')
     })
+  }).catch((e) => {
+    console.log(e)
   });
 })
 
-export const getTasks = createAsyncThunk("tasks/getTasks", async (userId: string) => {
+export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: string, admin: boolean}) => {
   let tasksList: Array<Task> = []
 
-  await firestore()
-        .collection('users')
-        .doc(userId)
-        .collection('tasks')
-        .orderBy('creationDate', "desc")
-        .get()
-  .then(querySnapshot => { 
-    // console.log(querySnapshot)
-    querySnapshot.docs.forEach(documentSnapshot => {
-      documentSnapshot.data().id = documentSnapshot.id
-      tasksList.push(documentSnapshot.data() as any) 
-    });
-  }).catch((error) => {
-    console.log(error)
-  });
+  if(user.admin){
+    const usersCollection = await firestore().collection('users')
+
+    const usersQuerySnapshot = await usersCollection.get()
+    let usersDataWithTasks = []
+  
+    for(const userDoc of usersQuerySnapshot.docs){
+      const userTasksCollection = userDoc.ref.collection('tasks')
+  
+      const tasksQuerySnapshot = await userTasksCollection.get()
+  
+      const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
+        id: taskDoc.id,
+        ...taskDoc.data()
+      }))
+  
+      if(tasksData[0]){
+        usersDataWithTasks.push(
+          // id: userDoc.id,
+          // userData: userDoc.data(),
+          ...tasksData
+        )
+      }
+      tasksList = usersDataWithTasks
+    }
+  } else {
+    await firestore()
+    .collection('users')
+    .doc(user.id)
+    .collection('tasks')
+    .orderBy('creationDate', "desc")
+    .get()
+.then(querySnapshot => { 
+querySnapshot.docs.forEach(documentSnapshot => {
+  console.log(documentSnapshot.data())
+  documentSnapshot.data().id = documentSnapshot.id
+  tasksList.push(documentSnapshot.data() as any) 
+});
+}).catch((error) => {
+console.log(error)
+});
+  }
 
   return tasksList
 })

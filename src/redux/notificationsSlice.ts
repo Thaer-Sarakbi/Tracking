@@ -5,22 +5,22 @@ import { Notification, notificationsList } from '../types/types';
 export const getNotifications = createAsyncThunk("notifications/getNotifications", async (userId: string) => {
   let notificationsList: Array<Notification> = []
 
-  await firestore()
-        .collection('users')
-        .doc(userId)
-        .collection('notifications')
-        .orderBy('creationDate', "desc")
-        .get()
-        .then(querySnapshot => { 
-          querySnapshot.docs.forEach(documentSnapshot => {
-            documentSnapshot.data().id = documentSnapshot.id
-            notificationsList.push(documentSnapshot.data() as any) 
-          });
-        }).catch((error) => {
-          console.log(error)
-        });
-
-      return notificationsList
+      await firestore()
+    .collection('users')
+    .doc(userId)
+    .collection('notifications')
+    .orderBy('creationDateNotification', "desc")
+    .get()
+    .then(querySnapshot => { 
+      querySnapshot.docs.forEach(documentSnapshot => {
+        documentSnapshot.data().id = documentSnapshot.id
+        notificationsList.push(documentSnapshot.data() as any) 
+      });
+    }).catch((error) => {
+      console.log(error)
+    });
+  
+  return notificationsList
 })
 
 export const updateNotifications = createAsyncThunk("notifications/updateNotifications", async (id:{notificationId: string, userId: string}) => {

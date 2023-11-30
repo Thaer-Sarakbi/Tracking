@@ -21,12 +21,12 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
 
   const onRefresh = () => {
     setIsFetching(true)
-    dispatch(getTasks(user.id))
+    dispatch(getTasks({id: user.id, admin: user.admin}))
     setIsFetching(false)
   }
 
   useEffect(() => {
-    dispatch(getTasks(user.id))
+    dispatch(getTasks({id: user.id, admin: user.admin}))
 
     createChannels()
   },[])
@@ -57,9 +57,14 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
                 if(item.item.status === 'Completed'){
                     return(
                         <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                            taskId: item.item.id,
-                            userId: user.id,
-                            userName: user.name
+                          taskId: item.item.id,
+                          userName: item.item.assignedTo,
+                          status: item.item.status,
+                          creationDate: item.item.creationDate,
+                          title: item.item.title,
+                          description: item.item.description,
+                          duration: item.item.duration,
+                          assigenId: item.item.assigenId
                         })}} >
                           <Card item={item.item} />
                         </TouchableOpacity>

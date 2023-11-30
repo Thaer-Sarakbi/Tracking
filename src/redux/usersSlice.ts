@@ -15,7 +15,10 @@ export const getUsers = createAsyncThunk("users/getUsers", async () => {
   .then(querySnapshot => { 
     querySnapshot.docs.forEach(documentSnapshot => {
       documentSnapshot.data().id = documentSnapshot.id
-      usersList.push(documentSnapshot.data().name as any) 
+      usersList.push({
+        id: documentSnapshot.data().id,
+        value: documentSnapshot.data().name as any
+      }) 
     });
   });
 

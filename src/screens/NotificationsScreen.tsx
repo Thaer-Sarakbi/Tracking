@@ -35,7 +35,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                           navigation.navigate('TaskDetails', {
                             taskId: item.item.taskId,
                             userId: user.id,
-                            userName: user.name,
+userName: user.name,
                             status: item.item.status,
                             creationDate: item.item.creationDate
                         })
