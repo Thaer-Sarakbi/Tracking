@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground, A
 import { Colors } from '../assets/Colors';
 import firestore, { firebase } from '@react-native-firebase/firestore'
 import { getUpdates } from '../redux/updatesSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -15,12 +15,15 @@ interface Props {
   changeModalVisible: (boole: boolean) => void,
   isModalVisible: boolean,
   id: string,
-  userId: string
+  userId: string,
+  assigenId: string,
+  admin: boolean
 }
 
-const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId } : Props) => {
+const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId, admin, updaterName } : Props) => {
     const [images, setImages] = useState<string[]>()
     const [transferred, setTransferred] = useState(0);
+    const users = useSelector((state: MyState) => state.users.data)
 
     const {
       control,
@@ -43,16 +46,18 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId } : Props)
   //  }
 
    const submit = async () => {
+
     const { title, description } = watch()
 
-    await firestore().collection('users').doc(userId).collection('tasks').doc(id).collection('updates').add({
+    await firestore().collection('users').doc(assigenId).collection('tasks').doc(id).collection('updates').add({
       title, 
       description, 
       images: images ? images : null,
-      time: new Date()
+      time: new Date(),
+      updatedBy: updaterName
     }).then(res => {
       changeModalVisible(false)
-      dispatch(getUpdates({taskId: id, userId}))
+      dispatch(getUpdates({taskId: id, userId, admin}))
     }).catch(err => {
       changeModalVisible(false)
       console.log(err)

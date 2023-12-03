@@ -2,17 +2,44 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Updates } from '../types/types';
 
-export const getUpdates = createAsyncThunk("updates/getUpdates", async (id:{taskId: string, userId: string}) => {
+export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{taskId: string, userId: string, admin:boolean}) => {
     let updatesList: Array<Updates> = []
 
-    await firestore().collection('users').doc(id.userId).collection('tasks').doc(id.taskId).collection('updates').orderBy('time', "desc").get()
-    .then(querySnapshot => { 
-      querySnapshot.docs.forEach(documentSnapshot => {
-          updatesList.push(documentSnapshot.data() as any) 
+    if(user.admin){
+      const usersCollection = await firestore().collection('users')
+  
+      const usersQuerySnapshot = await usersCollection.get()
+      let usersDataWithTasks = []
+    
+      for(const userDoc of usersQuerySnapshot.docs){
+        const userUpdatesCollection = userDoc.ref.collection('tasks').doc(user.taskId).collection('updates')
+    
+        const updatesQuerySnapshot = await userUpdatesCollection.get()
+    
+        const updatesData = updatesQuerySnapshot.docs.map((updateDoc) => ({
+          id: updateDoc.id,
+          ...updateDoc.data()
+        }))
+    
+        if(updatesData[0]){
+          usersDataWithTasks.push(
+            // id: userDoc.id,
+            // userData: userDoc.data(),
+            ...updatesData
+          )
+        }
+        updatesList = usersDataWithTasks
+      }
+    } else {
+      await firestore().collection('users').doc(user.userId).collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc").get()
+      .then(querySnapshot => { 
+        querySnapshot.docs.forEach(documentSnapshot => {
+            updatesList.push(documentSnapshot.data() as any) 
+        });
+      }).catch((error) => {
+        console.log(error)
       });
-    }).catch((error) => {
-      console.log(error)
-    });
+    }
 
     return updatesList
 })

@@ -6,12 +6,22 @@ import { firebase } from '@react-native-firebase/firestore'
 import { AppDispatch } from './redux/store';
 import { setUser } from './redux/authSlice';
 import { User } from './types/types';
+import usePushNotification from './hooks/usePushNotification';
 
 interface AppContainerState {
   auth: {user: User}
 }
 
 const AppContainer = () => {
+  const {
+    requestUserPermission,
+    getFCMToken,
+    listenToBackgroundNotifications,
+    listenToForegroundNotifications,
+    onNotificationOpenedAppFromBackground,
+    onNotificationOpenedAppFromQuit,
+  } = usePushNotification();
+
     const user = useSelector((state: AppContainerState) => state.auth.user)
     console.log('user', JSON.stringify(user))
 
@@ -22,6 +32,21 @@ const AppContainer = () => {
             // console.log(u)
             dispatch(setUser(u))
         })
+
+        const listenToNotifications = () => {
+          try {
+            getFCMToken();
+            requestUserPermission();
+            onNotificationOpenedAppFromQuit();
+            listenToBackgroundNotifications();
+            listenToForegroundNotifications();
+            onNotificationOpenedAppFromBackground();
+          } catch (error) {
+            console.log(error);
+          }
+        };
+    
+        listenToNotifications();
     },[])
 
     if(user){

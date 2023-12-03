@@ -46,6 +46,10 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
           <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
             <Text style={styles.title}>{route.params.update.title}</Text>
             <Text style={styles.decription}>{route.params.update.description}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Updated By: </Text>
+              <Text style={{ fontSize: 15 }}> {route.params.update.updatedBy}</Text>
+            </View>       
           </View>
 
           {images && (<SliderBox

@@ -41,7 +41,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
   const users = useSelector((state: MyState) => state.users.data)
   const user = useSelector((state: MyState) => state.auth.user)
-  // console.log(users)
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -51,7 +50,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     const assigned = users.find(user => {
       
       if(user.value === assignedTo){
-        // console.log(user.id, assignedTo)
         return user
       }
     })
@@ -65,8 +63,25 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     status: 'Not Started',
     creationDate: new Date(),
     assigenId: assigned.id
+  }).then(async(res) => {
+    console.log(res)  
+    await firestore().collection('users').doc(assigned?.id).collection('notifications').add({
+      message: 'You have assigned a new task',
+      read: false,
+      task: title,
+      taskId: res.id,
+      status: 'Not Started',
+      creationDate: new Date(route.params.creationDate.seconds * 1000),
+      creationDateNotification: new Date(),
+      title,
+      description,
+      assignTo: userName,
+      duration
   }).then(res => {
-    console.log(res)
+    // dispatch(getNotifications(user.id))
+  }).catch(err => {
+    console.log(err)
+  })
     changeModalVisible(false)
     dispatch(getTasks({id: user.id, admin: user.admin}))
   }).catch(err => {

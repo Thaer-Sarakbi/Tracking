@@ -57,6 +57,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
   const user = useSelector((state: TasksState) => state.auth.user)
+  
+  const editUpadtes = updates.map(update => {
+    const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do YY')
+    return{
+      ...update,
+      time
+    }
+  })
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -67,7 +75,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const duration = route.params.duration
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
-  console.log(assigenId)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -77,11 +84,11 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     //   }
     // });
 
-    dispatch(getHistory({taskId: id, userId: user.id})).then(() => {
+    dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin})).then(() => {
 
     })
 
-    dispatch(getUpdates({taskId: id, userId: user.id}))
+    dispatch(getUpdates({taskId: id, userId: user.id, admin: user.admin}))
   },[isModalVisible])
 
   useEffect(() => {
@@ -122,7 +129,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       assignTo: userName,
       duration
     }).then(res => {
-      dispatch(getNotifications({id: user.id, admin: user.admin}))
+      dispatch(getNotifications(user.id))
     }).catch(err => {
       console.log(err)
     })
@@ -144,8 +151,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       duration,
       assignTo: userName,
       description,
-      creationDate: new Date(route.params.creationDate.seconds * 1000),
-
+      creationDate: new Date(route.params.creationDate.seconds * 1000)
     });
 
     PushNotification.popInitialNotification((notification) => {
@@ -185,9 +191,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     setUpdateModalVisible(bool)
   }
 
-  // if(task === null){
-  //   return <View/>
-  // } else {
     return (
       <ScrollView>
         <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
@@ -242,7 +245,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
               <>
                 <Timeline
                   onEventPress={(update) => navigation.navigate('UpdateDetails', { update })}
-                  data={updates}
+                  data={editUpadtes}
                   circleSize={20}
                   circleColor='rgb(45,156,219)'
                   lineColor='rgb(45,156,219)'
@@ -271,6 +274,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                     isModalVisible={updateModalVisible}
                     id={id}
                     userId={user.id}
+                    assigenId={assigenId}
+                    admin={user.admin}
+                    updaterName= {user.name}
                   />
                 </Modal>
               </>
@@ -278,17 +284,15 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           }
         </View>
 
-        {/* <View style={{ width: '100%', height: 100 }}> */}
         <MapView
-        style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
-  initialRegion={{
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  }}
-/>
-        {/* </View> */}
+          style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+        />
 
           {status === 'loading' ? (
             <View />
@@ -305,6 +309,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                       <View>
                         <Text>{moment(new Date(item.item.updateDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') }</Text>
                         <Text>{item.item.status}</Text>
+                        <Text>Updated By: {item.item.updatedBy}</Text>
                       </View>
                     )
                   }}
@@ -345,7 +350,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            dispatch(updateTask({ id, status: taskStatus, userId: assigenId }))
+            dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name }))
             dispatch(getTasks({id: user.id, admin: user.admin}))
             dispatch(getHistory({taskId: id, userId: user.id}))
             setShowAlert(false)

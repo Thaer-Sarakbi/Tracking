@@ -25,6 +25,10 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
     setIsFetching(false)
   }
 
+  // setTimeout(() => {
+  //   dispatch(getTasks({id: user.id, admin: user.admin}))
+  // }, 30000);
+
   useEffect(() => {
     dispatch(getTasks({id: user.id, admin: user.admin}))
 

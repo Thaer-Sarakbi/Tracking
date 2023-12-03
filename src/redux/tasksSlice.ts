@@ -1,10 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Task, tasks, TasksState } from '../types/types';
-import moment from 'moment';
 
-export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string}) => {
-  console.log(task)
+export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string, updaterName: string}) => {
   await firestore()
   .collection('users')
   .doc(task.userId)
@@ -17,7 +15,8 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
     console.log('updated')
     firestore().collection('users').doc(task.userId).collection('tasks').doc(task.id).collection('history').add({
     status: task.status,
-    updateDate: new Date()
+    updateDate: new Date(),
+    updatedBy: task.updaterName
     }).then(() => {
       console.log('history created')
     })

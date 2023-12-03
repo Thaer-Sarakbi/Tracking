@@ -7,6 +7,7 @@ import App from './App';
 import {name as appName} from './app.json';
 import PushNotification from "react-native-push-notification";
 import { navigate } from './src/navigation/RootNavigation';
+import messaging from '@react-native-firebase/messaging';
 
 PushNotification.configure({
     onRegister: function (token) {
@@ -16,7 +17,8 @@ PushNotification.configure({
     onNotification: function (notification) {
         console.log('LOCAL NOTIFICATION ==>', notification)
         const { data } = notification;
-        navigate(notification.screen, { userName: 'Lucy' });
+        console.log({...notification})
+        navigate(notification.data.screen, { ...notification.data });
     },
 
     permissions: {
@@ -27,6 +29,10 @@ PushNotification.configure({
     requestPermissions: true,
 
     popInitialNotification: true,
+})
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+    console.log('State Notification ', remoteMessage)
 })
 
 AppRegistry.registerComponent(appName, () => App);
