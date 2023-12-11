@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid, Platform} from 'react-native';
+import { navigate } from '../navigation/RootNavigation';
 
 const usePushNotification = () => {
   const requestUserPermission = async () => {
@@ -36,6 +37,8 @@ const usePushNotification = () => {
         'A new message arrived! (FOREGROUND)',
         JSON.stringify(remoteMessage),
       );
+         
+    navigate(remoteMessage.data.screen, { ...remoteMessage.data })
     });
     return unsubscribe;
   }
@@ -59,7 +62,9 @@ const usePushNotification = () => {
           'App opened from BACKGROUND by tapping notification:',
           JSON.stringify(remoteMessage),
         );
+        navigate(remoteMessage.data.screen, { ...remoteMessage.data })
       },
+      // navigate(remoteMessage.data.screen, { ...remoteMessage.data })
     );
     return unsubscribe;
   };

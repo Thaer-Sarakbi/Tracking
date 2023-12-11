@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux'
 import { store } from './src/redux/store';
@@ -7,6 +7,12 @@ import AppContainer from './src/AppContainer';
 
 const App = () => {
 
+  // useEffect(() => {
+  //   messaging().setBackgroundMessageHandler(async remoteMessage => {
+  //     console.log('State Notification ', remoteMessage)
+  // })
+  
+  // },[])
   return (
     <Provider store={store}>
       <NavigationContainer ref={navigationRef}>

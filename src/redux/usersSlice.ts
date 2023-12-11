@@ -17,7 +17,8 @@ export const getUsers = createAsyncThunk("users/getUsers", async () => {
       documentSnapshot.data().id = documentSnapshot.id
       usersList.push({
         id: documentSnapshot.data().id,
-        value: documentSnapshot.data().name as any
+        value: documentSnapshot.data().name as any,
+        deviceToken: documentSnapshot.data().deviceToken as any,
       }) 
     });
   });

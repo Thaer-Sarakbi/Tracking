@@ -12,6 +12,8 @@ import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import { Controller, useForm } from 'react-hook-form';
 import { getTasks } from '../redux/tasksSlice';
+import PushNotification from 'react-native-push-notification';
+import NotificationService from '../services/NotificationService';
 
 interface MyState {
     users: {data: Array<User>},
@@ -44,6 +46,45 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
+  const handleNotification = async(message, title, duration, description, assignedTo, assigned) => {
+    PushNotification.localNotification({
+      channelId: "update-status",
+      title: "New Task",
+      status: 'Not Started',
+      message: message,
+      task: title,
+      vibrate: true, // (optional) default: true
+      vibration: 300,
+      screen: 'TaskDetails',
+      duration,
+      assignTo: assignedTo,
+      description,
+      creationDate: new Date(),
+    });
+  
+    // PushNotification.popInitialNotification((notification) => {
+    //   console.log('Initial Notification', notification);
+    // });
+  
+    let notificationData = {
+      data: {
+        screen: 'TaskDetails',
+        title,
+        duration,
+        status: 'Not Started',
+        message,
+        task: title,
+        userName: assignedTo,
+        description,
+        creationDate: new Date()
+      },
+      title: 'New Task',
+      body: message,
+      token: assigned.deviceToken
+    };
+  
+    await NotificationService.sendSingleDeviceNotification(notificationData);
+  }
   const onSubmit = async () => {
     const { title, description, assignedTo, duration, location } = watch()
 
@@ -54,6 +95,11 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       }
     })
 
+    const message = `You have assigned a new task by ${user.name}`
+ 
+    // const title = title
+  
+
   await firestore().collection('users').doc(assigned.id).collection('tasks').add({
     title, 
     description, 
@@ -63,22 +109,21 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     status: 'Not Started',
     creationDate: new Date(),
     assigenId: assigned.id
-  }).then(async(res) => {
-    console.log(res)  
+  }).then(async(res) => { 
     await firestore().collection('users').doc(assigned?.id).collection('notifications').add({
-      message: 'You have assigned a new task',
+      message: `You have assigned a new task by ${user.name}`,
       read: false,
       task: title,
       taskId: res.id,
       status: 'Not Started',
-      creationDate: new Date(route.params.creationDate.seconds * 1000),
+      creationDate: new Date(),
       creationDateNotification: new Date(),
       title,
       description,
-      assignTo: userName,
+      assignTo: assignedTo,
       duration
   }).then(res => {
-    // dispatch(getNotifications(user.id))
+    handleNotification(message, title, duration, description, assignedTo, assigned)
   }).catch(err => {
     console.log(err)
   })
@@ -107,6 +152,11 @@ const getLocation = () => {
 //         });
 //   }); 
 }
+
+// const handleNotification = async (status: string) => {
+
+  // addNotification(message, title)
+// }
 
   useEffect(() => {
     dispatch(getUsers())

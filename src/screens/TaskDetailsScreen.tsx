@@ -21,6 +21,8 @@ import { getUpdates } from '../redux/updatesSlice';
 import UpdateModal from '../components/UpdateModal';
 import MapView from "react-native-maps";
 import moment from 'moment';
+import messaging from '@react-native-firebase/messaging';
+import NotificationService from '../services/NotificationService';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -46,7 +48,6 @@ interface updatesState {
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-  // const [task, setTask] = useState<Task | null>(null)
   const [taskStatus, setTaskStatus] = useState<string>(route.params.status)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
@@ -75,6 +76,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const duration = route.params.duration
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
+  const deviceToken = route.params.deviceToken
+
+  console.log(route.params)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -135,8 +139,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     })
   }
 
-  const handleNotification = (status: string) => {
-    const message = `Status Updated to ${status}`
+  const handleNotification = async (status: string) => {
+    const message = `Status Updated to ${status} by ${user.name}`
+   
     // const title = title
 
     PushNotification.localNotification({
@@ -154,10 +159,28 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       creationDate: new Date(route.params.creationDate.seconds * 1000)
     });
 
-    PushNotification.popInitialNotification((notification) => {
-      console.log('Initial Notification', notification);
-    });
+    // PushNotification.popInitialNotification((notification) => {
+    //   console.log('Initial Notification', notification);
+    // });
 
+    let notificationData = {
+      data: {
+        screen: 'TaskDetails',
+        title,
+        duration,
+        status: taskStatus,
+        message,
+        task: title,
+        userName,
+        description,
+        creationDate: new Date(route.params.creationDate.seconds * 1000)
+      },
+      title: 'Update Status',
+      body: message,
+      token: deviceToken
+    };
+
+    await NotificationService.sendSingleDeviceNotification(notificationData);
     addNotification(message, title)
   }
 

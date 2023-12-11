@@ -29,17 +29,19 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                 <FlatList
                     data={notifications}
                     renderItem={(item) => {
-                      console.log(item.item)
                       return(
                         <TouchableOpacity style={[styles.card, item.item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
                           navigation.navigate('TaskDetails', {
                             taskId: item.item.taskId,
                             userId: user.id,
-userName: user.name,
+                            userName: user.name,
                             status: item.item.status,
-                            creationDate: item.item.creationDate
+                            creationDate: item.item.creationDate,
+                            duration: item.item.duration,
+                            title: item.item.title,
+                            description: item.item.description
                         })
-                          dispatch(updateNotifications({notificationId: item.item.id, userId: user.id}))
+                          dispatch(updateNotifications({notificationId: item.item.id, userId: user.id, read: item.item.read}))
                           dispatch(getNotifications(user.id))
                         }}>
                         <Text style={styles.title}>{item.item.task}</Text>
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
     },
     card:{
       // backgroundColor: 'white',
-      height: 70,
+      // height: 70,
       borderRadius: 5,
       padding: 10,
       marginVertical: 5

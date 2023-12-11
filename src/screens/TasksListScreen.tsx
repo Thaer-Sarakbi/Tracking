@@ -14,6 +14,7 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
   const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
   const user = useSelector((state: TasksState) => state.auth.user)
+  const users = useSelector((state: MyState) => state.users.data)
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -24,10 +25,6 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
     dispatch(getTasks({id: user.id, admin: user.admin}))
     setIsFetching(false)
   }
-
-  // setTimeout(() => {
-  //   dispatch(getTasks({id: user.id, admin: user.admin}))
-  // }, 30000);
 
   useEffect(() => {
     dispatch(getTasks({id: user.id, admin: user.admin}))
@@ -59,6 +56,13 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
             data={tasks}
             renderItem={(item) => {
               if(item.item?.status !== 'Completed'){
+                const assigned = users.find(user => {
+      
+                  if(user.value === item.item.assignedTo){
+                    return user
+                  }
+                })
+                
                 return(
                   <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                     taskId: item.item.id,
@@ -68,7 +72,8 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
                     title: item.item.title,
                     description: item.item.description,
                     duration: item.item.duration,
-                    assigenId: item.item.assigenId
+                    assigenId: item.item.assigenId,
+                    deviceToken: assigned.deviceToken
                   })}} >
                     <Card item={item.item} />
                   </TouchableOpacity>

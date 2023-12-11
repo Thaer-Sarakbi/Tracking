@@ -7,6 +7,8 @@ import { AppDispatch } from './redux/store';
 import { setUser } from './redux/authSlice';
 import { User } from './types/types';
 import usePushNotification from './hooks/usePushNotification';
+import messaging from '@react-native-firebase/messaging';
+import firestore from '@react-native-firebase/firestore'
 
 interface AppContainerState {
   auth: {user: User}
@@ -49,7 +51,23 @@ const AppContainer = () => {
         listenToNotifications();
     },[])
 
+    const refreshToken = async() => {
+      const token = await messaging().getToken()
+
+    await firestore()
+      .collection('users')
+      .doc(user.id)
+      .update({
+        deviceToken: token
+      })
+      .then(() => {
+        console.log('updated')
+      }).catch((e) => {
+        console.log(e)
+      });
+    }
     if(user){
+      refreshToken()
        return(
          <AppStack/>
        ) 

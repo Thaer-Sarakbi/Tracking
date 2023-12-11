@@ -5,7 +5,7 @@ import { Notification, notificationsList } from '../types/types';
 export const getNotifications = createAsyncThunk("notifications/getNotifications", async (userId: string) => {
   let notificationsList: Array<Notification> = []
 
-      await firestore()
+    await firestore()
     .collection('users')
     .doc(userId)
     .collection('notifications')
@@ -23,7 +23,8 @@ export const getNotifications = createAsyncThunk("notifications/getNotifications
   return notificationsList
 })
 
-export const updateNotifications = createAsyncThunk("notifications/updateNotifications", async (id:{notificationId: string, userId: string}) => {
+export const updateNotifications = createAsyncThunk("notifications/updateNotifications", async (id:{notificationId: string, userId: string, read: boolean}) => {
+  if(!id.read){
     await firestore()
     .collection('users')
     .doc(id.userId)
@@ -37,7 +38,8 @@ export const updateNotifications = createAsyncThunk("notifications/updateNotific
     }).catch((e) => {
       console.log(e)
     });
-  })
+  }
+})
 
 const notificationsSlice = createSlice({
   name: 'notifications',
