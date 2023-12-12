@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
@@ -9,14 +9,17 @@ import { getNotifications } from '../redux/notificationsSlice';
 import { AppDispatch } from '../redux/store';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
+import firestore from '@react-native-firebase/firestore'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "Header">
 }
 
 const Header = ({ navigation } : Props) => {
-  const notifications = useSelector((state: notificationsState) => state.notifications.data)
+  // const notifications = useSelector((state: notificationsState) => state.notifications.data)
   const user = useSelector((state: notificationsState) => state.auth.user)
+
+  const [notifications, setNotifications] = useState([])
 
   const dispatch = useDispatch<AppDispatch>()
  
@@ -32,9 +35,32 @@ const Header = ({ navigation } : Props) => {
     }
   }
 
+  // useEffect(() => {
+  //   dispatch(getNotifications(user.id))
+  // },[])
+
   useEffect(() => {
-    dispatch(getNotifications(user.id))
+    const unsubscribe = firestore()
+      .collection('users')
+      .doc(user.id)
+      .collection('notifications')
+      .orderBy('creationDateNotification', "desc")
+      .onSnapshot(snapshot => {
+        // res.docs.forEach(snapshot => {
+        //   // snapshot.data().id = snapshot.id
+        //   console.log(snapshot.data())
+        //   // notificationsList.push(snapshot.data() as any) 
+  
+        // })
+  
+        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setNotifications(newData);
+      })
+
+    // Unsubscribe when component unmounts
+    return () => unsubscribe();
   },[])
+
   return (
     <View style={styles.container}>
       <View style={styles.left}>

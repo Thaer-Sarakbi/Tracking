@@ -18,17 +18,16 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
     updateDate: new Date(),
     updatedBy: task.updaterName
     }).then(() => {
-      console.log('history created')
+      console.log('history updated')
     })
   }).catch((e) => {
     console.log(e)
   });
 })
 
-export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: string, admin: boolean}) => {
+export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: string }) => {
   let tasksList: Array<Task> = []
 
-  if(user.admin){
     const usersCollection = await firestore().collection('users')
 
     const usersQuerySnapshot = await usersCollection.get()
@@ -53,24 +52,9 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: stri
       }
       tasksList = usersDataWithTasks
     }
-  } else {
-    await firestore()
-    .collection('users')
-    .doc(user.id)
-    .collection('tasks')
-    .orderBy('creationDate', "desc")
-    .get()
-.then(querySnapshot => { 
-querySnapshot.docs.forEach(documentSnapshot => {
-  console.log(documentSnapshot.data())
-  documentSnapshot.data().id = documentSnapshot.id
-  tasksList.push(documentSnapshot.data() as any) 
-});
-}).catch((error) => {
-console.log(error)
-});
-  }
 
+
+  // console.log(tasksList)
   return tasksList
 })
 

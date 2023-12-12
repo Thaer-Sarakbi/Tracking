@@ -9,12 +9,16 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
+import firestore from '@react-native-firebase/firestore'
  
 const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
-  const tasks = useSelector((state: TasksState) => state.tasks.data)
+  // const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
   const user = useSelector((state: TasksState) => state.auth.user)
   const users = useSelector((state: MyState) => state.users.data)
+
+  const [tasks, setTasks] = useState([])
+  console.log(tasks)
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -22,12 +26,103 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
 
   const onRefresh = () => {
     setIsFetching(true)
-    dispatch(getTasks({id: user.id, admin: user.admin}))
+    // dispatch(getTasks({id: user.id, admin: user.admin}))
     setIsFetching(false)
   }
 
+  const adminData = async() => {
+    let tasksList: Array<Task> = []
+
+    const usersCollection = await firestore().collection('users')
+
+    const usersQuerySnapshot = await usersCollection.get()
+    let usersDataWithTasks = []
+  
+    for(const userDoc of usersQuerySnapshot.docs){
+      const userTasksCollection = userDoc.ref.collection('tasks')
+  
+      const tasksQuerySnapshot = await userTasksCollection.get()
+  
+      const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
+        id: taskDoc.id,
+        ...taskDoc.data()
+      }))
+  
+      if(tasksData[0]){
+        usersDataWithTasks.push(
+          // id: userDoc.id,
+          // userData: userDoc.data(),
+          ...tasksData
+        )
+      }
+      setTasks(usersDataWithTasks)
+    }
+  }
+
   useEffect(() => {
-    dispatch(getTasks({id: user.id, admin: user.admin}))
+    if(user.admin){
+      adminData()
+    } else {
+      firestore()
+      .collection('users')
+      .doc(user.id)
+      .collection('tasks')
+      .orderBy('creationDate', "desc")
+      .onSnapshot(snapshot => {
+        // res.docs.forEach(snapshot => {
+        //   // snapshot.data().id = snapshot.id
+        //   console.log(snapshot.data())
+        //   // notificationsList.push(snapshot.data() as any) 
+  
+        // })
+    
+        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setTasks(newData);
+      })
+  }
+   
+
+  //   if(user.admin){
+  //     const usersCollection = await firestore().collection('users')
+  
+  //     const usersQuerySnapshot = await usersCollection.get()
+  //     let usersDataWithTasks = []
+    
+  //     for(const userDoc of usersQuerySnapshot.docs){
+  //       const userTasksCollection = userDoc.ref.collection('tasks')
+    
+  //       const tasksQuerySnapshot = await userTasksCollection.get()
+    
+  //       const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
+  //         id: taskDoc.id,
+  //         ...taskDoc.data()
+  //       }))
+    
+  //       if(tasksData[0]){
+  //         usersDataWithTasks.push(
+  //           // id: userDoc.id,
+  //           // userData: userDoc.data(),
+  //           ...tasksData
+  //         )
+  //       }
+  //       setTasks(usersDataWithTasks)
+  //     }
+  //   } else {
+  //   const unsubscribe = firestore()
+  //   .collection('users')
+  //   .doc(user.id)
+  //   .collection('tasks')
+  //   .orderBy('creationDate', "desc")
+  //   .onSnapshot(snapshot => {
+  //     const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  //     setTasks(newData);
+  //   })
+
+  // // Unsubscribe when component unmounts
+  // return () => unsubscribe();
+
+  // }
+
 
     createChannels()
   },[])
@@ -70,6 +165,8 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
                     status: item.item.status,
                     creationDate: item.item.creationDate,
                     title: item.item.title,
+                    latitude: item.item.latitude,
+                    longitude: item.item.longitude,
                     description: item.item.description,
                     duration: item.item.duration,
                     assigenId: item.item.assigenId,

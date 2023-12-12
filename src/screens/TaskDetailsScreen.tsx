@@ -19,10 +19,11 @@ import { getNotifications } from '../redux/notificationsSlice';
 import Timeline from 'react-native-timeline-flatlist';
 import { getUpdates } from '../redux/updatesSlice';
 import UpdateModal from '../components/UpdateModal';
-import MapView from "react-native-maps";
+import MapView, {Marker} from "react-native-maps";
 import moment from 'moment';
 import messaging from '@react-native-firebase/messaging';
 import NotificationService from '../services/NotificationService';
+import usePushNotification from '../hooks/usePushNotification';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -77,8 +78,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
-
-  console.log(route.params)
+  const latitude = route.params.latitude
+  const longitude = route.params.longitude
+  console.log(userName)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -120,18 +122,18 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const addNotification = async (message: string, title: string | undefined) => {
 
-    await firestore().collection('users').doc(assigenId).collection('notifications').add({
-      message,
-      read: false,
-      task: title,
-      taskId: id,
-      status: taskStatus,
-      creationDate: new Date(route.params.creationDate.seconds * 1000),
-      creationDateNotification: new Date(),
-      title,
-      description,
-      assignTo: userName,
-      duration
+      await firestore().collection('users').doc('D7WNpRZb6d1j0WjuDtEJ').collection('notifications').add({
+        message,
+        read: false,
+        task: title,
+        taskId: id,
+        status: taskStatus,
+        creationDate: new Date(route.params.creationDate.seconds * 1000),
+        creationDateNotification: new Date(),
+        title,
+        description,
+        assignTo: userName,
+        duration
     }).then(res => {
       dispatch(getNotifications(user.id))
     }).catch(err => {
@@ -144,20 +146,20 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
    
     // const title = title
 
-    PushNotification.localNotification({
-      channelId: "update-status",
-      title: "Update Status",
-      status: taskStatus,
-      message: message,
-      task: title,
-      vibrate: true, // (optional) default: true
-      vibration: 300,
-      screen: 'TaskDetails',
-      duration,
-      assignTo: userName,
-      description,
-      creationDate: new Date(route.params.creationDate.seconds * 1000)
-    });
+    // PushNotification.localNotification({
+    //   channelId: "update-status",
+    //   title: "Update Status",
+    //   status: taskStatus,
+    //   message: message,
+    //   task: title,
+    //   vibrate: true, // (optional) default: true
+    //   vibration: 300,
+    //   screen: 'TaskDetails',
+    //   duration,
+    //   assignTo: userName,
+    //   description,
+    //   creationDate: new Date(route.params.creationDate.seconds * 1000)
+    // });
 
     // PushNotification.popInitialNotification((notification) => {
     //   console.log('Initial Notification', notification);
@@ -310,12 +312,19 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         <MapView
           style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
             initialRegion={{
-              latitude: 37.78825,
-              longitude: -122.4324,
+              latitude: 3.157250, 
+              longitude: 101.732385,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
-        />
+        >
+          {/* <Marker
+            coordinate={{ latitude, longitude }}
+            pinColor={"red"}
+            title={"title"}
+            description={"description"}
+          /> */}
+        </MapView>
 
           {status === 'loading' ? (
             <View />

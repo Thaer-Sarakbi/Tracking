@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { notificationsState } from '../types/types';
@@ -7,21 +7,47 @@ import { getNotifications, updateNotifications } from '../redux/notificationsSli
 import HeaderDetails from '../components/HeaderDetails';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
+import firestore from '@react-native-firebase/firestore'
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
-  const notifications = useSelector((state: notificationsState) => state.notifications.data)
+  // const notifications = useSelector((state: notificationsState) => state.notifications.data)
   const status = useSelector((state: notificationsState) => state.notifications.status)
   const user = useSelector((state: notificationsState) => state.auth.user)
+
+  const [notifications, setNotifications] = useState([])
+  console.log(notifications)
   
   const dispatch = useDispatch<AppDispatch>()
 
+  // useEffect(() => {
+  //   dispatch(getNotifications(user.id))
+  // },[])
+
   useEffect(() => {
-    dispatch(getNotifications(user.id))
+    const unsubscribe = firestore()
+      .collection('users')
+      .doc(user.id)
+      .collection('notifications')
+      .orderBy('creationDateNotification', "desc")
+      .onSnapshot(snapshot => {
+        // res.docs.forEach(snapshot => {
+        //   // snapshot.data().id = snapshot.id
+        //   console.log(snapshot.data())
+        //   // notificationsList.push(snapshot.data() as any) 
+  
+        // })
+    
+        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setNotifications(newData);
+      })
+
+    // Unsubscribe when component unmounts
+    return () => unsubscribe();
   },[])
 
-  if(status === 'loading'){
+  if(notifications.length === 0){
     return <View/>
-  } else if(status === 'succeeded'){
+  } else {
     return (
         <View>
             <HeaderDetails navigation={navigation}/>
@@ -34,7 +60,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                           navigation.navigate('TaskDetails', {
                             taskId: item.item.taskId,
                             userId: user.id,
-                            userName: user.name,
+                            userName: item.item.assignTo,
                             status: item.item.status,
                             creationDate: item.item.creationDate,
                             duration: item.item.duration,

@@ -16,7 +16,7 @@
       android:theme="@style/AppTheme">
         <meta-data
           android:name="com.google.android.geo.API_KEY"
-          android:value=""
+          android:value="AIzaSyBOXwD0WWwAOCfvZT0yhU1VCIGiCtzs_7g"
         />
               <!-- Change the value to true to enable pop-up for in foreground on receiving remote notifications (for prevent duplicating while showing local notifications set this to false) -->
         <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"
