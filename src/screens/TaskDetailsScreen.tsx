@@ -24,6 +24,7 @@ import moment from 'moment';
 import messaging from '@react-native-firebase/messaging';
 import NotificationService from '../services/NotificationService';
 import usePushNotification from '../hooks/usePushNotification';
+import Geolocation from '@react-native-community/geolocation';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -52,6 +53,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [taskStatus, setTaskStatus] = useState<string>(route.params.status)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
+  const [latitude, setLatitude] = useState<string>(route.params.latitude)
+  const [longitude, setLongitude] = useState<boolean>(route.params.longitude)
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
@@ -78,14 +81,12 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
-  const latitude = route.params.latitude
-  const longitude = route.params.longitude
-  console.log(userName)
+  console.log(latitude)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
     // .then(documentSnapshot => { 
-    //   if (documentSnapshot.exists) {
+    //   if (documentSnapshot.exists) { 
     //     setTask(documentSnapshot.data())
     //   }
     // });
@@ -184,6 +185,27 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
     await NotificationService.sendSingleDeviceNotification(notificationData);
     addNotification(message, title)
+  }
+
+  const onUpdateTask = () => {
+    Geolocation.getCurrentPosition(info => {
+      dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name, latitude: info.coords.latitude, longitude: info.coords.longitude }))
+      setLatitude(info.coords.latitude)
+      setLongitude(info.coords.longitude)
+    }, (err) => {
+      // //console.log(err.code, err.message);
+      //   setEnable(false)
+      //   RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+      //     interval: 10000,
+      //     fastInterval: 5000,
+      //   })
+      //     .then((data) => {
+      //       setEnable(true)
+      //     })
+      //     .catch((err) => {
+      //       setEnable(true)
+      //     });
+    }); 
   }
 
   const changeModalVisible = (bool: boolean) => {
@@ -318,12 +340,15 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
               longitudeDelta: 0.0421,
             }}
         >
-          {/* <Marker
-            coordinate={{ latitude, longitude }}
+          <Marker
+            coordinate={{
+              longitude: longitude ? Number(longitude) : 0,
+              latitude: latitude ? Number(latitude) : 0
+            }}
             pinColor={"red"}
-            title={"title"}
-            description={"description"}
-          /> */}
+            title={title}
+            description={description}
+          />
         </MapView>
 
           {status === 'loading' ? (
@@ -382,7 +407,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name }))
+            // dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name }))
+            onUpdateTask()
             dispatch(getTasks({id: user.id, admin: user.admin}))
             dispatch(getHistory({taskId: id, userId: user.id}))
             setShowAlert(false)

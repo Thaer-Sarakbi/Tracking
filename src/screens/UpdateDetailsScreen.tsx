@@ -8,6 +8,9 @@ import ImageView from "react-native-image-viewing";
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
+import storage from '@react-native-firebase/storage'
+import auth from '@react-native-firebase/auth';
+import { useSelector } from 'react-redux';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -24,19 +27,32 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [isVisible, setIsVisible] = useState(false)
   const [index, setIndex] = useState(0)
 
-  // const navigation = route.params.navigation
+  const user = useSelector((state: notificationsState) => state.auth.user)
 
+     
   const images = route.params.update.images?.map((image: string) => {
-    return(
-        `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`
+    console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`)
+    if(image.path.includes('react-native-image-crop-picker')){
+     
+      return( 
+        `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=${user.deviceToken}`
+      )
+    } else {
+      // console.log(image.path.slice(64))
+      return( 
+        `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`
     )
+    } 
+    // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`)
+   
   })
-
+ 
   const images2 = route.params.update.images?.map((image : string) => {
+    // console.log(image.path)
     return(
         { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
     )
-  })
+  }) 
 
   if(route){
     return (

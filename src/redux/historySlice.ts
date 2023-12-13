@@ -12,7 +12,7 @@ export const getHistory = createAsyncThunk("history/getHistory", async (user:{ta
     let usersDataWithHistory = []
   
     for(const userDoc of usersQuerySnapshot.docs){
-      const userHistoryCollection = userDoc.ref.collection('tasks').doc(user.taskId).collection('history')
+      const userHistoryCollection = userDoc.ref.collection('tasks').doc(user.taskId).collection('history').orderBy('updateDate', "desc")
 
       const historyQuerySnapshot = await userHistoryCollection.get()
 

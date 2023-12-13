@@ -20,7 +20,8 @@ export const setUser = createAsyncThunk("auth/setUser",async(user: User) => {
           id: documentSnapshot.id,
           email: documentSnapshot.data().email,
           name: documentSnapshot.data().name,
-          admin: documentSnapshot.data().admin
+          admin: documentSnapshot.data().admin,
+          deviceToken: documentSnapshot.data().deviceToken
         }
       }
     });
