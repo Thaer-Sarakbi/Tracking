@@ -1,6 +1,6 @@
 {
   "name": "Tracking",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -11,6 +11,7 @@
     "postinstall": "npx typesync"
   },
   "dependencies": {
+    "@bam.tech/react-native-image-resizer": "^3.0.7",
     "@notifee/react-native": "^7.8.0",
     "@react-native-community/geolocation": "^3.1.0",
     "@react-native-firebase/app": "^18.6.1",

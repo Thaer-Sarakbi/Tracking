@@ -31,26 +31,31 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
      
   const images = route.params.update.images?.map((image: string) => {
-    console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`)
-    if(image.path.includes('react-native-image-crop-picker')){
-     
-      return( 
-        `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=${user.deviceToken}`
-      )
-    } else {
-      // console.log(image.path.slice(64))
-      return( 
-        `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`
+    console.log(image)
+    // console.log(image.slice(39))  
+    // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=${user.deviceToken}`)
+    // if(image.includes('react-native-image-crop-picker')){
+      
+    //   return(  
+    //     `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.slice(70)}?alt=media&token=${user.deviceToken}`
+    //   )
+    // } else {
+    //   // console.log(image.path.slice(64))
+    //   return( 
+    //     `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.slice(37)}?alt=media&token=${user.deviceToken}`
+    // )
+    // } 
+    return( 
+      `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=${user.deviceToken}`
     )
-    } 
     // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`)
    
   })
- 
+  
   const images2 = route.params.update.images?.map((image : string) => {
     // console.log(image.path)
     return(
-        { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(70)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
+        { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
     )
   }) 
 

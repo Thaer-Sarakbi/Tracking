@@ -64,13 +64,16 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const user = useSelector((state: TasksState) => state.auth.user)
   
   const editUpadtes = updates.map(update => {
-    const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do YY')
+    const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
+    console.log()
     return{
       ...update,
-      time
+      time,
+      date: update.time.seconds
     }
   })
 
+  editUpadtes.sort((a, b) => b.date - a.date )
   const dispatch = useDispatch<AppDispatch>()
 
   const id = route.params.taskId

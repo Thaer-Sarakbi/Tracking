@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Platform } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
+import ImageResizer from '@bam.tech/react-native-image-resizer';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,
@@ -21,9 +22,10 @@ interface Props {
 }
 
 const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId, admin, updaterName } : Props) => {
-    const [images, setImages] = useState<string[]>()
+    const [images, setImages] = useState<string[]>([])
     const [transferred, setTransferred] = useState(0);
     const users = useSelector((state: MyState) => state.users.data)
+    console.log(images)
 
     const {
       control,
@@ -64,7 +66,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
     })
 
     uploadImage()
-  }
+  } 
 
   const chooseFromGallery = () => {
     ImagePicker.openPicker({
@@ -72,25 +74,47 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
       height: 300,
       multiple: true
     }).then(images => {
-      setImages(images)
+      // setImages(images)
+      {images.map((image) => (
+        compressAndResizeImage(image)
+      ))}
     }).catch((error) => {
       console.log(error)
     })
   }
 
+
+const compressAndResizeImage = async (originalUri) => {
+
+  try {
+    const resizedImage = await ImageResizer.createResizedImage(
+      originalUri.path,
+      800, // New width
+      600, // New height
+      'JPEG', // Compression format
+      80, // Compression quality (0-100)
+      0, // Rotation angle (0, 90, 180, 270)
+    );
+
+    setImages(oldArray => [...oldArray, resizedImage.uri]);
+  } catch (error) {
+    console.error('Error compressing image:', error);
+  }
+};
+
   const renderMultiImages = images?.map((image, i) => {
     return(
-        <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image.path }}/> 
+        <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image }}/> 
     )
   })
 
   const uploadImage = async () => {
     {
         images?.map(async(image) => {
-            const { path } = image;
-            const filename = path.substring(path.lastIndexOf('/') + 1);
+            // const { path } = image;
+            const filename = image.substring(image.lastIndexOf('/') + 1);
             // console.log(filename)
-            const uploadUri = Platform.OS === 'ios' ? path.replace('file://', '') : path;
+            const uploadUri = Platform.OS === 'ios' ? image.replace('file://', '') : image;
             // console.log(uploadUri)
             // setUploading(true);
             setTransferred(0);
