@@ -27,9 +27,10 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
   const onSubmit = async() => {
     const { email, password } = watch()
 
-    
     await auth().signInWithEmailAndPassword(email, password).then((res) => {
       console.log(res)
+    }).catch((e) => {
+      console.log(e)
     })
   }
 

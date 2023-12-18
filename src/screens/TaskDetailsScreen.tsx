@@ -14,10 +14,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getHistory } from '../redux/historySlice';
 import { ScrollView } from 'react-native-virtualized-view'
-import PushNotification from 'react-native-push-notification';
 import { getNotifications } from '../redux/notificationsSlice';
 import Timeline from 'react-native-timeline-flatlist';
-import { getUpdates } from '../redux/updatesSlice';
 import UpdateModal from '../components/UpdateModal';
 import MapView, {Marker} from "react-native-maps";
 import moment from 'moment';
@@ -56,16 +54,18 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [latitude, setLatitude] = useState<string>(route.params.latitude)
   const [longitude, setLongitude] = useState<boolean>(route.params.longitude)
 
+  const [updates, setUpdates] = useState([])
+  // console.log(updates)
+
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
 
-  const updates = useSelector((state: updatesState) => state.updates?.data)
+  // const updates = useSelector((state: updatesState) => state.updates?.data)
   const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
   const user = useSelector((state: TasksState) => state.auth.user)
   
   const editUpadtes = updates.map(update => {
     const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
-    console.log()
     return{
       ...update,
       time,
@@ -76,6 +76,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   editUpadtes.sort((a, b) => b.date - a.date )
   const dispatch = useDispatch<AppDispatch>()
 
+  // console.log(moment().diff(moment('2023-12-11'), 'days'))
+
   const id = route.params.taskId
   const userName = route.params.userName
   const title = route.params?.title
@@ -84,7 +86,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
-  console.log(latitude)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -98,7 +99,22 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
     })
 
-    dispatch(getUpdates({taskId: id, userId: user.id, admin: user.admin}))
+    // dispatch(getUpdates({taskId: id, userId: assigenId, admin: user.admin}))
+
+    const unsubscribe =  firestore()
+    .collection('users')
+    .doc(assigenId)
+    .collection('tasks')
+    .doc(id)
+    .collection('updates')
+    .orderBy('time', "desc")
+    .onSnapshot(snapshot => {
+      const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setUpdates(newData);
+    })
+
+  // Unsubscribe when component unmounts
+  return () => unsubscribe();
   },[isModalVisible])
 
   useEffect(() => {
@@ -288,48 +304,48 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
         <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
           <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Updates</Text>
-          {
-            statusUpdates === 'loading' ? (
-              <View/>
+          {updates.length === 0 ?
+           (
+             <View />
             ) : (
               <>
-                <Timeline
-                  onEventPress={(update) => navigation.navigate('UpdateDetails', { update })}
-                  data={editUpadtes}
-                  circleSize={20}
-                  circleColor='rgb(45,156,219)'
-                  lineColor='rgb(45,156,219)'
-                  separator={true}
-                  timeContainerStyle={{minWidth:52, marginTop: 10 }}
-                  timeStyle={{textAlign: 'center', backgroundColor:'#ff9797', color:'white', padding:5, borderRadius:13}}
-                  descriptionStyle={{color:'gray'}}
-                  options={{
-                    style:{paddingTop:5}
-                  }}
-                  isUsingFlatlist={true}
+              <Timeline
+                onEventPress={(update) => navigation.navigate('UpdateDetails', { update, taskId: id, assigenId, deviceToken })}
+                data={editUpadtes}
+                circleSize={20}
+                circleColor='rgba(0, 0, 0, 0)'
+                lineColor='rgb(45,156,219)'
+                separator={true}
+                timeContainerStyle={{minWidth:52, marginTop: 10, backgroundColor: 'blue' }}
+                timeStyle={{textAlign: 'center', backgroundColor:'green', color:'white', padding:5, borderRadius:13}}
+                descriptionStyle={{color:'gray'}}
+                options={{
+                  style:{paddingTop:5}
+                }}
+                isUsingFlatlist={true}
+              />
+
+              <TouchableOpacity style={styles.updateButton} onPress={() => onAddUpdate(true)}>
+                <Text style={{ fontSize: 20, color: 'white' }}>Add Update</Text>
+              </TouchableOpacity>
+
+              <Modal
+                transparent= {true}
+                animationType= 'fade'
+                visible= {updateModalVisible}
+                onRequestClose={() => onAddUpdate(false)}
+              >
+                <UpdateModal 
+                  changeModalVisible= {onAddUpdate}
+                  isModalVisible={updateModalVisible}
+                  id={id}
+                  userId={user.id}
+                  assigenId={assigenId}
+                  admin={user.admin}
+                  updaterName= {user.name}
                 />
-
-                <TouchableOpacity style={styles.updateButton} onPress={() => onAddUpdate(true)}>
-                  <Text style={{ fontSize: 20, color: 'white' }}>Add Update</Text>
-                </TouchableOpacity>
-
-                <Modal
-                  transparent= {true}
-                  animationType= 'fade'
-                  visible= {updateModalVisible}
-                  onRequestClose={() => onAddUpdate(false)}
-                >
-                  <UpdateModal 
-                    changeModalVisible= {onAddUpdate}
-                    isModalVisible={updateModalVisible}
-                    id={id}
-                    userId={user.id}
-                    assigenId={assigenId}
-                    admin={user.admin}
-                    updaterName= {user.name}
-                  />
-                </Modal>
-              </>
+              </Modal>
+            </>
             )
           }
         </View>

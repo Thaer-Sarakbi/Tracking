@@ -5,41 +5,52 @@ import { Updates } from '../types/types';
 export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{taskId: string, userId: string, admin:boolean}) => {
     let updatesList: Array<Updates> = []
 
-    if(user.admin){
-      const usersCollection = await firestore().collection('users')
+    // if(user.admin){
+    //   const usersCollection = await firestore().collection('users')
   
-      const usersQuerySnapshot = await usersCollection.get()
-      let usersDataWithTasks = []
+    //   const usersQuerySnapshot = await usersCollection.get()
+    //   let usersDataWithTasks = []
     
-      for(const userDoc of usersQuerySnapshot.docs){
-        const userUpdatesCollection = userDoc.ref.collection('tasks').doc(user.taskId).collection('updates')
+    //   for(const userDoc of usersQuerySnapshot.docs){
+    //     const userUpdatesCollection = userDoc.ref.collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc")
     
-        const updatesQuerySnapshot = await userUpdatesCollection.get()
+    //     const updatesQuerySnapshot = await userUpdatesCollection.get()
     
-        const updatesData = updatesQuerySnapshot.docs.map((updateDoc) => ({
-          id: updateDoc.id,
-          ...updateDoc.data()
-        }))
+    //     const updatesData = updatesQuerySnapshot.docs.map((updateDoc) => ({
+    //       id: updateDoc.id,
+    //       ...updateDoc.data()
+    //     }))
     
-        if(updatesData[0]){
-          usersDataWithTasks.push(
-            // id: userDoc.id,
-            // userData: userDoc.data(),
-            ...updatesData
-          )
-        }
-        updatesList = usersDataWithTasks
-      }
-    } else {
-      await firestore().collection('users').doc(user.userId).collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc").get()
+    //     if(updatesData[0]){
+    //       usersDataWithTasks.push(
+    //         // id: userDoc.id,
+    //         // userData: userDoc.data(),
+    //         ...updatesData
+    //       )
+    //     }
+    //     updatesList = usersDataWithTasks
+    //   }
+    // } else {
+    //   await firestore().collection('users').doc(user.userId).collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc").get()
+    //   .then(querySnapshot => { 
+    //     console.log(querySnapshot.docs)
+    //     querySnapshot.docs.forEach(documentSnapshot => {
+    //         updatesList.push(documentSnapshot.data() as any) 
+    //     });
+    //   }).catch((error) => {
+    //     console.log(error)
+    //   });
+    // }
+
+    await firestore().collection('users').doc(user.userId).collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc").get()
       .then(querySnapshot => { 
+        console.log(querySnapshot.docs)
         querySnapshot.docs.forEach(documentSnapshot => {
             updatesList.push(documentSnapshot.data() as any) 
         });
       }).catch((error) => {
         console.log(error)
       });
-    }
 
     return updatesList
 })

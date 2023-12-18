@@ -66,6 +66,7 @@ const AppContainer = () => {
         console.log(e)
       });
     }
+    
     if(user){
       refreshToken()
        return(

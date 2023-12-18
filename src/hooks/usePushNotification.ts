@@ -81,20 +81,20 @@ const usePushNotification = () => {
 
   const DisplayNotification = async(remoteMessage) => {
     // Create a channel
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
+    // const channelId = await notifee.createChannel({
+    //   id: 'default',
+    //   name: 'Default Channel',
+    // });
 
-    // Display a notification
-    await notifee.displayNotification({
-      title: 'dd',
-      body: 'dddddddddddddddd',
-      android: {
-        channelId,
-        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
-      },
-    });
+    // // Display a notification
+    // await notifee.displayNotification({
+    //   title: 'dd',
+    //   body: 'dddddddddddddddd',
+    //   android: {
+    //     channelId,
+    //     smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+    //   },
+    // });
   }
 
   // const localDisplayNotification =async () => {

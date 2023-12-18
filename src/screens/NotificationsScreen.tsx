@@ -15,7 +15,6 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
   const user = useSelector((state: notificationsState) => state.auth.user)
 
   const [notifications, setNotifications] = useState([])
-  console.log(notifications)
   
   const dispatch = useDispatch<AppDispatch>()
 
