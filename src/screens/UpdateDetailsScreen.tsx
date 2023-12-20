@@ -35,9 +35,9 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
   const user = useSelector((state: notificationsState) => state.auth.user)
 
-  const taskId = route.params.taskId
+  const taskId = route.params.taskId ? route.params.taskId : route.params.update.taskId
   const updateId = route.params.update.id
-  const assigenId = route.params.assigenId
+  const assigenId = route.params.assigenId ? route.params.assigenId : route.params.update.assigenId
   const deviceToken = route.params.deviceToken
 
   console.log(taskId, updateId, assigenId, deviceToken)

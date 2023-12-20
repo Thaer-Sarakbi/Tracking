@@ -8,11 +8,13 @@ import Header from "../components/Header"
 import HeaderDetails from "../components/HeaderDetails"
 import { Updates } from "../types/types"
 import TasksListScreen from "../screens/TasksListScreen"
+import BottomNavigator from "./BottomNavigator"
+import UpdatesListScreen from "../screens/UpdatesListScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
 export type RootStackParamsList = {
-    TopTabs: undefined,
+    BottomNavigator: undefined,
     TasksList: undefined
     TaskDetails: {
       taskId: string,
@@ -33,8 +35,8 @@ const AppStack = () => {
   return(
     <Stack.Navigator>
         <Stack.Screen
-          name="TopTabs"
-          component={TopTabs}
+          name="BottomNavigator"
+          component={BottomNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -65,6 +67,11 @@ const AppStack = () => {
         <Stack.Screen
           name="UpdateDetails"
           component={UpdateDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdatesList"
+          component={UpdatesListScreen}
           options={{ headerShown: false }}
         />
     </Stack.Navigator>

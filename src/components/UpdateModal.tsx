@@ -25,7 +25,6 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
     const [images, setImages] = useState<string[]>([])
     const [transferred, setTransferred] = useState(0);
     const users = useSelector((state: MyState) => state.users.data)
-    console.log(images)
 
     const {
       control,
@@ -56,7 +55,9 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
       description, 
       images: images ? images : null,
       time: new Date(),
-      updatedBy: updaterName
+      updatedBy: updaterName,
+      taskId: id,
+      assigenId
     }).then(res => {
       changeModalVisible(false)
       dispatch(getUpdates({taskId: id, userId, admin}))

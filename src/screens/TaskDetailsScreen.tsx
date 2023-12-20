@@ -310,14 +310,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             ) : (
               <>
               <Timeline
-                onEventPress={(update) => navigation.navigate('UpdateDetails', { update, taskId: id, assigenId, deviceToken })}
+                onEventPress={(update) => navigation.navigate('UpdateDetails', { update })}
                 data={editUpadtes}
                 circleSize={20}
-                circleColor='rgba(0, 0, 0, 0)'
+                circleColor='rgb(45,156,219)'
                 lineColor='rgb(45,156,219)'
                 separator={true}
-                timeContainerStyle={{minWidth:52, marginTop: 10, backgroundColor: 'blue' }}
-                timeStyle={{textAlign: 'center', backgroundColor:'green', color:'white', padding:5, borderRadius:13}}
+                timeContainerStyle={{minWidth:52, marginTop: 10 }}
+                timeStyle={{textAlign: 'center', backgroundColor:'#ff9797', color:'white', padding:5, borderRadius:13}}
                 descriptionStyle={{color:'gray'}}
                 options={{
                   style:{paddingTop:5}
