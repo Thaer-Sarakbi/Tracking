@@ -25,6 +25,8 @@ export const setUser = createAsyncThunk("auth/setUser",async(user: User) => {
         }
       }
     });
+  }).catch((e) => {
+    console.log(e)
   })
 
   return userData
@@ -33,7 +35,7 @@ export const setUser = createAsyncThunk("auth/setUser",async(user: User) => {
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+    user: {},
     status: ''
   } as MyState,
   reducers: {

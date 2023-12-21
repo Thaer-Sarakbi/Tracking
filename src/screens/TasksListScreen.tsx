@@ -10,15 +10,16 @@ import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
 import firestore from '@react-native-firebase/firestore'
+import { getUsers } from '../redux/usersSlice';
  
-const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
+const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   // const tasks = useSelector((state: TasksState) => state.tasks.data)
   const status = useSelector((state: TasksState) => state.tasks.status)
-  const user = useSelector((state: TasksState) => state.auth.user)
+  // const user = route.user  
   const users = useSelector((state: MyState) => state.users.data)
+  // console.log(tasks)
 
-  const [tasks, setTasks] = useState([])
-  console.log(tasks)
+  // const [tasks, setTasks] = useState([])
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -55,31 +56,27 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
           ...tasksData
         )
       }
+
       setTasks(usersDataWithTasks)
     }
   }
 
   useEffect(() => {
-    if(user.admin){
-      adminData()
-    } else {
-      firestore()
-      .collection('users')
-      .doc(user.id)
-      .collection('tasks')
-      .orderBy('creationDate', "desc")
-      .onSnapshot(snapshot => {
-        // res.docs.forEach(snapshot => {
-        //   // snapshot.data().id = snapshot.id
-        //   console.log(snapshot.data())
-        //   // notificationsList.push(snapshot.data() as any) 
-  
-        // })
+    // console.log(user)
+  //   if(user?.admin){
+  //     adminData()
+  //   } else {
+  //     firestore()
+  //     .collection('users')
+  //     .doc(user?.id)
+  //     .collection('tasks')
+  //     .orderBy('creationDate', "desc")
+  //     .onSnapshot(snapshot => {
     
-        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setTasks(newData);
-      })
-  }
+  //       const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  //       setTasks(newData);
+  //     })
+  // }
    
 
   //   if(user.admin){
@@ -125,7 +122,7 @@ const TasksListScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 
 
 
     createChannels()
-  },[])
+  },[user])
 
   const createChannels = () => {
     PushNotification.createChannel(

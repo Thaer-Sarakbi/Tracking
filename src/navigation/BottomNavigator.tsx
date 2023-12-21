@@ -32,6 +32,17 @@ const BottomNavigator = () => {
         }}
         component={CalendarScreen} 
       />
+      <Tab.Screen 
+        name="Profile" 
+        options={{ 
+            headerShown: false, 
+            tabBarLabelStyle: { display: 'none'},
+            tabBarIcon: ({ focused, color, size }) => (
+               <Icon name="person-outline" size={30} color={focused ? "#4F8EF7" : "#919191"} />
+            )
+        }}
+        component={ProfileScreen} 
+      />
     </Tab.Navigator>
   );
 }

@@ -42,7 +42,7 @@ const Header = ({ navigation } : Props) => {
   useEffect(() => {
     const unsubscribe = firestore()
       .collection('users')
-      .doc(user.id)
+      .doc(user?.id)
       .collection('notifications')
       .orderBy('creationDateNotification', "desc")
       .onSnapshot(snapshot => {

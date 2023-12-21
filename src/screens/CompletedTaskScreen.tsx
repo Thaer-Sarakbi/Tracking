@@ -21,12 +21,12 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
 
   const onRefresh = () => {
     setIsFetching(true)
-    dispatch(getTasks({id: user.id, admin: user.admin}))
+    dispatch(getTasks({id: user?.id, admin: user?.admin}))
     setIsFetching(false)
   }
 
   useEffect(() => {
-    dispatch(getTasks({id: user.id, admin: user.admin}))
+    dispatch(getTasks({id: user?.id, admin: user?.admin}))
 
     createChannels()
   },[])

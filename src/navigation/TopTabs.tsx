@@ -13,6 +13,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import CompletedTaskScreen from '../screens/CompletedTaskScreen';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
+import firestore from '@react-native-firebase/firestore'
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -23,8 +24,10 @@ interface MyState {
 export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const tasks = useSelector((state: MyState) => state.tasks?.data)
+  // const tasks = useSelector((state: MyState) => state.tasks?.data)
   const user = useSelector((state: TasksState) => state.auth.user)
+
+  const [tasks, setTasks] = useState([])
 
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
@@ -32,9 +35,54 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   const dispatch = useDispatch<AppDispatch>()
 
+  const adminData = async() => {
+    let tasksList: Array<Task> = []
+
+    const usersCollection = await firestore().collection('users')
+
+    const usersQuerySnapshot = await usersCollection.get()
+    let usersDataWithTasks = []
+  
+    for(const userDoc of usersQuerySnapshot.docs){
+      const userTasksCollection = userDoc.ref.collection('tasks')
+  
+      const tasksQuerySnapshot = await userTasksCollection.get()
+  
+      const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
+        id: taskDoc.id,
+        ...taskDoc.data()
+      }))
+  
+      if(tasksData[0]){
+        usersDataWithTasks.push(
+          // id: userDoc.id,
+          // userData: userDoc.data(),
+          ...tasksData
+        )
+      }
+
+      setTasks(usersDataWithTasks)
+    }
+  }
+
   useEffect(() => {
+    if(user?.admin){
+      adminData()
+    } else {
+      firestore()
+      .collection('users')
+      .doc(user?.id)
+      .collection('tasks')
+      .orderBy('creationDate', "desc")
+      .onSnapshot(snapshot => {
+    
+        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setTasks(newData);
+      })
+  }
     dispatch(getUsers())
-  },[])
+  },[user])
+
   return (
     <>
       <Header navigation={navigation}/>
@@ -49,11 +97,10 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
       >
         <Tab.Screen 
           name="Open" 
-          component={TasksListScreen} 
+          children={() => <TasksListScreen navigation={navigation} user={user} tasks={tasks} />} 
           options={{
             tabBarBadge:()=> { return (  
               <View style={{ position: 'relative', top: 14, left: -60 }}>
-                {/* <Text>({tasks.length})</Text> */}
                 <Text>({
                   tasks?.filter(task => {
                     if(task?.status !== 'Completed'){
@@ -69,7 +116,7 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
           component={CompletedTaskScreen} 
         />
       </Tab.Navigator>
-      {user.admin && (<TouchableOpacity onPress={() => changeModalVisible(true)} style={{ backgroundColor: Colors.main, position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}>
+      {user?.admin && (<TouchableOpacity onPress={() => changeModalVisible(true)} style={{ backgroundColor: Colors.main, position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}>
         <Icon name="add-outline" size={35} color={'white'} />
       </TouchableOpacity>)}
       <Modal 

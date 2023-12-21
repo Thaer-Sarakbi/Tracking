@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AuthStack from './navigation/AuthStack';
 import AppStack from './navigation/AppStack';
@@ -24,15 +24,16 @@ const AppContainer = () => {
     onNotificationOpenedAppFromQuit,
   } = usePushNotification();
 
-    const user = useSelector((state: AppContainerState) => state.auth.user)
-    console.log('user', JSON.stringify(user))
+  // const user = useSelector((state: TasksState) => state.auth.user)
+  const [currentUser, setCurrentUser] = useState<any | null>(null)
+  // console.log(user)
 
     const dispatch = useDispatch<AppDispatch>()
    
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
-            // console.log(u)
             dispatch(setUser(u))
+            setCurrentUser(u)
         })
 
         const listenToNotifications = () => {
@@ -54,20 +55,20 @@ const AppContainer = () => {
     const refreshToken = async() => {
       const token = await messaging().getToken()
 
-    await firestore()
-      .collection('users')
-      .doc(user.id)
-      .update({
-        deviceToken: token
-      })
-      .then(() => {
-        console.log('updated')
-      }).catch((e) => {
-        console.log(e)
-      });
+    // await firestore()
+    //   .collection('users')
+    //   .doc(user.id)
+    //   .update({
+    //     deviceToken: token
+    //   })
+    //   .then(() => {
+    //     console.log('updated')
+    //   }).catch((e) => {
+    //     console.log(e)
+    //   });
     }
     
-    if(user){
+    if(currentUser){
       refreshToken()
        return(
          <AppStack/>

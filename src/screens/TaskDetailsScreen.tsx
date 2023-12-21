@@ -310,7 +310,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             ) : (
               <>
               <Timeline
-                onEventPress={(update) => navigation.navigate('UpdateDetails', { update })}
+                onEventPress={(update) => navigation.navigate('UpdateDetails', { update, taskId: id, assigenId })}
                 data={editUpadtes}
                 circleSize={20}
                 circleColor='rgb(45,156,219)'
