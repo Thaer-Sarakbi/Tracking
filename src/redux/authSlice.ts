@@ -7,14 +7,12 @@ interface MyState {
   status: string
 }
 
-export const setUser = createAsyncThunk("auth/setUser",async(user: User) => {
+export const setUser = createAsyncThunk("auth/setUser",async(user: User | any) => {
   let userData
 
   await firestore().collection('users').get()
   .then(querySnapshot => { 
     querySnapshot.docs.forEach(documentSnapshot => {
-      // documentSnapshot.data().id = documentSnapshot.id
-      // usersList.push(documentSnapshot.data().name as any) 
       if(user.email === documentSnapshot.data().email){
         userData = {
           id: documentSnapshot.id,

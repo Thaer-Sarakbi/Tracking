@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:666492179787:android:ce07da10604c25b5c804ce",
+        "android_client_info": {
+          "package_name": "com.ark.tracking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDz_lsv_lkvXGE16zu9HHguGzlLNI5t09U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:666492179787:android:7aa33780459d1dedc804ce",
         "android_client_info": {
           "package_name": "com.tracking"

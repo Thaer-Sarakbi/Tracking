@@ -1,4 +1,4 @@
-package com.tracking;
+package com.ark.tracking;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
