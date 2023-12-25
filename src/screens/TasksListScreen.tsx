@@ -10,7 +10,7 @@ import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
 import firestore from '@react-native-firebase/firestore'
-import { getUsers } from '../redux/usersSlice';
+import LottieView from "lottie-react-native";
  
 const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
   // const tasks = useSelector((state: TasksState) => state.tasks.data)
@@ -136,9 +136,9 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
 
   if(status === 'loading'){
     return (
-      <View style={{ flex: 1 , justifyContent: 'center', alignItems: 'center'}}>
-        <AnimatedLottieView source={require('../assets/loading.json')} autoPlay loop />
-      </View>
+      <>
+        <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />
+      </>
     )
   } else if(status === 'succeeded'){
     return (

@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import NotificationService from '../services/NotificationService';
 import PushNotification from 'react-native-push-notification';
 import { addNotification } from '../redux/notificationsSlice';
+import LottieView from 'lottie-react-native';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -34,7 +35,6 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [chat, setChat] = useState()
   const [comment, setComment] = useState('')
 
-  console.log(route)
   const user = useSelector((state: notificationsState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
@@ -287,8 +287,8 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
            {chat && (<Text style={{ color: Colors.titles, fontSize: 25, margin: 10 }}>Comments:</Text>)}
            {
-            chat?.map(message => (
-              <View style={{ marginHorizontal: 10, borderRadius: 10, borderTopColor: 'black', marginVertical: 5, padding: 5, backgroundColor: 'white' }}>
+            chat?.map((message, index) => (
+              <View key={index} style={{ marginHorizontal: 10, borderRadius: 10, borderTopColor: 'black', marginVertical: 5, padding: 5, backgroundColor: 'white' }}>
                 <Text style={{ color: Colors.titles, fontSize: 20 }}>{message.commenter}</Text>
                 <Text style={{ color: Colors.texts, fontSize: 15 }}>{message.comment}</Text>
               </View>
@@ -315,7 +315,9 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
       );
   } else {
     return(
-        <View />
+      <>
+        <LottieView source={require("../assets/loading2.json")} style={{flex: 1}} autoPlay loop />
+      </>
     )
   }
 }

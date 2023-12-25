@@ -8,6 +8,7 @@ import HeaderDetails from '../components/HeaderDetails';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 import firestore from '@react-native-firebase/firestore'
+import LottieView from 'lottie-react-native';
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
   // const notifications = useSelector((state: notificationsState) => state.notifications.data)
@@ -46,7 +47,11 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
   },[])
 
   if(notifications.length === 0){
-    return <View/>
+    return(
+      <>
+        <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />
+      </>
+    )
   } else {
     return (
         <View>

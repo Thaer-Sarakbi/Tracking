@@ -23,6 +23,7 @@ import messaging from '@react-native-firebase/messaging';
 import NotificationService from '../services/NotificationService';
 import usePushNotification from '../hooks/usePushNotification';
 import Geolocation from '@react-native-community/geolocation';
+import LottieView from 'lottie-react-native';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -409,7 +410,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         </MapView>
 
           {status === 'loading' ? (
-            <View />
+            <>
+              <LottieView source={require("../assets/loading2.json")} style={{flex: 1}} autoPlay loop />
+            </>
           ) : (history.length === 0 ? (
             null) : (
               <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
