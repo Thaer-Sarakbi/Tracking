@@ -24,9 +24,7 @@ const AppContainer = () => {
     onNotificationOpenedAppFromQuit,
   } = usePushNotification();
 
-  // const user = useSelector((state: TasksState) => state.auth.user)
   const [currentUser, setCurrentUser] = useState<any | null>(null)
-  // console.log(user)
 
     const dispatch = useDispatch<AppDispatch>()
    

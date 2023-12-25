@@ -6,6 +6,7 @@ import { Colors } from '../assets/Colors';
 import { useSelector } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import { User } from '../types/types';
+import moment from 'moment';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -27,7 +28,7 @@ function ProfileScreen(): JSX.Element {
     const  feilds = [
       {title: 'Email', value: user?.email},
       {title: 'Mobile Number', value: user?.mobile},
-      {title: 'Password', value: user?.password}
+      {title: 'Password', value: '*******'}
     ]
 
     return (
@@ -38,7 +39,7 @@ function ProfileScreen(): JSX.Element {
               <MaterialCommunityIcons name="account-outline" color={'#BDBDBD'} size={60} />
             </View>
             <Text style = {{ color: '#fff', fontSize: 15, marginTop: 10 }}>{user?.name}</Text>
-            <Text style = {{ color: '#fff', fontSize: 15 }}>Joined in December 2023</Text>
+            <Text style = {{ color: '#fff', fontSize: 15 }}>Joined in {moment(user?.creationDate).format('MMMM YYYY')}</Text>
           </ImageBackground>
           
           <View style = {{ paddingHorizontal: 10, paddingTop: 10 }}>

@@ -14,7 +14,7 @@ const UpdatesListScreen = ({ route, navigation }) => {
         data={updatesList}
         renderItem={({item}) => {
             return(
-              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('UpdateDetails', { update: item })}>
+              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('UpdateDetails', item )}>
                 <Text style={{ color: Colors.titles, fontSize: 20 }}>{item.title}</Text>
                 <Text style={{ color: Colors.texts, fontSize: 15 }}>{moment(new Date(item.time.seconds * 1000)).format('h:mm a')}</Text>
               </TouchableOpacity>

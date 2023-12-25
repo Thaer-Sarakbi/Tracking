@@ -17,33 +17,32 @@ const CalendarScreen = ({ navigation }) => {
   const [updates, setUpdates] = useState([])
   const [selected, setSelected] = React.useState("");
   const [data,setData] = React.useState([]);
+  console.log(updates.length)
 
   const retreiveUpdates = async() =>{
 
     const usersCollection = await firestore().collection('users').doc(selected).collection('tasks')
 
     const usersQuerySnapshot = await usersCollection.get()
-    let usersDataWithTasks = []
+    let usersDataWithUpdates = []
   
     for(const userDoc of usersQuerySnapshot.docs){
-      const userTasksCollection = userDoc.ref.collection('updates')
+      const userUpdatesCollection = userDoc.ref.collection('updates')
   
-      const tasksQuerySnapshot = await userTasksCollection.get()
+      const updatesQuerySnapshot = await userUpdatesCollection.get()
   
-      const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
-        id: taskDoc.id,
-        ...taskDoc.data()
+      const updatesData = updatesQuerySnapshot.docs.map((updateDoc) => ({
+        updateId: updateDoc.id,
+        ...updateDoc.data()
       }))
   
-      if(tasksData[0]){
-        usersDataWithTasks.push(
-          // id: userDoc.id,
-          // userData: userDoc.data(),
-          ...tasksData
+      if(updatesData[0]){
+        usersDataWithUpdates.push(
+          ...updatesData
         )
       }
     }
-    setUpdates(usersDataWithTasks)
+    setUpdates(usersDataWithUpdates)
   }
 
 
@@ -54,7 +53,6 @@ const CalendarScreen = ({ navigation }) => {
     
     if(users){
         let newArray = users.map((item) => {
-            // console.log(item)
             return {key: item.id, value: item.value}
           })
           setData(newArray)
@@ -74,10 +72,8 @@ const CalendarScreen = ({ navigation }) => {
   let today = moment();
   let day = today.clone().startOf('month');   //first day of month
   let customDatesStyles = [];
-//   console.log(today.clone().endOf('month'))
   while(day.add(1, 'day').isSame(today, 'month')) {
    
-    // console.log(moment(updates[4]?.time.seconds * 1000), day.clone())
     if(filteredWorksDays.includes(moment(day.clone()).format('L'))){
         customDatesStyles.push({
             date: day.clone(),
@@ -100,14 +96,12 @@ const CalendarScreen = ({ navigation }) => {
 
 
   const filterUpdatesByDates = (date) => {
-    // console.log(date)
     const updatesList = updates.filter(update => {
         if(moment(new Date(update.time.seconds * 1000)).format('L') === moment(date).format('L')){
           return update
         }
       })
 
-    //   console.log(date)
       navigation.navigate('UpdatesList', {updatesList, date})
   }
 

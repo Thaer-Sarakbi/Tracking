@@ -14,6 +14,7 @@ import CompletedTaskScreen from '../screens/CompletedTaskScreen';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import firestore from '@react-native-firebase/firestore'
+import HeaderStack from './HeaderStack';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -73,7 +74,6 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
     .collection('notifications')
     .orderBy('creationDateNotification', "desc")
     .onSnapshot(snapshot => {
-      console.log(snapshot.docs)
       const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setNotifications(newData);
     })
@@ -98,6 +98,7 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
   return (
     <>
       <Header navigation={navigation} notifications={notifications}/>
+      {/* <HeaderStack /> */}
       <Tab.Navigator 
         screenOptions={{
           // tabBarActiveTintColor: Colors.main,

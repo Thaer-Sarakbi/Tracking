@@ -70,7 +70,6 @@ const Header = ({ navigation, notifications } : Props) => {
               {icon.name === 'notifications-outline' && (
                 <View style={{ width: 20, backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
                   <Text style={{ color: 'white' }}>{notifications.filter(notification => {
-                    console.log(notification)
                     if(notification.read === false){
                       return notification
                     }

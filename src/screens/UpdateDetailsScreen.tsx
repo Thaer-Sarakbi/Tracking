@@ -34,6 +34,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [chat, setChat] = useState()
   const [comment, setComment] = useState('')
 
+  console.log(route)
   const user = useSelector((state: notificationsState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
