@@ -34,19 +34,22 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
           email: "",
           password: "",
           confirmPassword: "",
-          name: ""
+          name: "",
+          mobile: ""
         },
     })
 
     const onSubmit = async () => {
-      const { email, password, name } = watch()
+      const { email, password, name, mobile } = watch()
 
       await auth().createUserWithEmailAndPassword(email, password).then((res) => {
         setMessage('User account created!');
         firestore().collection('users').add({
-          name: name,
-          email: email,
-          admin: false
+          name,
+          email,
+          admin: false,
+          mobile,
+          creationDate: new Date()
         }).then(() => {
           console.log('User Added')
         }).catch((e) => {
@@ -128,6 +131,33 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
           />
         </View>
         {errors.email && <Text style={{ color: 'red', fontSize: 15 }}>{errors.email?.message}</Text>}
+
+        <Text style={styles.text_footer}>Mobile</Text>
+        <View style={styles.action}>
+          <FontAwesome name='user-o' color='#05375a' size={20} />
+          <Controller
+            control={control}
+            rules={{
+              required: {
+                value: true,
+                message: 'Mobile is required'
+              }
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput 
+                placeholder='Your Mobile Phone' 
+                style={styles.textInput} 
+                autoCapitalize='none'  
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                keyboardType= 'numeric'
+              />
+            )}
+            name="mobile"
+          />
+        </View>
+        {errors.mobile && <Text style={{ color: 'red', fontSize: 15 }}>{errors.mobile?.message}</Text>}
 
         <Text style={[styles.text_footer,{marginTop: 35}]}>Password</Text>
         <View style={styles.action}>

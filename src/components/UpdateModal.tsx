@@ -11,6 +11,7 @@ import { Platform } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
+import { addNotification } from '../redux/notificationsSlice';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,
@@ -25,6 +26,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
     const [images, setImages] = useState<string[]>([])
     const [transferred, setTransferred] = useState(0);
     const users = useSelector((state: MyState) => state.users.data)
+    const user = useSelector((state: notificationsState) => state.auth.user)
 
     const {
       control,
@@ -59,6 +61,39 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
       taskId: id,
       assigenId
     }).then(res => {
+      if(user.admin){
+        dispatch(addNotification({notification:{
+          screen: 'UpdateDetails',
+          message: `${user.name} added a new Update`,
+          read: false,
+          taskId: id,
+          time: new Date(),
+          creationDateNotification: new Date(),
+          updateId: res.id,
+          images,
+          title,
+          description,
+          updatedBy: updaterName,
+          assigenId,
+          receiverId: assigenId
+      }}))
+      } else {
+        dispatch(addNotification({notification:{
+          screen: 'UpdateDetails',
+          message: `${user.name} added a new Update`,
+          read: false,
+          taskId: id,
+          time: new Date(),
+          creationDateNotification: new Date(),
+          updateId: res.id,
+          images,
+          title,
+          description,
+          updatedBy: updaterName,
+          assigenId,
+          receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
+      }}))
+      }
       changeModalVisible(false)
       dispatch(getUpdates({taskId: id, userId, admin}))
     }).catch(err => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
@@ -11,6 +11,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AuthStackParamsList } from '../navigation/AuthStack';
 
 const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) => {
+
+  const [backendError, setBackendError] = useState('')
 
   const {
     control,
@@ -30,7 +32,8 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
     await auth().signInWithEmailAndPassword(email, password).then((res) => {
       console.log(res)
     }).catch((e) => {
-      console.log(e)
+      setBackendError(e.code)
+      console.log(e.code)
     })
   }
 
@@ -102,6 +105,8 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
           />
         </View>
         {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
+
+        <Text style={{ color: 'red', fontSize: 15 }}>{backendError}</Text>
 
         <View style={styles.button}>
           

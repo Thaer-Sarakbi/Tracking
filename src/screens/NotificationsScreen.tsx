@@ -15,6 +15,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
   const user = useSelector((state: notificationsState) => state.auth.user)
 
   const [notifications, setNotifications] = useState([])
+  // console.log(notifications)
   
   const dispatch = useDispatch<AppDispatch>()
 
@@ -53,24 +54,26 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
             <View style={styles.container}>
                 <FlatList
                     data={notifications}
-                    renderItem={(item) => {
+                    renderItem={({item}) => {
+                      console.log(item)
                       return(
-                        <TouchableOpacity style={[styles.card, item.item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
-                          navigation.navigate('TaskDetails', {
-                            taskId: item.item.taskId,
-                            userId: user.id,
-                            userName: item.item.assignTo,
-                            status: item.item.status,
-                            creationDate: item.item.creationDate,
-                            duration: item.item.duration,
-                            title: item.item.title,
-                            description: item.item.description
-                        })
-                          dispatch(updateNotifications({notificationId: item.item.id, userId: user.id, read: item.item.read}))
+                        <TouchableOpacity style={[styles.card, item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
+                        //   navigation.navigate('TaskDetails', {
+                        //     taskId: item.item.taskId,
+                        //     userId: user.id,
+                        //     userName: item.item.assignTo,
+                        //     status: item.item.status,
+                        //     creationDate: item.item.creationDate,
+                        //     duration: item.item.duration,
+                        //     title: item.item.title,
+                        //     description: item.item.description
+                        // })
+                          navigation.navigate(item.screen, item )
+                          dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
                           dispatch(getNotifications(user.id))
                         }}>
-                        <Text style={styles.title}>{item.item.task}</Text>
-                        <Text style={styles.message}>{item.item.message}</Text>
+                        <Text style={styles.title}>{item.task}</Text>
+                        <Text style={styles.message}>{item.message}</Text>
                         </TouchableOpacity>
                     )}}
                 />

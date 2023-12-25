@@ -51,6 +51,16 @@ export const updateNotifications = createAsyncThunk("notifications/updateNotific
   }
 })
 
+export const addNotification = createAsyncThunk("notifications/updateNotification", async(notification:{notification}) => {
+    await firestore().collection('users').doc(notification.notification.receiverId).collection('notifications').add(
+    notification.notification
+  ).then(res => {
+    console.log(res)
+  }).catch(err => {
+    console.log(err)
+  })
+})
+
 const notificationsSlice = createSlice({
   name: 'notifications',
   initialState: {

@@ -158,7 +158,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
                 return(
                   <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                     taskId: item.item.id,
-                    userName: item.item.assignedTo,
+                    assignTo: item.item.assignedTo,
                     status: item.item.status,
                     creationDate: item.item.creationDate,
                     title: item.item.title,

@@ -14,6 +14,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getTasks } from '../redux/tasksSlice';
 import PushNotification from 'react-native-push-notification';
 import NotificationService from '../services/NotificationService';
+import { addNotification } from '../redux/notificationsSlice';
 
 interface MyState {
     users: {data: Array<User>},
@@ -100,7 +101,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     // const title = title
   
 
-  await firestore().collection('users').doc(assigned.id).collection('tasks').add({
+  await firestore().collection('users').doc(assigned?.id).collection('tasks').add({
     title, 
     description, 
     assignedTo, 
@@ -108,9 +109,10 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     location,
     status: 'Not Started',
     creationDate: new Date(),
-    assigenId: assigned.id
+    assigenId: assigned?.id
   }).then(async(res) => { 
-    await firestore().collection('users').doc(assigned?.id).collection('notifications').add({
+    dispatch(addNotification({notification:{
+      screen: 'TaskDetails',
       message: `You have assigned a new task by ${user.name}`,
       read: false,
       task: title,
@@ -121,12 +123,27 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       title,
       description,
       assignTo: assignedTo,
-      duration
-  }).then(res => {
-    handleNotification(message, title, duration, description, assignedTo, assigned)
-  }).catch(err => {
-    console.log(err)
-  })
+      duration,
+      assigenId: assigned?.id 
+    }}))
+  //   await firestore().collection('users').doc(assigned?.id).collection('notifications').add({
+  //     message: `You have assigned a new task by ${user.name}`,
+  //     read: false,
+  //     task: title,
+  //     taskId: res.id,
+  //     status: 'Not Started',
+  //     creationDate: new Date(),
+  //     creationDateNotification: new Date(),
+  //     title,
+  //     description,
+  //     assignTo: assignedTo,
+  //     duration,
+  //     assigenId: assigned?.id
+  // }).then(res => {
+  //   handleNotification(message, title, duration, description, assignedTo, assigned)
+  // }).catch(err => {
+  //   console.log(err)
+  // })
     changeModalVisible(false)
     dispatch(getTasks({id: user.id, admin: user.admin}))
   }).catch(err => {
@@ -134,24 +151,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     console.log(err)
   })
   }
-
-const getLocation = () => {
-//   Geolocation.getCurrentPosition(info => {
-//     setLatitude(info.coords.altitude)
-//     setLongitude(info.coords.longitude)
-//   }, (err) => {
-//       RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
-//         interval: 10000,
-//         fastInterval: 5000,
-//       })
-//         .then((data) => {
-//           getLocation()
-//         })
-//         .catch((err) => {
-          
-//         });
-//   }); 
-}
 
 // const handleNotification = async (status: string) => {
 

@@ -10,11 +10,12 @@ import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
 import storage from '@react-native-firebase/storage'
 import auth from '@react-native-firebase/auth';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore'
 import Icon from 'react-native-vector-icons/Ionicons';
 import NotificationService from '../services/NotificationService';
 import PushNotification from 'react-native-push-notification';
+import { addNotification } from '../redux/notificationsSlice';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -35,10 +36,17 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
   const user = useSelector((state: notificationsState) => state.auth.user)
 
-  const taskId = route.params.taskId ? route.params.taskId : route.params.update.taskId
-  const updateId = route.params.update.id
-  const assigenId = route.params.assigenId ? route.params.assigenId : route.params.update.assigenId
+  const dispatch = useDispatch<AppDispatch>()
+
+  const taskId = route.params.taskId
+  const updateId = route.params.updateId
+  const assigenId = route.params.assigenId
   const deviceToken = route.params.deviceToken
+  const creationDate = route.params.time
+  const title = route.params.title
+  const description = route.params.description
+  const updatedBy = route.params.updatedBy
+  const images = route.params.images
 
   console.log(taskId, updateId, assigenId, deviceToken)
 
@@ -115,7 +123,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
       data: {
         screen: 'UpdateDetails',
         taskId,
-        update:{id: updateId, images: route.params.update.images},
+        update:{id: updateId, images},
         assigenId
       },
       title: 'Comment',
@@ -175,16 +183,47 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
       commenter: user.name,
       comment
     }) 
-    .then((res) => { 
-      console.log(res)
+    .then((res) => {    
+      if(user.admin){
+        dispatch(addNotification({notification:{
+          screen: 'UpdateDetails',
+          message: `${user.name} added a new comment`,
+          read: false,
+          taskId,
+          time: creationDate,
+          creationDateNotification: new Date(),
+          updateId,
+          images,
+          title,
+          description,
+          updatedBy,
+          assigenId,
+          receiverId: assigenId
+      }}))
+      } else {
+        dispatch(addNotification({notification:{
+          screen: 'UpdateDetails',
+          message: `${user.name} added a new comment`,
+          read: false,
+          taskId,
+          time: creationDate,
+          creationDateNotification: new Date(),
+          updateId,
+          images,
+          title,
+          description,
+          updatedBy,
+          assigenId,
+          receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
+      }}))
+      }
       retreiveChat()
-      // sendNotification()
     }).catch((error) => { 
       console.log(error)
     });
   }
 
-  const images = route.params.update.images?.map((image: string) => {
+  const images1 = images?.map((image: string) => {
     // console.log(image.slice(39))  
     // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=${user.deviceToken}`)
     // if(image.includes('react-native-image-crop-picker')){
@@ -205,7 +244,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
    
   })
   
-  const images2 = route.params.update.images?.map((image : string) => {
+  const images2 = images?.map((image : string) => {
     // console.log(image.path)
     return(
         { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
@@ -219,16 +258,16 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
           <HeaderDetails navigation={navigation}/>
 
           <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
-            <Text style={styles.title}>{route.params.update.title}</Text>
-            <Text style={styles.decription}>{route.params.update.description}</Text>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.decription}>{description}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Updated By: </Text>
-              <Text style={{ fontSize: 15 }}> {route.params.update.updatedBy}</Text>
+              <Text style={{ fontSize: 15 }}> {updatedBy}</Text>
             </View>       
           </View>
 
           {images && (<SliderBox
-            images={images}
+            images={images1}
             sliderBoxHeight={400}
             firstItem={index}
             onCurrentImagePressed={(index: number) => {

@@ -14,7 +14,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getHistory } from '../redux/historySlice';
 import { ScrollView } from 'react-native-virtualized-view'
-import { getNotifications } from '../redux/notificationsSlice';
+import { addNotification, getNotifications } from '../redux/notificationsSlice';
 import Timeline from 'react-native-timeline-flatlist';
 import UpdateModal from '../components/UpdateModal';
 import MapView, {Marker} from "react-native-maps";
@@ -55,7 +55,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [longitude, setLongitude] = useState<boolean>(route.params.longitude)
 
   const [updates, setUpdates] = useState([])
-  // console.log(updates)
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
@@ -79,13 +78,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   // console.log(moment().diff(moment('2023-12-11'), 'days'))
 
   const id = route.params.taskId
-  const userName = route.params.userName
+  const assignTo = route.params.assignTo
   const title = route.params?.title
   const description = route.params.description
   const duration = route.params.duration
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
+  console.log('assigenId ', assigenId)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -109,7 +109,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     .collection('updates')
     .orderBy('time', "desc")
     .onSnapshot(snapshot => {
-      const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const newData = snapshot.docs.map((doc) => ({ updateId: doc.id, ...doc.data() }));
       setUpdates(newData);
     })
 
@@ -140,26 +140,26 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     }
   }
 
-  const addNotification = async (message: string, title: string | undefined) => {
+  // const addNotification = async (message: string, title: string | undefined) => {
 
-      await firestore().collection('users').doc('D7WNpRZb6d1j0WjuDtEJ').collection('notifications').add({
-        message,
-        read: false,
-        task: title,
-        taskId: id,
-        status: taskStatus,
-        creationDate: new Date(route.params.creationDate.seconds * 1000),
-        creationDateNotification: new Date(),
-        title,
-        description,
-        assignTo: userName,
-        duration
-    }).then(res => {
-      dispatch(getNotifications(user.id))
-    }).catch(err => {
-      console.log(err)
-    })
-  }
+  //     await firestore().collection('users').doc('D7WNpRZb6d1j0WjuDtEJ').collection('notifications').add({
+  //       message,
+  //       read: false,
+  //       task: title,
+  //       taskId: id,
+  //       status: taskStatus,
+  //       creationDate: new Date(route.params.creationDate.seconds * 1000),
+  //       creationDateNotification: new Date(),
+  //       title,
+  //       description,
+  //       assignTo,
+  //       duration
+  //   }).then(res => {
+  //     dispatch(getNotifications(user.id))
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // }
 
   const handleNotification = async (status: string) => {
     const message = `Status Updated to ${status} by ${user.name}`
@@ -193,7 +193,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         status: taskStatus,
         message,
         task: title,
-        userName,
+        assignTo,
         description,
         creationDate: new Date(route.params.creationDate.seconds * 1000)
       },
@@ -203,12 +203,50 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     };
 
     await NotificationService.sendSingleDeviceNotification(notificationData);
-    addNotification(message, title)
+    // addNotification(message, title)
   }
 
   const onUpdateTask = () => {
     Geolocation.getCurrentPosition(info => {
-      dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name, latitude: info.coords.latitude, longitude: info.coords.longitude }))
+      dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name, latitude: info.coords.latitude, longitude: info.coords.longitude })).then(() => {
+        if(user.admin){
+          dispatch(addNotification({notification:{
+            screen: 'TaskDetails',
+            message: `${user.name} updated status to ${taskStatus}`,
+            read: false,
+            task: title,
+            taskId: id,
+            status: taskStatus,
+            creationDate: new Date(),
+            creationDateNotification: new Date(),
+            title,
+            description,
+            assignTo,
+            duration,
+            assigenId,
+            receiverId: assigenId
+          }}))
+        } else {
+          dispatch(addNotification({notification:{
+            screen: 'TaskDetails',
+            message: `${user.name} updated status to ${taskStatus}`,
+            read: false,
+            task: title,
+            taskId: id,
+            status: taskStatus,
+            creationDate: new Date(),
+            creationDateNotification: new Date(),
+            title,
+            description,
+            assignTo,
+            duration,
+            assigenId,
+            receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
+          }}))
+        }
+ 
+      })
+
       setLatitude(info.coords.latitude)
       setLongitude(info.coords.longitude)
     }, (err) => {
@@ -268,7 +306,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           <Text style={styles.title}>{title}</Text>
           <View style={[styles.card, { marginBottom: 10 }]}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Assign To:</Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{userName}</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{assignTo}</Text>
             </View>
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.card}>
@@ -304,13 +342,13 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
         <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
           <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Updates</Text>
-          {updates.length === 0 ?
+          {!updates ?
            (
              <View />
             ) : (
               <>
               <Timeline
-                onEventPress={(update) => navigation.navigate('UpdateDetails', { update, taskId: id, assigenId })}
+                onEventPress={(update) => navigation.navigate('UpdateDetails', update )}
                 data={editUpadtes}
                 circleSize={20}
                 circleColor='rgb(45,156,219)'

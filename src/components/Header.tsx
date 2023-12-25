@@ -15,11 +15,11 @@ interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "Header">
 }
 
-const Header = ({ navigation } : Props) => {
+const Header = ({ navigation, notifications } : Props) => {
   // const notifications = useSelector((state: notificationsState) => state.notifications.data)
   const user = useSelector((state: notificationsState) => state.auth.user)
 
-  const [notifications, setNotifications] = useState([])
+  // const [notifications, setNotifications] = useState([])
 
   const dispatch = useDispatch<AppDispatch>()
  
@@ -40,25 +40,19 @@ const Header = ({ navigation } : Props) => {
   // },[])
 
   useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('users')
-      .doc(user?.id)
-      .collection('notifications')
-      .orderBy('creationDateNotification', "desc")
-      .onSnapshot(snapshot => {
-        // res.docs.forEach(snapshot => {
-        //   // snapshot.data().id = snapshot.id
-        //   console.log(snapshot.data())
-        //   // notificationsList.push(snapshot.data() as any) 
-  
-        // })
-  
-        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setNotifications(newData);
-      })
-
+      // firestore()
+      // .collection('users')
+      // .doc(user?.id)
+      // .collection('notifications')
+      // .orderBy('creationDateNotification', "desc")
+      // .onSnapshot(snapshot => {
+      //   console.log(snapshot.docs)
+      //   const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      //   setNotifications(newData);
+      // })
+ 
     // Unsubscribe when component unmounts
-    return () => unsubscribe();
+    // return () => unsubscribe();
   },[])
 
   return (
@@ -76,6 +70,7 @@ const Header = ({ navigation } : Props) => {
               {icon.name === 'notifications-outline' && (
                 <View style={{ width: 20, backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
                   <Text style={{ color: 'white' }}>{notifications.filter(notification => {
+                    console.log(notification)
                     if(notification.read === false){
                       return notification
                     }

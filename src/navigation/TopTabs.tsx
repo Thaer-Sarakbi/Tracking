@@ -28,6 +28,7 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
   const user = useSelector((state: TasksState) => state.auth.user)
 
   const [tasks, setTasks] = useState([])
+  const [notifications, setNotifications] = useState([])
 
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
@@ -66,6 +67,17 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
   }
 
   useEffect(() => {
+    firestore()
+    .collection('users')
+    .doc(user?.id)
+    .collection('notifications')
+    .orderBy('creationDateNotification', "desc")
+    .onSnapshot(snapshot => {
+      console.log(snapshot.docs)
+      const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setNotifications(newData);
+    })
+
     if(user?.admin){
       adminData()
     } else {
@@ -85,7 +97,7 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   return (
     <>
-      <Header navigation={navigation}/>
+      <Header navigation={navigation} notifications={notifications}/>
       <Tab.Navigator 
         screenOptions={{
           // tabBarActiveTintColor: Colors.main,
