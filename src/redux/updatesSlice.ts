@@ -55,6 +55,22 @@ export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{ta
     return updatesList
 })
 
+export const deleteUpdate = createAsyncThunk("tasks/deleteTask", async (update: { id: string, assigenId: string, taskId: string }) => {
+  firestore()
+  .collection('users')
+  .doc(update.assigenId)
+  .collection('tasks')
+  .doc(update.taskId)
+  .collection('updates')
+  .doc(update.id)
+  .delete()
+  .then(() => {
+    console.log('Update deleted!');
+  }).catch((error) => {
+    console.log(error)
+  });
+})
+
 const updatesSlice = createSlice({
   name: 'updates',
   initialState: {

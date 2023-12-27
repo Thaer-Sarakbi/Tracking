@@ -96,7 +96,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       }
     })
 
-    const message = `You have assigned a new task by ${user.name}`
  
     // const title = title
   
@@ -124,7 +123,8 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       description,
       assignTo: assignedTo,
       duration,
-      assigenId: assigned?.id 
+      assigenId: assigned?.id,
+      receiverId: assigned?.id
     }}))
   //   await firestore().collection('users').doc(assigned?.id).collection('notifications').add({
   //     message: `You have assigned a new task by ${user.name}`,

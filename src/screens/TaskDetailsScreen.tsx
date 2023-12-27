@@ -24,6 +24,7 @@ import NotificationService from '../services/NotificationService';
 import usePushNotification from '../hooks/usePushNotification';
 import Geolocation from '@react-native-community/geolocation';
 import LottieView from 'lottie-react-native';
+import HeaderDetails from '../components/HeaderDetails';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -86,7 +87,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
-  console.log('assigenId ', assigenId)
 
   useEffect(() => {
     // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
@@ -296,13 +296,44 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     setUpdateModalVisible(bool)
   }
 
+  const [startDate, setStartDate] = useState(new Date(route.params.creationDate.seconds * 1000)); // Replace this with your specific date
+  const [daysPassed, setDaysPassed] = useState(0);
+
+  if(daysPassed > duration){
+    dispatch(addNotification({notification:{
+      screen: 'TaskDetails',
+      message: 'The deadline has been exhausted',
+      read: false,
+      task: title,
+      taskId: id,
+      status: taskStatus,
+      creationDate: new Date(),
+      creationDateNotification: new Date(),
+      title,
+      description,
+      assignTo,
+      duration,
+      assigenId,
+      receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
+    }}))
+  }
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - startDate.getTime();
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    setDaysPassed(days);
+  }, [startDate]);
+
     return (
       <ScrollView>
-        <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
+        {/* <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrow-back-outline" size={30} color={'white'} />
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <HeaderDetails navigation={navigation} taskId={id} assigenId={assigenId} userId={user.id} admin={user.admin} />
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
           <View style={[styles.card, { marginBottom: 10 }]}>

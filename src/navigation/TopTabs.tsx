@@ -15,6 +15,8 @@ import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import firestore from '@react-native-firebase/firestore'
 import HeaderStack from './HeaderStack';
+import { getTasks } from '../redux/tasksSlice';
+import { useIsFocused } from '@react-navigation/native';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -25,10 +27,10 @@ interface MyState {
 export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  // const tasks = useSelector((state: MyState) => state.tasks?.data)
+  const tasks = useSelector((state: MyState) => state.tasks?.data)
   const user = useSelector((state: TasksState) => state.auth.user)
 
-  const [tasks, setTasks] = useState([])
+  // const [tasks, setTasks] = useState([])
   const [notifications, setNotifications] = useState([])
 
   const changeModalVisible = (bool: boolean) => {
@@ -37,35 +39,37 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   const dispatch = useDispatch<AppDispatch>()
 
-  const adminData = async() => {
-    let tasksList: Array<Task> = []
+  // const adminData = async() => {
+  //   let tasksList: Array<Task> = []
 
-    const usersCollection = await firestore().collection('users')
+  //   const usersCollection = await firestore().collection('users')
 
-    const usersQuerySnapshot = await usersCollection.get()
-    let usersDataWithTasks = []
+  //   const usersQuerySnapshot = await usersCollection.get()
+  //   let usersDataWithTasks = []
   
-    for(const userDoc of usersQuerySnapshot.docs){
-      const userTasksCollection = userDoc.ref.collection('tasks')
+  //   for(const userDoc of usersQuerySnapshot.docs){
+  //     const userTasksCollection = userDoc.ref.collection('tasks')
   
-      const tasksQuerySnapshot = await userTasksCollection.get()
+  //     const tasksQuerySnapshot = await userTasksCollection.get()
   
-      const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
-        id: taskDoc.id,
-        ...taskDoc.data()
-      }))
+  //     const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
+  //       id: taskDoc.id,
+  //       ...taskDoc.data()
+  //     }))
   
-      if(tasksData[0]){
-        usersDataWithTasks.push(
-          // id: userDoc.id,
-          // userData: userDoc.data(),
-          ...tasksData
-        )
-      }
+  //     if(tasksData[0]){
+  //       usersDataWithTasks.push(
+  //         // id: userDoc.id,
+  //         // userData: userDoc.data(),
+  //         ...tasksData
+  //       )
+  //     }
 
-      setTasks(usersDataWithTasks)
-    }
-  }
+  //     setTasks(usersDataWithTasks)
+  //   }
+  // }
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     firestore()
@@ -78,22 +82,24 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
       setNotifications(newData);
     })
 
-    if(user?.admin){
-      adminData()
-    } else {
-      firestore()
-      .collection('users')
-      .doc(user?.id)
-      .collection('tasks')
-      .orderBy('creationDate', "desc")
-      .onSnapshot(snapshot => {
+  //   if(user?.admin){
+  //     adminData()
+  //   } else {
+  //     firestore()
+  //     .collection('users')
+  //     .doc(user?.id)
+  //     .collection('tasks')
+  //     .orderBy('creationDate', "desc")
+  //     .onSnapshot(snapshot => {
     
-        const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setTasks(newData);
-      })
-  }
+  //       const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  //       setTasks(newData);
+  //     })
+  // }
+    dispatch(getTasks({id: user?.id, admin: user?.admin}))
     dispatch(getUsers())
-  },[user])
+
+  },[user, isFocused])
 
   return (
     <>

@@ -17,6 +17,8 @@ import NotificationService from '../services/NotificationService';
 import PushNotification from 'react-native-push-notification';
 import { addNotification } from '../redux/notificationsSlice';
 import LottieView from 'lottie-react-native';
+import AwesomeAlert from 'react-native-awesome-alerts';
+import { deleteUpdate } from '../redux/updatesSlice';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -34,6 +36,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [index, setIndex] = useState(0)
   const [chat, setChat] = useState()
   const [comment, setComment] = useState('')
+  const [showAlert, setShowAlert] = useState<boolean>(false)
 
   const user = useSelector((state: notificationsState) => state.auth.user)
 
@@ -52,47 +55,10 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   console.log(taskId, updateId, assigenId, deviceToken)
 
   useEffect(() => {
-    // const unsubscribe =  firestore()
-    // .collection('users')
-    // .doc(assigenId)
-    // .collection('tasks')
-    // .doc(taskId)
-    // .collection('updates')
-    // .doc(updateId)
-    // .collection('chat')
-    // .orderBy('creationDate', "desc")
-    // .onSnapshot(snapshot => {
-    //   const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    //   setChat(newData);
-    // })
-
-    // // Unsubscribe when component unmounts
-    // return () => unsubscribe();
-
     retreiveChat()
   },[])
 
   const retreiveChat = async () => {
-    // let chatList = []
-    // await firestore()
-    // .collection('users')
-    // .doc(assigenId)
-    // .collection('tasks')
-    // .doc(taskId)
-    // .collection('updates')
-    // .doc(updateId)
-    // .collection('chat')
-    // .orderBy('creationDate', "desc")
-    // .get() 
-    // .then(querySnapshot => { 
-    //   querySnapshot.docs.forEach(documentSnapshot => {
-    //     chatList.push(documentSnapshot.data() as any) 
-    //   });
-    // }).catch((error) => { 
-    //   console.log(error)
-    // });
-
-    // setChat(chatList)
     firestore()
     .collection('users')
     .doc(assigenId)
@@ -106,6 +72,13 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
       const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setChat(newData);
     })
+  }
+
+  const onDeleteUpdate = () => {
+    setShowAlert(false)
+    dispatch(deleteUpdate({ id: updateId, taskId, assigenId  }))
+    // dispatch(getTasks({id: userId, admin}))
+    navigation.goBack()
   }
 
   const handleNotification = async(message, taskId, updateId, assigenId) => {
@@ -225,30 +198,16 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   }
 
   const images1 = images?.map((image: string) => {
-    // console.log(image.slice(39))  
-    // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=${user.deviceToken}`)
-    // if(image.includes('react-native-image-crop-picker')){
-      
-    //   return(  
-    //     `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.slice(70)}?alt=media&token=${user.deviceToken}`
-    //   )
-    // } else {
-    //   // console.log(image.path.slice(64))
-    //   return( 
-    //     `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.slice(37)}?alt=media&token=${user.deviceToken}`
-    // )
-    // } 
     return( 
-      `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=${user.deviceToken}`
+      `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.substring(image.lastIndexOf('/') + 1)}?alt=media&token=${user.deviceToken}`
     )
     // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`)
    
   })
   
   const images2 = images?.map((image : string) => {
-    // console.log(image.path)
     return(
-        { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.slice(39)}?alt=media&token=8884e841-1118-44f8-97c6-3b15b85b417f`}
+        { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.substring(image.lastIndexOf('/') + 1)}?alt=media&token=${user.deviceToken}`}
     )
   }) 
  
@@ -256,7 +215,15 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
     return (
       <>
         <ScrollView style={{ flex: 1, marginBottom: 60 }}>
-          <HeaderDetails navigation={navigation}/>
+          {/* <HeaderDetails navigation={navigation}/> */}
+          <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'space-between', paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Icon name="arrow-back-outline" size={30} color={'white'} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowAlert(true)} style={{ backgroundColor: 'red', width: 70, height: 35, alignItems: 'center', justifyContent: 'center', marginRight: 10, borderRadius: 10 }}>
+              <Text style={{ color: 'white', fontSize: 17 }}>Delete</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
             <Text style={styles.title}>{title}</Text>
@@ -311,6 +278,53 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
                <Icon name="send-outline" size={25} color={'white'}  />
              </TouchableOpacity>
            </View>
+
+           <AwesomeAlert
+              show={showAlert}
+              showProgress={false}
+              title="Alert"
+              message="Are you sure you want to delete this task?"
+              closeOnTouchOutside={false}
+              closeOnHardwareBackPress={false}
+              showCancelButton={true}
+              showConfirmButton={true}
+              cancelText="No"
+              confirmText="Yes"
+              confirmButtonColor= {Colors.main}
+              onCancelPressed={() => {
+                setShowAlert(false)
+              }}
+              onConfirmPressed={() => {
+                // dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name }))
+                onDeleteUpdate()
+              }}
+              contentContainerStyle={{
+                width: '70%'
+              }}
+              titleStyle={{
+                fontSize: 30,
+                fontWeight: 'bold'
+              }}
+              messageStyle={{
+                fontSize: 20,
+              }}
+              confirmButtonStyle={{
+                width: 60,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              cancelButtonStyle={{
+                width: 60,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              confirmButtonTextStyle={{
+                fontSize: 15
+              }}
+              cancelButtonTextStyle={{
+                fontSize: 15
+              }}
+            />
       </>
       );
   } else {

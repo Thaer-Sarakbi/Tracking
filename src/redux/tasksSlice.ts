@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
-import { Task, tasks, TasksState } from '../types/types';
+import { Task, tasks } from '../types/types';
 
 export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string, updaterName: string, latitude: string, longitude: string}) => {
   await firestore()
@@ -27,8 +27,12 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
   });
 })
 
-export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: string }) => {
+export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: string, admin: boolean }) => {
+
   let tasksList: Array<Task> = []
+
+  if(user.admin){
+   
 
     const usersCollection = await firestore().collection('users')
 
@@ -52,12 +56,40 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: stri
           ...tasksData
         )
       }
+
       tasksList = usersDataWithTasks
     }
+  } else {
+    await firestore()
+    .collection('users')
+    .doc(user?.id)
+    .collection('tasks')
+    .orderBy('creationDate', "desc")
+    .get()
+    .then(querySnapshot => { 
+      querySnapshot.docs.forEach((documentSnapshot) => {
+        documentSnapshot.data().id = documentSnapshot.id
+        tasksList.push(documentSnapshot.data() as tasks)
+      })
+    });
+    
+  }
 
-
-  // console.log(tasksList)
   return tasksList
+})
+
+export const deleteTask = createAsyncThunk("tasks/deleteTask", async (task: { id: string, assigenId: string }) => {
+  firestore()
+  .collection('users')
+  .doc(task.assigenId)
+  .collection('tasks')
+  .doc(task.id)
+  .delete()
+  .then(() => {
+    console.log('Task deleted!');
+  }).catch((error) => {
+    console.log(error)
+  });
 })
 
 const tasksSlice = createSlice({

@@ -27,7 +27,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
 
   const onRefresh = () => {
     setIsFetching(true)
-    // dispatch(getTasks({id: user.id, admin: user.admin}))
+    dispatch(getTasks({id: user.id, admin: user.admin}))
     setIsFetching(false)
   }
 

@@ -5,7 +5,6 @@ import { Task } from '../types/types';
 import moment from 'moment';
 
 const Card = ({item}: { item: Task }  ) => {
-  // console.log(item)
 
   const getStyle = (status: string) => {
     if(status === 'In Progress'){

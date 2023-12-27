@@ -9,6 +9,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 import firestore from '@react-native-firebase/firestore'
 import LottieView from 'lottie-react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { Colors } from '../assets/Colors';
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
   // const notifications = useSelector((state: notificationsState) => state.notifications.data)
@@ -55,7 +57,12 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
   } else {
     return (
         <View>
-            <HeaderDetails navigation={navigation}/>
+            {/* <HeaderDetails navigation={navigation}/> */}
+            <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Icon name="arrow-back-outline" size={30} color={'white'} />
+              </TouchableOpacity>
+            </View>
             <View style={styles.container}>
                 <FlatList
                     data={notifications}
