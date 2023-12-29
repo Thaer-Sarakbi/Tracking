@@ -47,6 +47,7 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
         firestore().collection('users').add({
           name,
           email,
+          password,
           admin: false,
           mobile,
           creationDate: new Date()
@@ -225,7 +226,7 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
 
         <View style={styles.button}>
           <LinearGradient colors={['#FF8A65', '#FF5722']} style={styles.signIn}>
-            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+            <TouchableOpacity style={{  width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }} onPress={handleSubmit(onSubmit)}>
               <Text style={[styles.textSign, { color: '#fff' }]}>Sign Up</Text>
             </TouchableOpacity>
           </LinearGradient>

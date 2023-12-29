@@ -26,8 +26,8 @@ const HeaderDetails = ({ navigation, taskId, assigenId, userId, admin } : Props)
 
   return (
     <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'space-between', paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back-outline" size={30} color={'white'} />
+      <TouchableOpacity  onPress={() => navigation.goBack()}>
+        <Icon name="arrow-back-outline" size={35} color={'white'} />
       </TouchableOpacity>
       {admin && (<TouchableOpacity onPress={() => setShowAlert(true)} style={{ backgroundColor: 'red', width: 70, height: 35, alignItems: 'center', justifyContent: 'center', marginRight: 10, borderRadius: 10 }}>
         <Text style={{ color: 'white', fontSize: 17 }}>Delete</Text>
@@ -63,12 +63,14 @@ const HeaderDetails = ({ navigation, taskId, assigenId, userId, admin } : Props)
             fontSize: 20,
           }}
           confirmButtonStyle={{
-            width: 60,
+            width: 70,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
           cancelButtonStyle={{
-            width: 60,
+            width: 70,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}

@@ -516,12 +516,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             fontSize: 20,
           }}
           confirmButtonStyle={{
-            width: 60,
+            width: 70,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}
           cancelButtonStyle={{
-            width: 60,
+            width: 70,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center'
           }}

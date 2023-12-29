@@ -95,7 +95,7 @@ function ProfileScreen(): JSX.Element {
               </View>
             </View>
 
-            <TouchableOpacity onPress={() => onSignOut()} style = {{ borderWidth: 1, borderColor: 'red', width: '90%',height: 35 , justifyContent: 'center', alignItems: 'center', marginTop: 15, alignSelf: 'center', borderRadius: 10 }}>
+            <TouchableOpacity onPress={() => onSignOut()} style = {{ borderWidth: 1, borderColor: 'red', width: '90%',height: 45 , justifyContent: 'center', alignItems: 'center', marginTop: 15, alignSelf: 'center', borderRadius: 10 }}>
               <Text style = {{ color: 'red', fontWeight: 'bold' }}>Log Out</Text>
             </TouchableOpacity>
           </View>

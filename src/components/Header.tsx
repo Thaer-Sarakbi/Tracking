@@ -24,9 +24,9 @@ const Header = ({ navigation, notifications } : Props) => {
   const dispatch = useDispatch<AppDispatch>()
  
   const icons = [
-    { name: "search-outline", size: 30, color: 'white' },
-    { name: "notifications-outline", size: 30, color: 'white' },
-    { name: "chatbubbles-outline", size: 30, color: 'white'} 
+    { name: "search-outline", size: 35, color: 'white' },
+    { name: "notifications-outline", size: 35, color: 'white' },
+    { name: "chatbubbles-outline", size: 35, color: 'white'} 
   ]
 
   const handleNav = (name: string) => {

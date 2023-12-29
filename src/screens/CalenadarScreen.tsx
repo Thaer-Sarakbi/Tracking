@@ -113,7 +113,7 @@ const CalendarScreen = ({ navigation }) => {
           data={data} 
         //   save="value"
         //   value={value}
-          boxStyles={{ marginHorizontal: 10, marginVertical: 10 }}
+          boxStyles={{ marginHorizontal: 10, marginVertical: 10, height: 50, alignItems: 'center' }}
         />
           
         <CalendarPicker

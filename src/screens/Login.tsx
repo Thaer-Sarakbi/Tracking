@@ -111,7 +111,7 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
         <View style={styles.button}>
           
             <LinearGradient colors={['#FF8A65', Colors.main]} style={styles.signIn}>
-              <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+              <TouchableOpacity style={{  width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }} onPress={handleSubmit(onSubmit)}>
                 <Text style={[styles.textSign, { color: '#fff' }]}>Sign In</Text>
               </TouchableOpacity>
             </LinearGradient>
