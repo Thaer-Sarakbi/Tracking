@@ -296,35 +296,35 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     setUpdateModalVisible(bool)
   }
 
-  const [startDate, setStartDate] = useState(new Date(route.params.creationDate.seconds * 1000)); // Replace this with your specific date
-  const [daysPassed, setDaysPassed] = useState(0);
+  // const [startDate, setStartDate] = useState(new Date(route.params.creationDate.seconds * 1000)); // Replace this with your specific date
+  // const [daysPassed, setDaysPassed] = useState(0);
 
-  if(daysPassed > duration){
-    dispatch(addNotification({notification:{
-      screen: 'TaskDetails',
-      message: 'The deadline has been exhausted',
-      read: false,
-      task: title,
-      taskId: id,
-      status: taskStatus,
-      creationDate: new Date(),
-      creationDateNotification: new Date(),
-      title,
-      description,
-      assignTo,
-      duration,
-      assigenId,
-      receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
-    }}))
-  }
+  // if(daysPassed > duration){
+  //   dispatch(addNotification({notification:{
+  //     screen: 'TaskDetails',
+  //     message: 'The deadline has been exhausted',
+  //     read: false,
+  //     task: title,
+  //     taskId: id,
+  //     status: taskStatus,
+  //     creationDate: new Date(),
+  //     creationDateNotification: new Date(),
+  //     title,
+  //     description,
+  //     assignTo,
+  //     duration,
+  //     assigenId,
+  //     receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
+  //   }}))
+  // }
 
-  useEffect(() => {
-    const currentDate = new Date();
-    const timeDifference = currentDate.getTime() - startDate.getTime();
-    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  // useEffect(() => {
+  //   const currentDate = new Date();
+  //   const timeDifference = currentDate.getTime() - startDate.getTime();
+  //   const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
-    setDaysPassed(days);
-  }, [startDate]);
+  //   setDaysPassed(days);
+  // }, [startDate]);
 
     return (
       <ScrollView>

@@ -15,6 +15,7 @@ import { getTasks } from '../redux/tasksSlice';
 import PushNotification from 'react-native-push-notification';
 import NotificationService from '../services/NotificationService';
 import { addNotification } from '../redux/notificationsSlice';
+import notifee from '@notifee/react-native';
 
 interface MyState {
     users: {data: Array<User>},
@@ -47,45 +48,46 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
-  const handleNotification = async(message, title, duration, description, assignedTo, assigned) => {
-    PushNotification.localNotification({
-      channelId: "update-status",
-      title: "New Task",
-      status: 'Not Started',
-      message: message,
-      task: title,
-      vibrate: true, // (optional) default: true
-      vibration: 300,
-      screen: 'TaskDetails',
-      duration,
-      assignTo: assignedTo,
-      description,
-      creationDate: new Date(),
-    });
+  // const handleNotification = async(message, title, duration, description, assignedTo, assigned) => {
+  //   PushNotification.localNotification({
+  //     channelId: "update-status",
+  //     title: "New Task",
+  //     status: 'Not Started',
+  //     message: message,
+  //     task: title,
+  //     vibrate: true, // (optional) default: true
+  //     vibration: 300,
+  //     screen: 'TaskDetails',
+  //     duration,
+  //     assignTo: assignedTo,
+  //     description,
+  //     creationDate: new Date(),
+  //   });
   
-    // PushNotification.popInitialNotification((notification) => {
-    //   console.log('Initial Notification', notification);
-    // });
+  //   // PushNotification.popInitialNotification((notification) => {
+  //   //   console.log('Initial Notification', notification);
+  //   // });
   
-    let notificationData = {
-      data: {
-        screen: 'TaskDetails',
-        title,
-        duration,
-        status: 'Not Started',
-        message,
-        task: title,
-        userName: assignedTo,
-        description,
-        creationDate: new Date()
-      },
-      title: 'New Task',
-      body: message,
-      token: assigned.deviceToken
-    };
+  //   let notificationData = {
+  //     data: {
+  //       screen: 'TaskDetails',
+  //       title,
+  //       duration,
+  //       status: 'Not Started',
+  //       message,
+  //       task: title,
+  //       userName: assignedTo,
+  //       description,
+  //       creationDate: new Date()
+  //     },
+  //     title: 'New Task',
+  //     body: message,
+  //     token: assigned.deviceToken
+  //   };
   
-    await NotificationService.sendSingleDeviceNotification(notificationData);
-  }
+  //   await NotificationService.sendSingleDeviceNotification(notificationData);
+  // }
+
   const onSubmit = async () => {
     const { title, description, assignedTo, duration, location } = watch()
 
@@ -96,26 +98,17 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       }
     })
 
- 
-    // const title = title
-  
-
-  await firestore().collection('users').doc(assigned?.id).collection('tasks').add({
-    title, 
-    description, 
-    assignedTo, 
-    duration, 
-    location,
-    status: 'Not Started',
-    creationDate: new Date(),
-    assigenId: assigned?.id
-  }).then(async(res) => { 
-    dispatch(addNotification({notification:{
+    // const channelId = await notifee.createChannel({
+    //   id: 'newTask',
+    //   name: 'New Task',
+    // });
+    
+    const notificationData = {
       screen: 'TaskDetails',
       message: `You have assigned a new task by ${user.name}`,
       read: false,
       task: title,
-      taskId: res.id,
+      taskId: '123456',
       status: 'Not Started',
       creationDate: new Date(),
       creationDateNotification: new Date(),
@@ -124,9 +117,25 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       assignTo: assignedTo,
       duration,
       assigenId: assigned?.id,
-      receiverId: assigned?.id
-    }}))
-  //   await firestore().collection('users').doc(assigned?.id).collection('notifications').add({
+      receiverId: assigned?.id,
+      channelId: 'newTask',
+      channelName: 'New Task'
+    }
+  
+    NotificationService.sendSingleDeviceNotification({ notification: notificationData, token: assigned.deviceToken, message: `You have assigned a new task by ${user.name}` })
+  // await firestore().collection('users').doc(assigned?.id).collection('tasks').add({
+  //   title, 
+  //   description, 
+  //   assignedTo, 
+  //   duration, 
+  //   location,
+  //   status: 'Not Started',
+  //   creationDate: new Date(),
+  //   assigenId: assigned?.id
+  // }).then(async(res) => { 
+
+  //   const notificationData = {
+  //     screen: 'TaskDetails',
   //     message: `You have assigned a new task by ${user.name}`,
   //     read: false,
   //     task: title,
@@ -138,18 +147,19 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
   //     description,
   //     assignTo: assignedTo,
   //     duration,
-  //     assigenId: assigned?.id
-  // }).then(res => {
-  //   handleNotification(message, title, duration, description, assignedTo, assigned)
+  //     assigenId: assigned?.id,
+  //     receiverId: assigned?.id
+  //   }
+
+  //   dispatch(addNotification({ notification: notificationData }))
+
+  //   NotificationService.sendSingleDeviceNotification({ notification: notificationData, token: assigned.deviceToken, message: `You have assigned a new task by ${user.name}` })
+  //   changeModalVisible(false)
+  //   dispatch(getTasks({id: user.id, admin: user.admin}))
   // }).catch(err => {
+  //   changeModalVisible(false)
   //   console.log(err)
   // })
-    changeModalVisible(false)
-    dispatch(getTasks({id: user.id, admin: user.admin}))
-  }).catch(err => {
-    changeModalVisible(false)
-    console.log(err)
-  })
   }
 
 // const handleNotification = async (status: string) => {

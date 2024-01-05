@@ -10,19 +10,7 @@ import usePushNotification from './hooks/usePushNotification';
 import messaging from '@react-native-firebase/messaging';
 import firestore from '@react-native-firebase/firestore'
 
-interface AppContainerState {
-  auth: {user: User}
-}
-
 const AppContainer = () => {
-  const {
-    requestUserPermission,
-    getFCMToken,
-    listenToBackgroundNotifications,
-    listenToForegroundNotifications,
-    onNotificationOpenedAppFromBackground,
-    onNotificationOpenedAppFromQuit,
-  } = usePushNotification();
 
   const [currentUser, setCurrentUser] = useState<any | null>(null)
 
@@ -33,41 +21,9 @@ const AppContainer = () => {
             dispatch(setUser(u))
             setCurrentUser(u)
         })
-
-        const listenToNotifications = () => {
-          try {
-            getFCMToken();
-            requestUserPermission();
-            onNotificationOpenedAppFromQuit();
-            listenToBackgroundNotifications();
-            listenToForegroundNotifications();
-            onNotificationOpenedAppFromBackground();
-          } catch (error) {
-            console.log(error);
-          }
-        };
-    
-        listenToNotifications();
     },[])
-
-    const refreshToken = async() => {
-      const token = await messaging().getToken()
-
-    // await firestore()
-    //   .collection('users')
-    //   .doc(user.id)
-    //   .update({
-    //     deviceToken: token
-    //   })
-    //   .then(() => {
-    //     console.log('updated')
-    //   }).catch((e) => {
-    //     console.log(e)
-    //   });
-    }
     
     if(currentUser){
-      refreshToken()
        return(
          <AppStack/>
        ) 

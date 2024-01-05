@@ -68,8 +68,8 @@ const Header = ({ navigation, notifications } : Props) => {
           icons.map((icon, i) => (
             <TouchableOpacity key={i} onPress={() => handleNav(icon.name)}>
               {icon.name === 'notifications-outline' && (
-                <View style={{ width: 20, backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
-                  <Text style={{ color: 'white' }}>{notifications.filter(notification => {
+                <View style={{ backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+                  <Text style={{ color: 'white', margin: 2 }}>{notifications.filter(notification => {
                     if(notification.read === false){
                       return notification
                     }

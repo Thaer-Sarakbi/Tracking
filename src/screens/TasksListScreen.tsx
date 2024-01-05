@@ -121,7 +121,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
   // }
 
 
-    createChannels()
+    // createChannels()
   },[user])
 
   const createChannels = () => {
@@ -134,7 +134,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
   );
   }
 
-  if(status === 'loading'){
+  if(status === 'loading' || tasks.length === 0){
     return (
       <>
         <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />

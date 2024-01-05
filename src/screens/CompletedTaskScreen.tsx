@@ -28,7 +28,7 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
   useEffect(() => {
     dispatch(getTasks({id: user?.id, admin: user?.admin}))
 
-    createChannels()
+    // createChannels()
   },[])
 
   const createChannels = () => {

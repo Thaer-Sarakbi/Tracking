@@ -2,8 +2,11 @@ import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid, Platform} from 'react-native';
 import { navigate } from '../navigation/RootNavigation';
 import notifee from '@notifee/react-native';
+import { useSelector } from 'react-redux';
+import firestore from '@react-native-firebase/firestore'
 
 const usePushNotification = () => {
+
   const requestUserPermission = async () => {
     if (Platform.OS === 'ios') {
       //Request iOS permission
@@ -23,8 +26,21 @@ const usePushNotification = () => {
     }
   }
 
-  const getFCMToken = async () => {
+  const getFCMToken = async (user) => {
+    await messaging().registerDeviceForRemoteMessages();
+
     const fcmToken = await messaging().getToken();
+      await firestore()
+            .collection('users')
+            .doc(user?.id)
+            .update({
+              deviceToken: fcmToken
+            })
+            .then(() => {
+              console.log('token updated')
+            }).catch((e) => {
+              console.log(e)
+            });
     if (fcmToken) {
       console.log('Your Firebase Token is:', fcmToken);
     } else {
@@ -78,23 +94,25 @@ const usePushNotification = () => {
       console.log('App opened from QUIT by tapping notification:', JSON.stringify(message));
     }
   };
-
-  const DisplayNotification = async(remoteMessage) => {
+ 
+  const DisplayNotification = async (message) => {
     // Create a channel
-    // const channelId = await notifee.createChannel({
-    //   id: 'default',
-    //   name: 'Default Channel',
-    // });
+    const channelId = await notifee.createChannel({
+      id: message.data.channelId,
+      name: message.data.channelName,
+      vibration: true,
+      vibrationPattern: [300, 500],
+    });
 
-    // // Display a notification
-    // await notifee.displayNotification({
-    //   title: 'dd',
-    //   body: 'dddddddddddddddd',
-    //   android: {
-    //     channelId,
-    //     smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
-    //   },
-    // });
+    // Display a notification
+   await notifee.displayNotification({
+      title: message.notification.title,
+      body: message.notification.body,
+      data: message.data,
+      android:{
+        channelId
+      }
+    });
   }
 
   // const localDisplayNotification =async () => {
