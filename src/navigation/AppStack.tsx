@@ -6,7 +6,7 @@ import NotificationsScreen from "../screens/NotificationsScreen"
 import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
 import Header from "../components/Header"
 import HeaderDetails from "../components/HeaderDetails"
-import { Updates } from "../types/types"
+import { Notification, Updates, User } from "../types/types"
 import TasksListScreen from "../screens/TasksListScreen"
 import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
@@ -15,21 +15,41 @@ import { useSelector } from "react-redux"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
+interface MyState {
+  auth: {user: User}
+}
+
 export type RootStackParamsList = {
     BottomNavigator: undefined,
     TasksList: undefined
     TaskDetails: {
       taskId: string,
-      userId: string,
-      userName: string,
+      // userId: string,
+      // userName: string,
       status: string,
-      creationDate: string
+      creationDate: {
+        seconds: number
+      },
+      title: string,
+      description: string,
+      duration: number,
+      assigenId: string
+      assignedTo: string,
+      latitude: number,
+      longitude: number,
+      deviceToken: string
     },
     Notifications: undefined,
-    Header: undefined,
-    HeaderDetails: undefined
-    UpdateDetails: {
-      update: Updates
+    // Header: {
+    //   notifications: Array<Notification>
+    // },
+    HeaderDetails: {
+      // navigation: 
+    },
+    UpdateDetails: Updates,
+    UpdatesList:{
+      updatesList: Array<Updates>
+      date: string
     }
 }
 
@@ -81,11 +101,11 @@ const AppStack = () => {
           component={TaskDetailsScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Header"
           component={Header}
           options={{ headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
           name="HeaderDetails"
           component={HeaderDetails}

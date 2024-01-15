@@ -7,7 +7,7 @@ import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Task } from '../types/types';
+import { Task, tasks } from '../types/types';
 import { RootStackParamsList } from './AppStack';
 import { StackScreenProps } from '@react-navigation/stack';
 import CompletedTaskScreen from '../screens/CompletedTaskScreen';
@@ -21,7 +21,7 @@ import { useIsFocused } from '@react-navigation/native';
 const Tab = createMaterialTopTabNavigator();
 
 interface MyState {
-  tasks: {data: Array<Task>}
+  tasks: tasks
 }
 
 export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
@@ -39,36 +39,6 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   const dispatch = useDispatch<AppDispatch>()
 
-  // const adminData = async() => {
-  //   let tasksList: Array<Task> = []
-
-  //   const usersCollection = await firestore().collection('users')
-
-  //   const usersQuerySnapshot = await usersCollection.get()
-  //   let usersDataWithTasks = []
-  
-  //   for(const userDoc of usersQuerySnapshot.docs){
-  //     const userTasksCollection = userDoc.ref.collection('tasks')
-  
-  //     const tasksQuerySnapshot = await userTasksCollection.get()
-  
-  //     const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
-  //       id: taskDoc.id,
-  //       ...taskDoc.data()
-  //     }))
-  
-  //     if(tasksData[0]){
-  //       usersDataWithTasks.push(
-  //         // id: userDoc.id,
-  //         // userData: userDoc.data(),
-  //         ...tasksData
-  //       )
-  //     }
-
-  //     setTasks(usersDataWithTasks)
-  //   }
-  // }
-
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -82,20 +52,6 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
       setNotifications(newData);
     })
 
-  //   if(user?.admin){
-  //     adminData()
-  //   } else {
-  //     firestore()
-  //     .collection('users')
-  //     .doc(user?.id)
-  //     .collection('tasks')
-  //     .orderBy('creationDate', "desc")
-  //     .onSnapshot(snapshot => {
-    
-  //       const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  //       setTasks(newData);
-  //     })
-  // }
     dispatch(getTasks({id: user?.id, admin: user?.admin}))
     dispatch(getUsers())
 

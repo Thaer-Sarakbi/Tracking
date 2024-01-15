@@ -7,6 +7,7 @@ import { RootStackParamsList } from '../navigation/AppStack';
 import { useDispatch } from 'react-redux';
 import { deleteTask, getTasks } from '../redux/tasksSlice';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import { AppDispatch } from '../redux/store';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "HeaderDetails">

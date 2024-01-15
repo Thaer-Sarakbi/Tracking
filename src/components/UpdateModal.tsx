@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
 import { Colors } from '../assets/Colors';
-import firestore, { firebase } from '@react-native-firebase/firestore'
+import firestore from '@react-native-firebase/firestore'
 import { getUpdates } from '../redux/updatesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
@@ -12,6 +12,7 @@ import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { addNotification } from '../redux/notificationsSlice';
+import { User } from '../types/types';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,
@@ -19,14 +20,18 @@ interface Props {
   id: string,
   userId: string,
   assigenId: string,
-  admin: boolean
+  admin: boolean,
+  updaterName: string
+}
+
+interface MyState {
+  auth: {user: User}
 }
 
 const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId, admin, updaterName } : Props) => {
     const [images, setImages] = useState<string[]>([])
     const [transferred, setTransferred] = useState(0);
-    const users = useSelector((state: MyState) => state.users.data)
-    const user = useSelector((state: notificationsState) => state.auth.user)
+    const user = useSelector((state: MyState) => state.auth.user)
 
     const {
       control,
@@ -42,11 +47,6 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
     })
 
     const dispatch = useDispatch<AppDispatch>()
-
-  //  const closeModal = (bool: boolean, data: string) => {
-  //    changeModalVisible(bool)
-  //    submit()
-  //  }
 
    const submit = async () => {
 
@@ -120,7 +120,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
   }
 
 
-const compressAndResizeImage = async (originalUri) => {
+const compressAndResizeImage = async (originalUri: {path: string}) => {
 
   try {
     const resizedImage = await ImageResizer.createResizedImage(
@@ -171,17 +171,11 @@ const compressAndResizeImage = async (originalUri) => {
             }
         })
     }
-
-    // setUploading(false);
-    // Alert.alert(
-    //   'Photo uploaded!',
-    //   'Your photo has been uploaded to Firebase Cloud Storage!'
-    // );
 } 
 
     return (
       <View
-        style={[styles.container, isModalVisible ? { backgroundColor: 'rgba(0, 0, 0, 0.5)' } : '']}
+        style={[styles.container, isModalVisible ? { backgroundColor: 'rgba(0, 0, 0, 0.5)' } : {}]}
       >
         <View style={styles.modal}>
           <Text style = {{ fontSize: 20, color: Colors.titles }}>Title</Text>

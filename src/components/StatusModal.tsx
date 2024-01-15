@@ -8,7 +8,7 @@ interface Props {
   setData: (data: string) => void
 }
 
-const StatusModal = ({ changeModalVisible, isModalVisible, setData, setLatitude, setLongitude } : Props) => {
+const StatusModal = ({ changeModalVisible, isModalVisible, setData } : Props) => {
 
    const closeModal = (bool: boolean, data: string) => {
      changeModalVisible(bool)

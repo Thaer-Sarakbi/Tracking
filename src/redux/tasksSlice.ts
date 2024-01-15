@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Task, tasks } from '../types/types';
 
-export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string, updaterName: string, latitude: string, longitude: string}) => {
+export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id: string, status: string, userId: string, updaterName: string, latitude: number, longitude: number}) => {
   await firestore()
   .collection('users')
   .doc(task.userId)

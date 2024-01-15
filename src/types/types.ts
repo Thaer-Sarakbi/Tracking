@@ -6,14 +6,18 @@ export type Task = {
     status: string,
     duration: number,
     creationDate: string,
-    assignedTo: string
+    assignedTo: string,
+    assigenId: string
 }
 
 export type User = {
     id: string,
     name: string,
     email: string,
-    password: string
+    password: string,
+    admin: boolean,
+    mobile: string,
+    creationDate: string
 }
 
 export type  tasks = {
@@ -35,7 +39,10 @@ export interface TasksState {
 export type History = {
   id: string,
   status: string,
-  updateDate: string
+  updateDate: {
+    seconds: number
+  },
+  updatedBy: string
 }
 
 export type historyList = {
@@ -45,13 +52,18 @@ export type historyList = {
 }
 
 export type Notification = {
-  id: string,
-  taskId: string,
-  read: boolean,
-  title: string,
-  message: string,
-  task: string,
-  creationDate: string
+  item : {
+    id: string,
+    taskId: string,
+    read: boolean,
+    title: string,
+    message: string,
+    task: string,
+    creationDate: {
+      seconds: number
+    },
+    screen: string
+  }
 }
 
 export type notificationsList = {
@@ -71,9 +83,26 @@ export interface notificationsState {
 }
 
 export type Updates = {
-  id: string,
+  updateId: string,
+  assigenId: string, 
+  description: string, 
+  images: Array<string>, 
+  taskId: string, 
+  time: {
+    seconds: number
+  }, 
   title: string,
-  description: string,
-  time: string,
-  images: Array<string>
+  updatedBy: string,
+  deviceToken: string
 }
+
+// export type UpdatesList = {
+//   assigenId: string, 
+//   description: string, 
+//   images: Array<string>, 
+//   taskId: string, 
+//   time: Date, 
+//   title: string, 
+//   updateId: string, 
+//   updatedBy: string
+// }

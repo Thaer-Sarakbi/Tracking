@@ -6,22 +6,19 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { History, Task, Updates } from '../types/types';
+import { History, Task, Updates, User } from '../types/types';
 import StatusModal from '../components/StatusModal';
 import firestore from '@react-native-firebase/firestore'
 import { getTasks, updateTask } from '../redux/tasksSlice';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { getHistory } from '../redux/historySlice';
 import { ScrollView } from 'react-native-virtualized-view'
-import { addNotification, getNotifications } from '../redux/notificationsSlice';
+import { addNotification } from '../redux/notificationsSlice';
 import Timeline from 'react-native-timeline-flatlist';
 import UpdateModal from '../components/UpdateModal';
 import MapView, {Marker} from "react-native-maps";
 import moment from 'moment';
-import messaging from '@react-native-firebase/messaging';
 import NotificationService from '../services/NotificationService';
-import usePushNotification from '../hooks/usePushNotification';
 import Geolocation from '@react-native-community/geolocation';
 import LottieView from 'lottie-react-native';
 import HeaderDetails from '../components/HeaderDetails';
@@ -39,12 +36,8 @@ interface historyState {
   }
 }
 
-interface updatesState {
-  updates: {
-    data: Array<Updates>,
-    status: string,
-    error: string
-  }
+interface MyState {
+  auth: {user: User}
 }
 
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
@@ -53,17 +46,15 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [taskStatus, setTaskStatus] = useState<string>(route.params.status)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
-  const [latitude, setLatitude] = useState<string>(route.params.latitude)
-  const [longitude, setLongitude] = useState<boolean>(route.params.longitude)
+  const [latitude, setLatitude] = useState<number>(route.params.latitude)
+  const [longitude, setLongitude] = useState<number>(route.params.longitude)
 
-  const [updates, setUpdates] = useState([])
+  const [updates, setUpdates] = useState<Updates[]>([])
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
 
-  // const updates = useSelector((state: updatesState) => state.updates?.data)
-  const statusUpdates = useSelector((state: updatesState) => state.updates?.status)
-  const user = useSelector((state: TasksState) => state.auth.user)
+  const user = useSelector((state: MyState) => state.auth.user)
   
   const editUpadtes = updates.map(update => {
     const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
@@ -77,10 +68,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   editUpadtes.sort((a, b) => b.date - a.date )
   const dispatch = useDispatch<AppDispatch>()
 
-  // console.log(moment().diff(moment('2023-12-11'), 'days'))
-
   const id = route.params.taskId
-  const assignTo = route.params.assignTo
+  const assignTo = route.params.assignedTo
   const title = route.params?.title
   const description = route.params.description
   const duration = route.params.duration
@@ -89,18 +78,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const deviceToken = route.params.deviceToken
 
   useEffect(() => {
-    // firestore().collection('users').doc(userId).collection('tasks').doc(id).get()
-    // .then(documentSnapshot => { 
-    //   if (documentSnapshot.exists) { 
-    //     setTask(documentSnapshot.data())
-    //   }
-    // });
 
-    dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin})).then(() => {
-
-    })
-
-    // dispatch(getUpdates({taskId: id, userId: assigenId, admin: user.admin}))
+    dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin}))
 
     const unsubscribe =  firestore()
     .collection('users')
@@ -140,27 +119,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       }
     }
   }
-
-  // const addNotification = async (message: string, title: string | undefined) => {
-
-  //     await firestore().collection('users').doc('D7WNpRZb6d1j0WjuDtEJ').collection('notifications').add({
-  //       message,
-  //       read: false,
-  //       task: title,
-  //       taskId: id,
-  //       status: taskStatus,
-  //       creationDate: new Date(route.params.creationDate.seconds * 1000),
-  //       creationDateNotification: new Date(),
-  //       title,
-  //       description,
-  //       assignTo,
-  //       duration
-  //   }).then(res => {
-  //     dispatch(getNotifications(user.id))
-  //   }).catch(err => {
-  //     console.log(err)
-  //   })
-  // }
 
   const handleNotification = async (status: string) => {
     const message = `Status Updated to ${status} by ${user.name}`
@@ -204,7 +162,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     };
 
     await NotificationService.sendSingleDeviceNotification(notificationData);
-    // addNotification(message, title)
   }
 
   const onUpdateTask = () => {
@@ -268,24 +225,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)
-
-    // Geolocation.getCurrentPosition(info => {
-    //   setLatitude(info.coords.latitude)
-    //   setLongitude(info.coords.longitude)
-    // }, (err) => {
-      // //console.log(err.code, err.message);
-      //   setEnable(false)
-      //   RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
-      //     interval: 10000,
-      //     fastInterval: 5000,
-      //   })
-      //     .then((data) => {
-      //       setEnable(true)
-      //     })
-      //     .catch((err) => {
-      //       setEnable(true)
-      //     });
-    // }); 
   }
 
   const onChangeStatus = () => {
@@ -296,43 +235,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     setUpdateModalVisible(bool)
   }
 
-  // const [startDate, setStartDate] = useState(new Date(route.params.creationDate.seconds * 1000)); // Replace this with your specific date
-  // const [daysPassed, setDaysPassed] = useState(0);
-
-  // if(daysPassed > duration){
-  //   dispatch(addNotification({notification:{
-  //     screen: 'TaskDetails',
-  //     message: 'The deadline has been exhausted',
-  //     read: false,
-  //     task: title,
-  //     taskId: id,
-  //     status: taskStatus,
-  //     creationDate: new Date(),
-  //     creationDateNotification: new Date(),
-  //     title,
-  //     description,
-  //     assignTo,
-  //     duration,
-  //     assigenId,
-  //     receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
-  //   }}))
-  // }
-
-  // useEffect(() => {
-  //   const currentDate = new Date();
-  //   const timeDifference = currentDate.getTime() - startDate.getTime();
-  //   const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-
-  //   setDaysPassed(days);
-  // }, [startDate]);
-
     return (
       <ScrollView>
-        {/* <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back-outline" size={30} color={'white'} />
-          </TouchableOpacity>
-        </View> */}
         <HeaderDetails navigation={navigation} taskId={id} assigenId={assigenId} userId={user.id} admin={user.admin} />
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
@@ -498,7 +402,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            // dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name }))
             onUpdateTask()
             dispatch(getTasks({id: user.id, admin: user.admin}))
             dispatch(getHistory({taskId: id, userId: user.id}))

@@ -2,8 +2,16 @@ import moment from 'moment';
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../assets/Colors';
+import { RootStackParamsList } from '../navigation/AppStack';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-const UpdatesListScreen = ({ route, navigation }) => {
+interface Props {
+  route: RouteProp<RootStackParamsList, "UpdatesList">
+  navigation: StackNavigationProp<RootStackParamsList, "UpdatesList">
+}
+
+const UpdatesListScreen = ({ route, navigation }: Props) => {
   const updatesList = route.params.updatesList
   const date = route.params.date
 

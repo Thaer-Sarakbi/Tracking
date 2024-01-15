@@ -19,6 +19,8 @@ import { addNotification } from '../redux/notificationsSlice';
 import LottieView from 'lottie-react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { deleteUpdate } from '../redux/updatesSlice';
+import { AppDispatch } from '../redux/store';
+import { User } from '../types/types';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -30,7 +32,10 @@ interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "UpdateDetails">
 }
  
- 
+interface MyState {
+  auth: {user: User}
+}
+
 const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [isVisible, setIsVisible] = useState(false)
   const [index, setIndex] = useState(0)
@@ -38,7 +43,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [comment, setComment] = useState('')
   const [showAlert, setShowAlert] = useState<boolean>(false)
 
-  const user = useSelector((state: notificationsState) => state.auth.user)
+  const user = useSelector((state: MyState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -81,32 +86,22 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
     navigation.goBack()
   }
 
-  const handleNotification = async(message, taskId, updateId, assigenId) => {
-    // PushNotification.localNotification({
-    //   channelId: "update-status",
-    //   taskId,
-    //   updateId,
-    //   assigenId
-    // });
+  // const handleNotification = async(message, taskId, updateId, assigenId) => {
   
-    // PushNotification.popInitialNotification((notification) => {
-    //   console.log('Initial Notification', notification);
-    // });
+  //   let notificationData = {
+  //     data: {
+  //       screen: 'UpdateDetails',
+  //       taskId,
+  //       update:{id: updateId, images},
+  //       assigenId
+  //     },
+  //     title: 'Comment',
+  //     body: message,
+  //     token: deviceToken
+  //   };
   
-    let notificationData = {
-      data: {
-        screen: 'UpdateDetails',
-        taskId,
-        update:{id: updateId, images},
-        assigenId
-      },
-      title: 'Comment',
-      body: message,
-      token: deviceToken
-    };
-  
-    await NotificationService.sendSingleDeviceNotification(notificationData);
-  }
+  //   await NotificationService.sendSingleDeviceNotification(notificationData);
+  // }
 
   const sendNotification = async() => {
     const message = `${user.name} commented on you update`
@@ -137,7 +132,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
     // })
     // }
 
-    handleNotification(message, taskId, updateId, assigenId)
+    // handleNotification(message, taskId, updateId, assigenId)
   }
 
   const onSubmitComment = async () => {
@@ -159,7 +154,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
     }) 
     .then((res) => {    
       if(user.admin){
-        dispatch(addNotification({notification:{
+        const notificationData = {
           screen: 'UpdateDetails',
           message: `${user.name} added a new comment`,
           read: false,
@@ -173,7 +168,10 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
           updatedBy,
           assigenId,
           receiverId: assigenId
-      }}))
+        }
+        dispatch(addNotification({notification: notificationData}))
+
+        // NotificationService.sendSingleDeviceNotification({ notification: notificationData, token: assigned.deviceToken, message: `You have assigned a new task by ${user.name}` })
       } else {
         dispatch(addNotification({notification:{
           screen: 'UpdateDetails',

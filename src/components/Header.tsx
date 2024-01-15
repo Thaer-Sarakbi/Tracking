@@ -3,25 +3,16 @@ import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
-import { notificationsState } from '../types/types';
-import { getNotifications } from '../redux/notificationsSlice';
-import { AppDispatch } from '../redux/store';
+import { Notification, notificationsState } from '../types/types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
-import firestore from '@react-native-firebase/firestore'
 
 interface Props {
-  navigation: StackNavigationProp<RootStackParamsList, "Header">
+  // navigation: StackNavigationProp<RootStackParamsList, "Header">,
+  notifications: Array<Notification>
 }
 
 const Header = ({ navigation, notifications } : Props) => {
-  // const notifications = useSelector((state: notificationsState) => state.notifications.data)
-  const user = useSelector((state: notificationsState) => state.auth.user)
-
-  // const [notifications, setNotifications] = useState([])
-
-  const dispatch = useDispatch<AppDispatch>()
  
   const icons = [
     { name: "search-outline", size: 35, color: 'white' },
@@ -34,26 +25,6 @@ const Header = ({ navigation, notifications } : Props) => {
       navigation.navigate('Notifications')
     }
   }
-
-  // useEffect(() => {
-  //   dispatch(getNotifications(user.id))
-  // },[])
-
-  useEffect(() => {
-      // firestore()
-      // .collection('users')
-      // .doc(user?.id)
-      // .collection('notifications')
-      // .orderBy('creationDateNotification', "desc")
-      // .onSnapshot(snapshot => {
-      //   console.log(snapshot.docs)
-      //   const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      //   setNotifications(newData);
-      // })
- 
-    // Unsubscribe when component unmounts
-    // return () => unsubscribe();
-  },[])
 
   return (
     <View style={styles.container}>

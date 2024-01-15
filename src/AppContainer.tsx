@@ -5,10 +5,6 @@ import AppStack from './navigation/AppStack';
 import { firebase } from '@react-native-firebase/firestore'
 import { AppDispatch } from './redux/store';
 import { setUser } from './redux/authSlice';
-import { User } from './types/types';
-import usePushNotification from './hooks/usePushNotification';
-import messaging from '@react-native-firebase/messaging';
-import firestore from '@react-native-firebase/firestore'
 
 const AppContainer = () => {
 

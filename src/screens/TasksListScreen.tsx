@@ -13,13 +13,9 @@ import firestore from '@react-native-firebase/firestore'
 import LottieView from "lottie-react-native";
  
 const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
-  // const tasks = useSelector((state: TasksState) => state.tasks.data)
-  const status = useSelector((state: TasksState) => state.tasks.status)
-  // const user = route.user  
-  const users = useSelector((state: MyState) => state.users.data)
-  // console.log(tasks)
 
-  // const [tasks, setTasks] = useState([])
+  const status = useSelector((state: TasksState) => state.tasks.status)
+  const users = useSelector((state: MyState) => state.users.data)
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -29,36 +25,6 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
     setIsFetching(true)
     dispatch(getTasks({id: user.id, admin: user.admin}))
     setIsFetching(false)
-  }
-
-  const adminData = async() => {
-    let tasksList: Array<Task> = []
-
-    const usersCollection = await firestore().collection('users')
-
-    const usersQuerySnapshot = await usersCollection.get()
-    let usersDataWithTasks = []
-  
-    for(const userDoc of usersQuerySnapshot.docs){
-      const userTasksCollection = userDoc.ref.collection('tasks')
-  
-      const tasksQuerySnapshot = await userTasksCollection.get()
-  
-      const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
-        id: taskDoc.id,
-        ...taskDoc.data()
-      }))
-  
-      if(tasksData[0]){
-        usersDataWithTasks.push(
-          // id: userDoc.id,
-          // userData: userDoc.data(),
-          ...tasksData
-        )
-      }
-
-      setTasks(usersDataWithTasks)
-    }
   }
 
   useEffect(() => {
@@ -158,7 +124,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
                 return(
                   <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                     taskId: item.item.id,
-                    assignTo: item.item.assignedTo,
+                    assignedTo: item.item.assignedTo,
                     status: item.item.status,
                     creationDate: item.item.creationDate,
                     title: item.item.title,
