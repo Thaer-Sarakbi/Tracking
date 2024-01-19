@@ -17,7 +17,8 @@ export type User = {
     password: string,
     admin: boolean,
     mobile: string,
-    creationDate: string
+    creationDate: string,
+    deviceToken: string
 }
 
 export type  tasks = {
@@ -106,3 +107,12 @@ export type Updates = {
 //   updateId: string, 
 //   updatedBy: string
 // }
+
+export type message = {
+  id: string,
+  comment: string,
+  commenter: string,
+  creationDate: {
+    seconds: number
+  }
+}

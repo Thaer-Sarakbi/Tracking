@@ -11,6 +11,10 @@ import { AppDispatch } from '../redux/store';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamsList, "HeaderDetails">
+  taskId: string,
+  assigenId: string,
+  userId: string,
+  admin: boolean
 }
 
 const HeaderDetails = ({ navigation, taskId, assigenId, userId, admin } : Props) => {

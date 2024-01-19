@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Updates } from '../types/types';
 
-export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{taskId: string, userId: string, admin:boolean}) => {
+export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{taskId: string, userId: string}) => {
     let updatesList: Array<Updates> = []
 
     // if(user.admin){
@@ -42,17 +42,33 @@ export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{ta
     //   });
     // }
 
-    await firestore().collection('users').doc(user.userId).collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc").get()
-      .then(querySnapshot => { 
-        console.log(querySnapshot.docs)
-        querySnapshot.docs.forEach(documentSnapshot => {
-            updatesList.push(documentSnapshot.data() as any) 
-        });
-      }).catch((error) => {
-        console.log(error)
-      });
+    // await firestore().collection('users').doc(user.userId).collection('tasks').doc(user.taskId).collection('updates').orderBy('time', "desc").get()
+    //   .then(querySnapshot => { 
+    //     console.log(querySnapshot.docs)
+    //     querySnapshot.docs.forEach(documentSnapshot => {
+    //         updatesList.push(documentSnapshot.data() as any) 
+    //     });
+    //   }).catch((error) => {
+    //     console.log(error)
+    //   });
 
-    return updatesList
+    const unsubscribe =  await firestore()
+    .collection('users')
+    .doc(user.userId)
+    .collection('tasks')
+    .doc(user.taskId)
+    .collection('updates')
+    .orderBy('time', "desc")
+    .onSnapshot(snapshot => {
+      updatesList =  snapshot.docs.map((doc) => ({ updateId: doc.id, ...doc.data() }));
+      // setUpdates(newData);
+      // updatesList = updatesList1
+    })
+
+    return {
+      unsubscribe,
+      updatesList
+    }
 })
 
 export const deleteUpdate = createAsyncThunk("tasks/deleteTask", async (update: { id: string, assigenId: string, taskId: string }) => {

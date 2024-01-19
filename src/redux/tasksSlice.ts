@@ -40,7 +40,7 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: stri
     let usersDataWithTasks = []
   
     for(const userDoc of usersQuerySnapshot.docs){
-      const userTasksCollection = userDoc.ref.collection('tasks')
+      const userTasksCollection = userDoc.ref.collection('tasks').orderBy('creationDate', "desc")
   
       const tasksQuerySnapshot = await userTasksCollection.get()
   

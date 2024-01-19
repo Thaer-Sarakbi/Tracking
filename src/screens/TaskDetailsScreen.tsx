@@ -69,13 +69,15 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const id = route.params.taskId
-  const assignTo = route.params.assignedTo
+  const assignedTo = route.params.assignedTo
   const title = route.params?.title
   const description = route.params.description
   const duration = route.params.duration
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
+
+
 
   useEffect(() => {
 
@@ -145,23 +147,44 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     // });
 
     let notificationData = {
-      data: {
-        screen: 'TaskDetails',
-        title,
-        duration,
-        status: taskStatus,
-        message,
-        task: title,
-        assignTo,
-        description,
-        creationDate: new Date(route.params.creationDate.seconds * 1000)
-      },
-      title: 'Update Status',
-      body: message,
-      token: deviceToken
+      screen: 'TaskDetails',
+      title,
+      duration,
+      status: taskStatus,
+      // message,
+      task: title,
+      assignedTo,
+      description,
+      creationDate: new Date(route.params.creationDate.seconds * 1000),
+      channelId: 'updateTaskStatus',
+      channelName: 'New update Status'
+
+      // title: 'Update Status',
+      // body: message,
+      // token: deviceToken
     };
 
-    await NotificationService.sendSingleDeviceNotification(notificationData);
+    // const notificationData = {
+    //   screen: 'TaskDetails',
+    //   message: `You have assigned a new task by ${user.name}`,
+    //   read: false,
+    //   task: title,
+    //   taskId: res.id,
+    //   status: 'Not Started',
+    //   creationDate: new Date(),
+    //   creationDateNotification: new Date(),
+    //   title,
+    //   description,
+    //   assignTo: assignedTo,
+    //   duration,
+    //   assigenId: assigned?.id,
+    //   receiverId: assigned?.id,
+    //   channelId: 'newTask',
+    //   channelName: 'New Task'
+    // }
+
+   
+    await NotificationService.sendSingleDeviceNotification( { notification: notificationData, token: deviceToken, message });
   }
 
   const onUpdateTask = () => {
@@ -179,7 +202,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             creationDateNotification: new Date(),
             title,
             description,
-            assignTo,
+            assignedTo,
             duration,
             assigenId,
             receiverId: assigenId
@@ -196,7 +219,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             creationDateNotification: new Date(),
             title,
             description,
-            assignTo,
+            assignedTo,
             duration,
             assigenId,
             receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
@@ -242,7 +265,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           <Text style={styles.title}>{title}</Text>
           <View style={[styles.card, { marginBottom: 10 }]}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Assign To:</Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{assignTo}</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{assignedTo}</Text>
             </View>
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.card}>
@@ -404,7 +427,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           onConfirmPressed={() => {
             onUpdateTask()
             dispatch(getTasks({id: user.id, admin: user.admin}))
-            dispatch(getHistory({taskId: id, userId: user.id}))
+            dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin}))
             setShowAlert(false)
             handleNotification(taskStatus)
           }}

@@ -7,17 +7,19 @@ import moment from 'moment';
 import { getUsers } from '../redux/usersSlice';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { Colors } from '../assets/Colors';
+import { AppDispatch } from '../redux/store';
 
 const CalendarScreen = ({ navigation }) => {
   const users = useSelector((state: MyState) => state.users.data)
   const user = useSelector((state: TasksState) => state.auth.user)
 
+
   const dispatch = useDispatch<AppDispatch>()
 
+  const [date,setDate] = React.useState(new Date());
   const [updates, setUpdates] = useState([])
-  const [selected, setSelected] = React.useState("");
+  const [selected, setSelected] = React.useState();
   const [data,setData] = React.useState([]);
-  console.log(updates.length)
 
   const retreiveUpdates = async() =>{
 
@@ -45,35 +47,72 @@ const CalendarScreen = ({ navigation }) => {
     setUpdates(usersDataWithUpdates)
   }
 
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      retreiveUpdates()
+    });
 
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, selected]);
 
   useEffect(() => {
     retreiveUpdates()
     dispatch(getUsers())
     
     if(users){
-        let newArray = users.map((item) => {
-            return {key: item.id, value: item.value}
-          })
+        // let newArray = users.map((item) => {
+        //   if(user.admin){
+        //     return {key: item.id, value: item.value}
+        //   } else {
+        //     if(item.value === user.name){
+        //       return {key: item.id, value: item.value}
+        //     }
+        //   }
+            
+
+          
+        //   })
+
+        let newArray = []
+          if(user.admin){
+            users.forEach((item) => {
+              newArray.push({key: item.id, value: item.value})
+            })
+          } else {
+            users.forEach(item => {
+              if(item.value === user.name){
+                // console.log(item.id, item.value)
+                newArray.push({key: item.id, value: item.value})  
+              }
+            })
+          }
+         
           setData(newArray)
       }
   },[selected])
-
   
   let workDays = []
 
   updates.forEach(update => {
-    workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
-      
+    // console.log(new Date(update.time.seconds * 1000).getMonth() + 1, new Date(date).getMonth() + 1)
+    if(new Date(update.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
+      // return moment(new Date(update.time.seconds * 1000)).format('L')
+      workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
+    }
+    // workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
   })
+  
 
+  // console.log(workDays)
   const filteredWorksDays = [... new Set(workDays)]
 
-  let today = moment();
+  let today = moment(date);
   let day = today.clone().startOf('month');   //first day of month
   let customDatesStyles = [];
   while(day.add(1, 'day').isSame(today, 'month')) {
-   
     if(filteredWorksDays.includes(moment(day.clone()).format('L'))){
         customDatesStyles.push({
             date: day.clone(),
@@ -94,6 +133,7 @@ const CalendarScreen = ({ navigation }) => {
 
   }
 
+  // console.log(customDatesStyles)
 
   const filterUpdatesByDates = (date) => {
     const updatesList = updates.filter(update => {
@@ -119,10 +159,12 @@ const CalendarScreen = ({ navigation }) => {
         <CalendarPicker
           onDateChange={(date) => filterUpdatesByDates(date)}
           customDatesStyles={customDatesStyles}
-          onMonthChange={() => retreiveUpdates()}
+          onMonthChange={(date) => setDate(date)}
         />
 
-        <Text style={{ alignSelf: 'center', fontSize: 20 }}>{filteredWorksDays.length} Days Working</Text>
+        <View style={{ flex:  1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ alignSelf: 'center', fontSize: 20 }}>{filteredWorksDays.length} Days Working</Text>
+        </View>
   </View>
   );
 }

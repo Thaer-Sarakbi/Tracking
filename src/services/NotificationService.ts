@@ -8,7 +8,7 @@ const sendSingleDeviceNotification = data => {
       `key=${server_key}`,
     );
   
-    console.log(data.description)
+    console.log(data.data)
     var raw = JSON.stringify({
       data: data.notification,
       notification: {

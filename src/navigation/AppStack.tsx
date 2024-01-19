@@ -44,7 +44,10 @@ export type RootStackParamsList = {
     //   notifications: Array<Notification>
     // },
     HeaderDetails: {
-      // navigation: 
+      taskId: string, 
+      assigenId: string, 
+      userId: string, 
+      admin: boolean
     },
     UpdateDetails: Updates,
     UpdatesList:{
@@ -79,8 +82,6 @@ const AppStack = () => {
   };
   
   useEffect(() => {
-
-
     listenToNotifications();
   },[user])
 
@@ -106,11 +107,11 @@ const AppStack = () => {
           component={Header}
           options={{ headerShown: false }}
         /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="HeaderDetails"
           component={HeaderDetails}
           options={{ headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
           name="Notifications"
           component={NotificationsScreen}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ImageBackground, Text, View, LogBox, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import HeaderDetails from '../components/HeaderDetails';
+import { Text, View, LogBox, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { StyleSheet, Keyboard } from 'react-native';
 import { SliderBox } from "react-native-image-slider-box";
 import { Colors } from '../assets/Colors';
@@ -8,19 +7,15 @@ import ImageView from "react-native-image-viewing";
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
-import storage from '@react-native-firebase/storage'
-import auth from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore'
 import Icon from 'react-native-vector-icons/Ionicons';
-import NotificationService from '../services/NotificationService';
-import PushNotification from 'react-native-push-notification';
 import { addNotification } from '../redux/notificationsSlice';
 import LottieView from 'lottie-react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { deleteUpdate } from '../redux/updatesSlice';
 import { AppDispatch } from '../redux/store';
-import { User } from '../types/types';
+import { User, message } from '../types/types';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -39,7 +34,7 @@ interface MyState {
 const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [isVisible, setIsVisible] = useState(false)
   const [index, setIndex] = useState(0)
-  const [chat, setChat] = useState()
+  const [chat, setChat] = useState<message[]>()
   const [comment, setComment] = useState('')
   const [showAlert, setShowAlert] = useState<boolean>(false)
 
@@ -252,8 +247,8 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
            {chat && (<Text style={{ color: Colors.titles, fontSize: 25, margin: 10 }}>Comments:</Text>)}
            {
-            chat?.map((message, index) => (
-              <View key={index} style={{ marginHorizontal: 10, borderRadius: 10, borderTopColor: 'black', marginVertical: 5, padding: 5, backgroundColor: 'white' }}>
+            chat?.map((message) => (
+              <View key={message.id} style={{ marginHorizontal: 10, borderRadius: 10, borderTopColor: 'black', marginVertical: 5, padding: 5, backgroundColor: 'white' }}>
                 <Text style={{ color: Colors.titles, fontSize: 20 }}>{message.commenter}</Text>
                 <Text style={{ color: Colors.texts, fontSize: 15 }}>{message.comment}</Text>
               </View>
