@@ -92,6 +92,27 @@ export const deleteTask = createAsyncThunk("tasks/deleteTask", async (task: { id
   });
 })
 
+export const searchTask = createAsyncThunk("tasks/searchTask", async (task: { title: string, userId: string}) => {
+  let moviesList: Array<Movie> = []
+  
+  // await firestore()
+  // .collection('users')
+  // .doc(task.userId)
+  // .collection('tasks')
+  // .orderBy('creationDate', "desc")
+  // .where('title', '==' , task.title)
+  // .get()
+  // .then(querySnapshot => { 
+  //   querySnapshot.docs.forEach((documentSnapshot) => {
+  //     console.log(documentSnapshot)
+  //     // documentSnapshot.data().id = documentSnapshot.id
+  //     // tasksList.push(documentSnapshot.data() as tasks)
+  //   })
+  // });
+  
+    return moviesList
+  })
+
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState: {

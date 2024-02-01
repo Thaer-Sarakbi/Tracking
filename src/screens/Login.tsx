@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { StatusBar } from 'react-native';
 import * as Animatable from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient'
@@ -9,10 +10,16 @@ import { Colors } from '../assets/Colors';
 import { useForm, Controller } from "react-hook-form"
 import { StackScreenProps } from '@react-navigation/stack';
 import { AuthStackParamsList } from '../navigation/AuthStack';
+import packageJson from '../../package.json';
 
 const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) => {
 
   const [backendError, setBackendError] = useState('')
+  const [showPassword, setShowPassword] = useState(false); 
+
+  const toggleShowPassword = () => { 
+    setShowPassword(!showPassword); 
+  }; 
 
   const {
     control,
@@ -98,11 +105,19 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                secureTextEntry={true}
+                secureTextEntry={!showPassword} 
               />
             )}
             name="password"
           />
+
+            <MaterialIcons 
+              name={showPassword ? 'visibility-off' : 'visibility'} 
+              size={25} 
+              color="#aaa"
+              style={{marginRight: 10}} 
+              onPress={toggleShowPassword} 
+            /> 
         </View>
         {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
 
@@ -121,6 +136,7 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
             <Text style={[styles.textSign, { color: Colors.main }]}>Sign Up</Text>
           </TouchableOpacity>
         </View>
+        <Text style={{ alignSelf: 'center', fontSize: 15, marginVertical: 10 }}>Version: {packageJson.version}</Text>
       </Animatable.View>
     </View>
   );

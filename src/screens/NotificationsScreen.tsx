@@ -13,60 +13,79 @@ import { Colors } from '../assets/Colors';
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
 
-  const status = useSelector((state: notificationsState) => state.notifications.status)
   const user = useSelector((state: notificationsState) => state.auth.user)
 
-  const [notifications, setNotifications] = useState([])
+  const [notifications, setNotifications] = useState()
+  const [limit, setLimit] = useState(10)
   
   const dispatch = useDispatch<AppDispatch>()
 
-  useEffect(() => {
+  const getNotifications = () => {
     const unsubscribe = firestore()
       .collection('users')
       .doc(user.id)
       .collection('notifications')
       .orderBy('creationDateNotification', "desc")
+      .limit(limit)
       .onSnapshot(snapshot => {
     
         const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        // console.log(newData.length)
         setNotifications(newData);
       })
 
-    return () => unsubscribe();
+      return () => unsubscribe();
+  }
+
+  const handleLoadMore = () => {
+    setLimit(limit + 5)
+    getNotifications()
+  }
+
+  useEffect(() => {
+    getNotifications()
   },[])
 
-  if(notifications.length === 0){
+  if(!notifications){
     return(
       <>
         <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />
       </>
     )
   } else {
-    return (
-        <View>
-            <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={30} color={'white'} />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.container}>
-                <FlatList
-                    data={notifications}
-                    renderItem={({item}: Notification) => {
-                      return(
-                        <TouchableOpacity style={[styles.card, item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
-                          navigation.navigate(item.screen, item )
-                          dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
-                          dispatch(getNotifications(user.id))
-                        }}>
-                        <Text style={styles.title}>{item.task}</Text>
-                        <Text style={styles.message}>{item.message}</Text>
-                        </TouchableOpacity>
-                    )}}
-                />
-            </View>
+    if(notifications.length === 0){
+      return(
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 15 }}>No Notifications yet</Text>
         </View>
-    );
+      )
+    } else {
+        return (
+            <View>
+                <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Icon name="arrow-back-outline" size={30} color={'white'} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.container}>
+                    <FlatList
+                        data={notifications}
+                        renderItem={({item}: Notification) => {
+                          return(
+                            <TouchableOpacity style={[styles.card, item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
+                              navigation.navigate(item.screen, item )
+                              dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
+                              dispatch(getNotifications(user.id))
+                            }}>
+                            <Text style={styles.title}>{item.task}</Text>
+                            <Text style={styles.message}>{item.message}</Text>
+                            </TouchableOpacity>
+                        )}}
+                        onEndReached={handleLoadMore}
+                    />
+                </View>
+            </View>
+        )}
   }
 }
 
@@ -77,7 +96,7 @@ const styles = StyleSheet.create({
     },
     card:{
       // backgroundColor: 'white',
-      // height: 70,
+      // height: 170,
       borderRadius: 5,
       padding: 10,
       marginVertical: 5

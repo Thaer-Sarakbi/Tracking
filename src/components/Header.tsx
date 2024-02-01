@@ -12,7 +12,7 @@ interface Props {
   notifications: Array<Notification>
 }
 
-const Header = ({ navigation, notifications } : Props) => {
+const Header = ({ navigation, notifications, tasks, user } : Props) => {
  
   const icons = [
     { name: "search-outline", size: 35, color: 'white' },
@@ -23,6 +23,8 @@ const Header = ({ navigation, notifications } : Props) => {
   const handleNav = (name: string) => {
     if(name === 'notifications-outline'){
       navigation.navigate('Notifications')
+    } else if(name === 'search-outline'){
+      navigation.navigate('Search', { tasks, user })
     }
   }
 

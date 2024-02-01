@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TopTabs from './TopTabs';
 import CalendarScreen from '../screens/CalenadarScreen';
+import AttendanceScreen from '../screens/AttendanceScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -21,6 +21,17 @@ const BottomNavigator = () => {
         }} 
         component={TopTabs} 
       />
+      {/* <Tab.Screen 
+        name="Attendance" 
+        options={{ 
+            headerShown: false, 
+            tabBarLabelStyle: { display: 'none'},
+            tabBarIcon: ({ focused, color, size }) => (
+               <Icon name="document-attach-outline" size={30} color={focused ? "#4F8EF7" : "#919191"} />
+            )
+        }}
+        component={AttendanceScreen} 
+      /> */}
       <Tab.Screen 
         name="Calendar" 
         options={{ 

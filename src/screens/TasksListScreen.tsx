@@ -100,53 +100,60 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
   );
   }
 
-  if(status === 'loading' || tasks.length === 0){
+  if(status === 'loading'){
     return (
       <>
         <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />
       </>
     )
   } else if(status === 'succeeded'){
-    return (
-      <View style={{ flex: 1 }}>
-          <FlatList
-            keyExtractor={(item) => item?.id.toString()}
-            data={tasks}
-            renderItem={(item) => {
-              if(item.item?.status !== 'Completed'){
-                const assigned = users.find(user => {
-      
-                  if(user.value === item.item.assignedTo){
-                    return user
+    if(tasks.length === 0){
+      return(
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 15 }}>No Tasks yet</Text>
+        </View>
+      )
+    } else {
+        return (
+          <View style={{ flex: 1 }}>
+              <FlatList
+                keyExtractor={(item) => item?.id.toString()}
+                data={tasks}
+                renderItem={(item) => {
+                  if(item.item?.status !== 'Completed'){
+                    const assigned = users.find(user => {
+          
+                      if(user.value === item.item.assignedTo){
+                        return user
+                      }
+                    })
+                    
+                    return(
+                      <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
+                        taskId: item.item.id,
+                        assignedTo: item.item.assignedTo,
+                        status: item.item.status,
+                        creationDate: item.item.creationDate,
+                        title: item.item.title,
+                        latitude: item.item.latitude,
+                        longitude: item.item.longitude,
+                        description: item.item.description,
+                        duration: item.item.duration,
+                        assigenId: item.item.assigenId,
+                        deviceToken: assigned.deviceToken
+                      })}} >
+                        <Card item={item.item} />
+                      </TouchableOpacity>
+                    )
+                  } else {
+                    return null
                   }
-                })
-                
-                return(
-                  <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                    taskId: item.item.id,
-                    assignedTo: item.item.assignedTo,
-                    status: item.item.status,
-                    creationDate: item.item.creationDate,
-                    title: item.item.title,
-                    latitude: item.item.latitude,
-                    longitude: item.item.longitude,
-                    description: item.item.description,
-                    duration: item.item.duration,
-                    assigenId: item.item.assigenId,
-                    deviceToken: assigned.deviceToken
-                  })}} >
-                    <Card item={item.item} />
-                  </TouchableOpacity>
-                )
-              } else {
-                return null
-              }
-            }}
-            onRefresh= {() => onRefresh()}
-            refreshing={isFetching}
-          />
-      </View>
-    );
+                }}
+                onRefresh= {() => onRefresh()}
+                refreshing={isFetching}
+              />
+          </View>
+        );}
   }
 }
 

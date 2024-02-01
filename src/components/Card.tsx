@@ -71,18 +71,21 @@ const Card = ({item}: { item: Task }  ) => {
       marginVertical: 10
     },
     title:{
+      flex: 2,
       fontWeight: 'bold',
       fontSize: 25,
       color: 'black'
     },
     status: {
+      flex: 1,
       borderWidth: 2,
       // borderColor: '#5C6BC0',
       paddingHorizontal: 5,
       borderRadius: 5,
       alignItems: 'center',
       justifyContent: 'center',
-      width: '30%'
+      width: '30%',
+      height: 45
     },
     statusText:{
       color: '#5C6BC0',

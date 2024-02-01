@@ -110,6 +110,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     assignedTo, 
     duration, 
     location,
+    searchTitle: title.toLowerCase(),
     status: 'Not Started',
     creationDate: new Date(),
     assigenId: assigned?.id
@@ -126,7 +127,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       creationDateNotification: new Date(),
       title,
       description,
-      assignTo: assignedTo,
+      assignedTo,
       duration,
       assigenId: assigned?.id,
       receiverId: assigned?.id,

@@ -78,7 +78,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const deviceToken = route.params.deviceToken
 
 
-
   useEffect(() => {
 
     dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin}))

@@ -16,6 +16,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { deleteUpdate } from '../redux/updatesSlice';
 import { AppDispatch } from '../redux/store';
 import { User, message } from '../types/types';
+import moment from 'moment';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -46,7 +47,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const updateId = route.params.updateId
   const assigenId = route.params.assigenId
   const deviceToken = route.params.deviceToken
-  const creationDate = route.params.time
+  const creationDate = route.params.time.toString().replace(/(\r\n|\n|\r)/gm, ",  ")
   const title = route.params.title
   const description = route.params.description
   const updatedBy = route.params.updatedBy
@@ -220,6 +221,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
           <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
             <Text style={styles.title}>{title}</Text>
+            <Text style={{ marginBottom: 15 }}>{creationDate}</Text>
             <Text style={styles.decription}>{description}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Updated By: </Text>
@@ -276,7 +278,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
               show={showAlert}
               showProgress={false}
               title="Alert"
-              message="Are you sure you want to delete this task?"
+              message="Are you sure you want to delete this update?"
               closeOnTouchOutside={false}
               closeOnHardwareBackPress={false}
               showCancelButton={true}
@@ -335,10 +337,10 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 30,
         color: Colors.titles,
-        marginVertical: 20
+        marginTop: 20
       },
       decription:{
-        fontSize: 15
+        fontSize: 17
       },
   })
 

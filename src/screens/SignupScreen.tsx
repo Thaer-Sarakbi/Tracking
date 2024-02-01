@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Dimensions, TextInput, Image, TouchableOpacity, Platform, StatusBar, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import LinearGradient from 'react-native-linear-gradient'
 import * as Animatable from 'react-native-animatable'
 import { useForm, Controller } from "react-hook-form"
@@ -17,6 +18,11 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
 
   const [message, setMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
+  const [showPassword, setShowPassword] = useState(false); 
+
+  const toggleShowPassword = () => { 
+    setShowPassword(!showPassword); 
+  }; 
 
   useEffect(() => {
     if(message !== ''){
@@ -183,11 +189,19 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                secureTextEntry={true}
+                secureTextEntry={!showPassword} 
               />
             )}
             name="password"
-          />      
+          />  
+
+            <MaterialIcons 
+              name={showPassword ? 'visibility-off' : 'visibility'} 
+              size={25} 
+              color="#aaa"
+              style={{marginRight: 10}} 
+              onPress={toggleShowPassword} 
+            />     
         </View>
         {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
 
@@ -216,11 +230,19 @@ const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Si
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                secureTextEntry={true}
+                secureTextEntry={!showPassword} 
               />
             )}
             name="confirmPassword"
-          />     
+          />
+
+            <MaterialIcons 
+              name={showPassword ? 'visibility-off' : 'visibility'} 
+              size={25} 
+              color="#aaa"
+              style={{marginRight: 10}} 
+              onPress={toggleShowPassword} 
+            />      
         </View>
         {errors.confirmPassword && <Text style={{ color: 'red', fontSize: 15 }}>{errors.confirmPassword?.message}</Text>}
 

@@ -12,6 +12,8 @@ import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
 import usePushNotification from "../hooks/usePushNotification"
 import { useSelector } from "react-redux"
+import SearchBox from "../components/SearchBox"
+import SearchScreen from "../screens/SearchScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -125,6 +127,11 @@ const AppStack = () => {
         <Stack.Screen
           name="UpdatesList"
           component={UpdatesListScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
           options={{ headerShown: false }}
         />
     </Stack.Navigator>

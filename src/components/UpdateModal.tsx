@@ -228,7 +228,7 @@ const compressAndResizeImage = async (originalUri: {path: string}) => {
           />
           {errors.description && <Text style={{ color: 'red', fontSize: 15 }}>{errors.description?.message}</Text>}
 
-            {images ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
+            {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
                
                 {renderMultiImages}
               

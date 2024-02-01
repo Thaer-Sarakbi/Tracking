@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import { User } from '../types/types';
 import moment from 'moment';
+import packageJson from '../../package.json';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -17,6 +18,7 @@ interface ProfileState {
 function ProfileScreen(): JSX.Element {
   const user = useSelector((state: ProfileState) => state.auth.user)
 
+  console.log(packageJson.version)
   const onSignOut = async() => {
     await auth().signOut().then(function() {
       console.log('Signed Out');
@@ -98,6 +100,8 @@ function ProfileScreen(): JSX.Element {
             <TouchableOpacity onPress={() => onSignOut()} style = {{ borderWidth: 1, borderColor: 'red', width: '90%',height: 45 , justifyContent: 'center', alignItems: 'center', marginTop: 15, alignSelf: 'center', borderRadius: 10 }}>
               <Text style = {{ color: 'red', fontWeight: 'bold' }}>Log Out</Text>
             </TouchableOpacity>
+
+            <Text style={{ alignSelf: 'center', fontSize: 15, marginVertical: 10 }}>Version: {packageJson.version}</Text>
           </View>
         </View>
       </ScrollView>

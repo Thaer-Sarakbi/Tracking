@@ -14,9 +14,10 @@ import CompletedTaskScreen from '../screens/CompletedTaskScreen';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import firestore from '@react-native-firebase/firestore'
-import HeaderStack from './HeaderStack';
+import HeaderStack from './SearchStack';
 import { getTasks } from '../redux/tasksSlice';
 import { useIsFocused } from '@react-navigation/native';
+import SearchStack from './SearchStack';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -30,7 +31,6 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
   const tasks = useSelector((state: MyState) => state.tasks?.data)
   const user = useSelector((state: TasksState) => state.auth.user)
 
-  // const [tasks, setTasks] = useState([])
   const [notifications, setNotifications] = useState([])
 
   const changeModalVisible = (bool: boolean) => {
@@ -59,8 +59,8 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   return (
     <>
-      <Header navigation={navigation} notifications={notifications}/>
-      {/* <HeaderStack /> */}
+      <Header navigation={navigation} notifications={notifications} tasks={tasks} user={user}/>
+      {/* <SearchStack navigation={navigation} notifications={notifications} /> */}
       <Tab.Navigator 
         screenOptions={{
           // tabBarActiveTintColor: Colors.main,

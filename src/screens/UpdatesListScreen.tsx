@@ -5,6 +5,7 @@ import { Colors } from '../assets/Colors';
 import { RootStackParamsList } from '../navigation/AppStack';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import 'moment/locale/en-gb'
 
 interface Props {
   route: RouteProp<RootStackParamsList, "UpdatesList">
@@ -15,6 +16,7 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
   const updatesList = route.params.updatesList
   const date = route.params.date
 
+  moment.locale('en-gb');        
   return (
     <View style={styles.container}>
       <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>{moment(date).format('L')}</Text>
