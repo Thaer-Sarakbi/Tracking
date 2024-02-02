@@ -63,18 +63,6 @@ const CalendarScreen = ({ navigation }) => {
     dispatch(getUsers())
     
     if(users){
-        // let newArray = users.map((item) => {
-        //   if(user.admin){
-        //     return {key: item.id, value: item.value}
-        //   } else {
-        //     if(item.value === user.name){
-        //       return {key: item.id, value: item.value}
-        //     }
-        //   }
-            
-
-          
-        //   })
 
         let newArray = []
           if(user.admin){

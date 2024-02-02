@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Notification, notificationsState } from '../types/types';
 import { AppDispatch } from '../redux/store';
@@ -17,6 +17,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
 
   const [notifications, setNotifications] = useState()
   const [limit, setLimit] = useState(10)
+  const [footerLoading, setFooterLoading] = useState(true)
   
   const dispatch = useDispatch<AppDispatch>()
 
@@ -28,17 +29,27 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
       .orderBy('creationDateNotification', "desc")
       .limit(limit)
       .onSnapshot(snapshot => {
-    
         const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        // console.log(newData.length)
+        if(newData.length === notifications?.length){
+          setFooterLoading(false)
+        }
         setNotifications(newData);
+        setLimit(limit + 10)
       })
 
       return () => unsubscribe();
   }
 
+  const footer = () => {
+    return(
+      footerLoading ? 
+        <View style={styles.loader}>
+          <ActivityIndicator size='large' />
+        </View> : null
+    )
+}
+
   const handleLoadMore = () => {
-    setLimit(limit + 5)
     getNotifications()
   }
 
@@ -61,7 +72,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
       )
     } else {
         return (
-            <View>
+            <View style={{ paddingBottom: 110 }}>
                 <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
                   <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back-outline" size={30} color={'white'} />
@@ -82,6 +93,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                             </TouchableOpacity>
                         )}}
                         onEndReached={handleLoadMore}
+                        ListFooterComponent={footer}
                     />
                 </View>
             </View>
@@ -107,6 +119,10 @@ const styles = StyleSheet.create({
     },
     message:{
       fontSize: 20
+    },
+    loader:{
+      marginTop: 10,
+      alignItems: 'center'
     }
   })
 export default NotificationsScreen;

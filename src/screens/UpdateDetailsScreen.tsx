@@ -16,7 +16,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { deleteUpdate } from '../redux/updatesSlice';
 import { AppDispatch } from '../redux/store';
 import { User, message } from '../types/types';
-import moment from 'moment';
+import MapView, {Marker} from "react-native-maps";
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -43,6 +43,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
+  console.log(route.params)
   const taskId = route.params.taskId
   const updateId = route.params.updateId
   const assigenId = route.params.assigenId
@@ -52,6 +53,8 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const description = route.params.description
   const updatedBy = route.params.updatedBy
   const images = route.params.images
+  const latitude = route.params.latitude
+  const longitude = route.params.longitude
 
   console.log(taskId, updateId, assigenId, deviceToken)
 
@@ -246,6 +249,26 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
             onRequestClose={() => setIsVisible(false)}
             onImageIndexChange={(i) => setIndex(i)}
            />)}
+
+        <MapView
+          style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
+            initialRegion={{
+              longitude: longitude ? Number(longitude) : 0,
+              latitude: latitude ? Number(latitude) : 0,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+        >
+          <Marker
+            coordinate={{
+              longitude: longitude ? Number(longitude) : 0,
+              latitude: latitude ? Number(latitude) : 0
+            }}
+            pinColor={"red"}
+            title={title}
+            description={description}
+          />
+        </MapView>
 
            {chat && (<Text style={{ color: Colors.titles, fontSize: 25, margin: 10 }}>Comments:</Text>)}
            {

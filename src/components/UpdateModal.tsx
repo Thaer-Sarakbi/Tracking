@@ -13,6 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { addNotification } from '../redux/notificationsSlice';
 import { User } from '../types/types';
+import Geolocation from '@react-native-community/geolocation';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,
@@ -52,54 +53,64 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
 
     const { title, description } = watch()
 
-    await firestore().collection('users').doc(assigenId).collection('tasks').doc(id).collection('updates').add({
-      title, 
-      description, 
-      images: images ? images : null,
-      time: new Date(),
-      updatedBy: updaterName,
-      taskId: id,
-      assigenId
-    }).then(res => {
-      if(user.admin){
-        dispatch(addNotification({notification:{
-          screen: 'UpdateDetails',
-          message: `${user.name} added a new Update`,
-          read: false,
-          taskId: id,
-          time: new Date(),
-          creationDateNotification: new Date(),
-          updateId: res.id,
-          images,
-          title,
-          description,
-          updatedBy: updaterName,
-          assigenId,
-          receiverId: assigenId
-      }}))
-      } else {
-        dispatch(addNotification({notification:{
-          screen: 'UpdateDetails',
-          message: `${user.name} added a new Update`,
-          read: false,
-          taskId: id,
-          time: new Date(),
-          creationDateNotification: new Date(),
-          updateId: res.id,
-          images,
-          title,
-          description,
-          updatedBy: updaterName,
-          assigenId,
-          receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
-      }}))
-      }
-      changeModalVisible(false)
-      dispatch(getUpdates({taskId: id, userId, admin}))
-    }).catch(err => {
-      changeModalVisible(false)
-      console.log(err)
-    })
+    Geolocation.getCurrentPosition(info => {
+      firestore().collection('users').doc(assigenId).collection('tasks').doc(id).collection('updates').add({
+        title, 
+        description, 
+        images: images ? images : null,
+        time: new Date(),
+        updatedBy: updaterName,
+        taskId: id,
+        assigenId,
+        latitude: info.coords.latitude, 
+        longitude: info.coords.longitude
+      }).then(res => {
+        if(user.admin){
+          dispatch(addNotification({notification:{
+            screen: 'UpdateDetails',
+            message: `${user.name} added a new Update`,
+            read: false,
+            taskId: id,
+            time: new Date(),
+            creationDateNotification: new Date(),
+            updateId: res.id,
+            images,
+            title,
+            description,
+            updatedBy: updaterName,
+            assigenId,
+            receiverId: assigenId,
+            latitude: info.coords.latitude, 
+            longitude: info.coords.longitude
+        }}))
+        } else {
+          dispatch(addNotification({notification:{
+            screen: 'UpdateDetails',
+            message: `${user.name} added a new Update`,
+            read: false,
+            taskId: id,
+            time: new Date(),
+            creationDateNotification: new Date(),
+            updateId: res.id,
+            images,
+            title,
+            description,
+            updatedBy: updaterName,
+            assigenId,
+            receiverId: 'D7WNpRZb6d1j0WjuDtEJ',
+            latitude: info.coords.latitude, 
+            longitude: info.coords.longitude
+        }}))
+        }
+        changeModalVisible(false)
+        dispatch(getUpdates({taskId: id, userId, admin}))
+      }).catch(err => {
+        changeModalVisible(false)
+        console.log(err)
+      })
+
+      uploadImage()
+  }) 
 
     uploadImage()
   } 

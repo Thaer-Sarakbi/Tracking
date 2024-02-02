@@ -96,11 +96,11 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   // Unsubscribe when component unmounts
   return () => unsubscribe();
-  },[isModalVisible])
+  },[])
 
-  useEffect(() => {
+  // useEffect(() => {
     // setTask({ ...task, status: taskStatus })
-  },[taskStatus])
+  // },[taskStatus])
 
   const getStyle = (status: string) => {
     if(status === 'In Progress'){
@@ -349,8 +349,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         <MapView
           style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
             initialRegion={{
-              latitude: 3.157250, 
-              longitude: 101.732385,
+              longitude: longitude ? Number(longitude) : 0,
+              latitude: latitude ? Number(latitude) : 0,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
