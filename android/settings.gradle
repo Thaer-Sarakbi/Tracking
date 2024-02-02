@@ -8,3 +8,6 @@ project(':react-native-vector-icons').projectDir = new File(rootProject.projectD
 
 include ':react-native-push-notification'
 project(':react-native-push-notification').projectDir = file('../node_modules/react-native-push-notification/android')
+
+include ':react-native-android-location-enabler'
+project(':react-native-android-location-enabler').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-android-location-enabler/android')

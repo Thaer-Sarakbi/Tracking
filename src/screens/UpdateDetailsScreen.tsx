@@ -43,7 +43,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
-  console.log(route.params)
+  console.log(route.params.time)
   const taskId = route.params.taskId
   const updateId = route.params.updateId
   const assigenId = route.params.assigenId

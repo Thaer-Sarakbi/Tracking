@@ -1,6 +1,6 @@
 import { RouteProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View, StyleSheet, FlatList } from 'react-native';
+import { Modal, Text, TouchableOpacity, View, StyleSheet, FlatList, Platform, ActivityIndicator } from 'react-native';
 import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
@@ -22,6 +22,7 @@ import NotificationService from '../services/NotificationService';
 import Geolocation from '@react-native-community/geolocation';
 import LottieView from 'lottie-react-native';
 import HeaderDetails from '../components/HeaderDetails';
+import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -48,6 +49,8 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false)
   const [latitude, setLatitude] = useState<number>(route.params.latitude)
   const [longitude, setLongitude] = useState<number>(route.params.longitude)
+  const [statusLoading, setStatusLoading] = useState<boolean>(false)
+  console.log(statusLoading)
 
   const [updates, setUpdates] = useState<Updates[]>([])
 
@@ -205,7 +208,9 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             duration,
             assigenId,
             receiverId: assigenId
-          }}))
+          }})).then(() => {
+            setStatusLoading(false)
+          })
         } else {
           dispatch(addNotification({notification:{
             screen: 'TaskDetails',
@@ -222,26 +227,29 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
             duration,
             assigenId,
             receiverId: 'D7WNpRZb6d1j0WjuDtEJ'
-          }}))
+          }})).then(() => {
+            setStatusLoading(false)
+          })
         }
- 
       })
 
+      dispatch(getTasks({id: user.id, admin: user.admin}))
+      dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin}))
+      handleNotification(taskStatus)
       setLatitude(info.coords.latitude)
       setLongitude(info.coords.longitude)
-    }, (err) => {
-      // //console.log(err.code, err.message);
-      //   setEnable(false)
-      //   RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
-      //     interval: 10000,
-      //     fastInterval: 5000,
-      //   })
-      //     .then((data) => {
-      //       setEnable(true)
-      //     })
-      //     .catch((err) => {
-      //       setEnable(true)
-      //     });
+    }, async(err) => {
+      if (Platform.OS === 'android') {
+        try {
+          const enableResult = await promptForEnableLocationIfNeeded();
+          if(enableResult === 'enabled'){
+            setStatusLoading(true)
+            onUpdateTask()
+          }
+        } catch (error: unknown) {
+          console.log('error')
+        }
+      }
     }); 
   }
 
@@ -285,17 +293,24 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           </View>
 
           <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
-            <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Status</Text>
-            <TouchableOpacity 
-              style={[styles.button, getStyle(taskStatus)]}
-              onPress={() => changeModalVisible(true)}
-            >
-              <Text style={[styles.decription, getStyle(taskStatus)]}>{taskStatus}</Text>
-            </TouchableOpacity>
+            {!statusLoading ? (
+              <>
+                <Text style={{ fontWeight: 'bold', color: Colors.titles, fontSize: 30 }}>Status</Text>
+                <TouchableOpacity 
+                  style={[styles.button, getStyle(taskStatus)]}
+                  onPress={() => changeModalVisible(true)}
+                >
+                  <Text style={[styles.decription, getStyle(taskStatus)]}>{taskStatus}</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.updateButton} onPress={() => onChangeStatus()}>
-              <Text style={{ fontSize: 20, color: 'white' }}>Update</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.updateButton} onPress={() => onChangeStatus()}>
+                  <Text style={{ fontSize: 20, color: 'white' }}>Update</Text>
+                </TouchableOpacity>
+              </>) : (
+                <View style={styles.loader}>
+                  <ActivityIndicator size='large' />
+                </View>
+              )}
         </View>
 
         <View style={{ backgroundColor: 'white', marginTop: 10, borderRadius: 5, padding: 10}}>
@@ -312,7 +327,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                 circleColor='rgb(45,156,219)'
                 lineColor='rgb(45,156,219)'
                 separator={true}
-                timeContainerStyle={{minWidth:52, marginTop: 10 }}
+                timeContainerStyle={{width:75, marginTop: 10 }}
                 timeStyle={{textAlign: 'center', backgroundColor:'#ff9797', color:'white', padding:5, borderRadius:13}}
                 descriptionStyle={{color:'gray'}}
                 options={{
@@ -425,10 +440,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           }}
           onConfirmPressed={() => {
             onUpdateTask()
-            dispatch(getTasks({id: user.id, admin: user.admin}))
-            dispatch(getHistory({taskId: id, userId: user.id, admin: user.admin}))
             setShowAlert(false)
-            handleNotification(taskStatus)
           }}
           contentContainerStyle={{
             width: '70%'
@@ -525,6 +537,10 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     height: 100,
     width: '100%'
+  },
+  loader:{
+    marginTop: 10,
+    alignItems: 'center'
   }
 })
 export default TaskDetailsScreen;

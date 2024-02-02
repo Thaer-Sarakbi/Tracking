@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground, Platform, ActivityIndicator } from 'react-native';
 import { Colors } from '../assets/Colors';
 import firestore from '@react-native-firebase/firestore'
 import { getUpdates } from '../redux/updatesSlice';
@@ -7,13 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Platform } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { addNotification } from '../redux/notificationsSlice';
 import { User } from '../types/types';
 import Geolocation from '@react-native-community/geolocation';
+import { promptForEnableLocationIfNeeded, isLocationEnabled } from 'react-native-android-location-enabler';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,
@@ -32,6 +32,7 @@ interface MyState {
 const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId, admin, updaterName } : Props) => {
     const [images, setImages] = useState<string[]>([])
     const [transferred, setTransferred] = useState(0);
+    const [modalLoading, setModalStatusLoading] = useState<boolean>(false)
     const user = useSelector((state: MyState) => state.auth.user)
 
     const {
@@ -82,7 +83,9 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
             receiverId: assigenId,
             latitude: info.coords.latitude, 
             longitude: info.coords.longitude
-        }}))
+        }})).then(() => {
+          setModalStatusLoading(false)
+        })
         } else {
           dispatch(addNotification({notification:{
             screen: 'UpdateDetails',
@@ -100,7 +103,9 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
             receiverId: 'D7WNpRZb6d1j0WjuDtEJ',
             latitude: info.coords.latitude, 
             longitude: info.coords.longitude
-        }}))
+        }})).then(() => {
+          setModalStatusLoading(false)
+        })
         }
         changeModalVisible(false)
         dispatch(getUpdates({taskId: id, userId, admin}))
@@ -110,9 +115,21 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
       })
 
       uploadImage()
-  }) 
+  }, async(err) => {
 
-    uploadImage()
+      if (Platform.OS === 'android') {
+        try {
+          const enableResult = await promptForEnableLocationIfNeeded();
+          if(enableResult === 'enabled'){
+            setModalStatusLoading(true)
+            submit()
+          }
+          
+        } catch (error: unknown) {
+          console.log('error')
+        }
+      }
+  }) 
   } 
 
   const chooseFromGallery = () => {
@@ -189,7 +206,7 @@ const compressAndResizeImage = async (originalUri: {path: string}) => {
         style={[styles.container, isModalVisible ? { backgroundColor: 'rgba(0, 0, 0, 0.5)' } : {}]}
       >
         <View style={styles.modal}>
-          <Text style = {{ fontSize: 20, color: Colors.titles }}>Title</Text>
+          {!modalLoading ? (<><Text style = {{ fontSize: 20, color: Colors.titles }}>Title</Text>
 
           <Controller
             control={control}
@@ -251,7 +268,11 @@ const compressAndResizeImage = async (originalUri: {path: string}) => {
 
             <TouchableOpacity style={styles.updateButton} onPress={handleSubmit(submit)}>
               <Text style={{ fontSize: 20, color: 'white' }}>Proceed</Text>
-            </TouchableOpacity>
+            </TouchableOpacity></>) : (
+               <View style={styles.loader}>
+                 <ActivityIndicator size='large' />
+               </View>
+            )}
         </View> 
       </View>
     );
@@ -290,6 +311,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10
     },
+    loader:{
+      marginTop: 10,
+      alignItems: 'center'
+    }
 })
 
 export default UpdateModal
