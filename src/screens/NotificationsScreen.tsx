@@ -82,9 +82,13 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                     <FlatList
                         data={notifications}
                         renderItem={({item}: Notification) => {
+                          console.log(item)
                           return(
                             <TouchableOpacity style={[styles.card, item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
-                              navigation.navigate(item.screen, item )
+                              navigation.navigate(item.screen, {
+                                ...item,
+                                time: moment(new Date(item.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
+                              })
                               dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
                               dispatch(getNotifications(user.id))
                             }}>
