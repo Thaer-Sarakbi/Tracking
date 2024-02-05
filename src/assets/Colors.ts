@@ -1,5 +1,5 @@
 export const Colors = {
     titles: 'black',
-    texts: '#9E9E9E',
-    main: '#F57C00'
+    texts: 'rgba(158, 158, 158, 1)',
+    main: 'rgba(245, 124, 0, 1)'
 }

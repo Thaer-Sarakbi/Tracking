@@ -10,6 +10,7 @@ import firestore from '@react-native-firebase/firestore'
 import LottieView from 'lottie-react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
+import moment from 'moment';
 
 const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsList, 'Notifications'>) => {
 
@@ -82,12 +83,11 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                     <FlatList
                         data={notifications}
                         renderItem={({item}: Notification) => {
-                          console.log(item)
                           return(
                             <TouchableOpacity style={[styles.card, item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
                               navigation.navigate(item.screen, {
                                 ...item,
-                                time: moment(new Date(item.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
+                                time: moment(new Date(item.time?.seconds * 1000)).format('MMM Do[\n]h:ss a')
                               })
                               dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
                               dispatch(getNotifications(user.id))

@@ -72,8 +72,8 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
           children={() => <TasksListScreen navigation={navigation} user={user} tasks={tasks} />} 
           options={{
             tabBarBadge:()=> { return (  
-              <View style={{ position: 'relative', top: 14, left: -60 }}>
-                <Text>({
+              <View style={{ position: 'relative', top: 14, left: -45 }}>
+                <Text style={{ marginLeft: 20 }}>({
                   tasks?.filter(task => {
                     if(task?.status !== 'Completed'){
                       return task

@@ -50,7 +50,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [latitude, setLatitude] = useState<number>(route.params.latitude)
   const [longitude, setLongitude] = useState<number>(route.params.longitude)
   const [statusLoading, setStatusLoading] = useState<boolean>(false)
-  console.log(statusLoading)
 
   const [updates, setUpdates] = useState<Updates[]>([])
 
@@ -100,10 +99,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   // Unsubscribe when component unmounts
   return () => unsubscribe();
   },[])
-
-  // useEffect(() => {
-    // setTask({ ...task, status: taskStatus })
-  // },[taskStatus])
 
   const getStyle = (status: string) => {
     if(status === 'In Progress'){

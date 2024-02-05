@@ -290,7 +290,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
                style={{ flex: 1, backgroundColor: 'white', borderRadius: 10, marginVertical: 5, marginRight: 5, fontSize: 15 }}
              />
              <TouchableOpacity 
-               onPress={() => onSubmitComment()}
+               onPress={() => {comment !== '' ? onSubmitComment() : null}}
                style={{ backgroundColor: Colors.main, borderRadius: 50, width: 50, height: 50, justifyContent: 'center', alignItems: 'center' }}
              >
                <Icon name="send-outline" size={25} color={'white'}  />
