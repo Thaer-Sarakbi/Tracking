@@ -14,6 +14,8 @@ import usePushNotification from "../hooks/usePushNotification"
 import { useSelector } from "react-redux"
 import SearchBox from "../components/SearchBox"
 import SearchScreen from "../screens/SearchScreen"
+import ReportDetailsScreen from "../screens/ReportDetails"
+import AttendanceDetailsScreen from "../screens/AttendanceDetailsScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -39,6 +41,7 @@ export type RootStackParamsList = {
       assignedTo: string,
       latitude: number,
       longitude: number,
+      assignedBy: string,
       deviceToken: string
     },
     Notifications: undefined,
@@ -132,6 +135,16 @@ const AppStack = () => {
         <Stack.Screen
           name="Search"
           component={SearchScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ReportDetails"
+          component={ReportDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AttendanceDetails"
+          component={AttendanceDetailsScreen}
           options={{ headerShown: false }}
         />
     </Stack.Navigator>

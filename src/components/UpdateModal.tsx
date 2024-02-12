@@ -14,6 +14,7 @@ import { addNotification } from '../redux/notificationsSlice';
 import { User } from '../types/types';
 import Geolocation from '@react-native-community/geolocation';
 import { promptForEnableLocationIfNeeded, isLocationEnabled } from 'react-native-android-location-enabler';
+import useUploadImages from '../hooks/useUploadImages';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,
@@ -30,10 +31,11 @@ interface MyState {
 }
 
 const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId, admin, updaterName } : Props) => {
-    const [images, setImages] = useState<string[]>([])
+    // const [images, setImages] = useState<string[]>([])
     const [transferred, setTransferred] = useState(0);
     const [modalLoading, setModalStatusLoading] = useState<boolean>(false)
     const user = useSelector((state: MyState) => state.auth.user)
+    const { images, chooseFromGallery } = useUploadImages() 
 
     const {
       control,
@@ -132,39 +134,39 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
   }) 
   } 
 
-  const chooseFromGallery = () => {
-    ImagePicker.openPicker({
-      width: 400,
-      height: 300,
-      multiple: true
-    }).then(images => {
-      // setImages(images)
-      {images.map((image) => (
-        compressAndResizeImage(image)
-      ))}
-    }).catch((error) => {
-      console.log(error)
-    })
-  }
+  // const chooseFromGallery = () => {
+  //   ImagePicker.openPicker({
+  //     width: 400,
+  //     height: 300,
+  //     multiple: true
+  //   }).then(images => {
+  //     // setImages(images)
+  //     {images.map((image) => (
+  //       compressAndResizeImage(image)
+  //     ))}
+  //   }).catch((error) => {
+  //     console.log(error)
+  //   })
+  // }
 
 
-const compressAndResizeImage = async (originalUri: {path: string}) => {
+// const compressAndResizeImage = async (originalUri: {path: string}) => {
 
-  try {
-    const resizedImage = await ImageResizer.createResizedImage(
-      originalUri.path,
-      800, // New width
-      600, // New height
-      'JPEG', // Compression format
-      80, // Compression quality (0-100)
-      0, // Rotation angle (0, 90, 180, 270)
-    );
+//   try {
+//     const resizedImage = await ImageResizer.createResizedImage(
+//       originalUri.path,
+//       800, // New width
+//       600, // New height
+//       'JPEG', // Compression format
+//       80, // Compression quality (0-100)
+//       0, // Rotation angle (0, 90, 180, 270)
+//     );
 
-    setImages(oldArray => [...oldArray, resizedImage.uri]);
-  } catch (error) {
-    console.error('Error compressing image:', error);
-  }
-};
+//     setImages(oldArray => [...oldArray, resizedImage.uri]);
+//   } catch (error) {
+//     console.error('Error compressing image:', error);
+//   }
+// };
 
   const renderMultiImages = images?.map((image, i) => {
     return(

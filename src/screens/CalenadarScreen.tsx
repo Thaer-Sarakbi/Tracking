@@ -18,6 +18,7 @@ const CalendarScreen = ({ navigation }) => {
 
   const [date,setDate] = React.useState(new Date());
   const [updates, setUpdates] = useState([])
+  const [dailyReports, setDailyReports] = useState([])
   const [selected, setSelected] = React.useState();
   const [data,setData] = React.useState([]);
 
@@ -47,11 +48,25 @@ const CalendarScreen = ({ navigation }) => {
     setUpdates(usersDataWithUpdates)
   }
 
+  const retreiveDailyReports = async () => {
+    let dailyReportsList = []
+    await firestore().collection('users').doc(selected).collection('dailyReport').get()
+    .then((querySnapshot) => {
+      querySnapshot.docs.forEach((documentSnapshot) => {
+        documentSnapshot.data().id = documentSnapshot.id
+        dailyReportsList.push(documentSnapshot.data() as tasks)
+      })
+    })
+
+    setDailyReports(dailyReportsList)
+  }
+
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // The screen is focused
       // Call any action
       retreiveUpdates()
+      retreiveDailyReports()
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -60,6 +75,7 @@ const CalendarScreen = ({ navigation }) => {
 
   useEffect(() => {
     retreiveUpdates()
+    retreiveDailyReports()
     dispatch(getUsers())
     
     if(users){
@@ -92,9 +108,16 @@ const CalendarScreen = ({ navigation }) => {
     }
     // workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
   })
-  
 
-  // console.log(workDays)
+  dailyReports.forEach(dailyReport => {
+    // console.log(new Date(update.time.seconds * 1000).getMonth() + 1, new Date(date).getMonth() + 1)
+    if(new Date(dailyReport.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
+      // return moment(new Date(update.time.seconds * 1000)).format('L')
+      workDays.push(moment(new Date(dailyReport.time.seconds * 1000)).format('L'))
+    }
+    // workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
+  })
+  
   const filteredWorksDays = [... new Set(workDays)]
 
   let today = moment(date);
@@ -121,8 +144,6 @@ const CalendarScreen = ({ navigation }) => {
 
   }
 
-  // console.log(customDatesStyles)
-
   const filterUpdatesByDates = (date) => {
     const updatesList = updates.filter(update => {
         if(moment(new Date(update.time.seconds * 1000)).format('L') === moment(date).format('L')){
@@ -130,7 +151,12 @@ const CalendarScreen = ({ navigation }) => {
         }
       })
 
-      navigation.navigate('UpdatesList', {updatesList, date})
+    const dailyReportsList = dailyReports.filter(dailyReport => {
+        if(moment(new Date(dailyReport.time.seconds * 1000)).format('L') === moment(date).format('L')){
+          return dailyReport
+        }
+      })
+      navigation.navigate('UpdatesList', {updatesList, dailyReportsList, date})
   }
 
   return (

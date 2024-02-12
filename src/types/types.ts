@@ -18,7 +18,8 @@ export type User = {
     admin: boolean,
     mobile: string,
     creationDate: string,
-    deviceToken: string
+    deviceToken: string,
+    value: string
 }
 
 export type  tasks = {

@@ -3,14 +3,14 @@ import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
-import { TasksState } from '../types/types';
+import { TasksState, User } from '../types/types';
 import Card from '../components/Card';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
-import AnimatedLottieView from 'lottie-react-native';
-import firestore from '@react-native-firebase/firestore'
 import LottieView from "lottie-react-native";
+import firestore from '@react-native-firebase/firestore'
+import { useIsFocused } from '@react-navigation/native';
  
 const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
 
@@ -21,6 +21,8 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
 
   const dispatch = useDispatch<AppDispatch>()
 
+  const isFocused = useIsFocused();
+
   const onRefresh = () => {
     setIsFetching(true)
     dispatch(getTasks({id: user.id, admin: user.admin}))
@@ -28,6 +30,16 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
   }
 
   useEffect(() => {
+    dispatch(getTasks({id: user?.id, admin: user?.admin}))
+
+    const interval = setInterval(() => {
+  
+      dispatch(getTasks({id: user?.id, admin: user?.admin}))
+    }, 60000);
+
+    return () => clearInterval(interval)
+    
+    
     // console.log(user)
   //   if(user?.admin){
   //     adminData()
@@ -90,16 +102,6 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
     // createChannels()
   },[user])
 
-  const createChannels = () => {
-    PushNotification.createChannel(
-      {
-          channelId: "update-status", // (required)
-          channelName: "update status", // (required)
-      },
-      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
-  );
-  }
-
   if(status === 'loading'){
     return (
       <>
@@ -120,8 +122,8 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
                 keyExtractor={(item) => item?.id.toString()}
                 data={tasks}
                 renderItem={(item) => {
-                  if(item.item?.status !== 'Completed'){
-                    const assigned = users.find(user => {
+                  if(item.item?.status == 'Not Started'){
+                    const assigned = users.find((user: User) => {
           
                       if(user.value === item.item.assignedTo){
                         return user
@@ -140,6 +142,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
                         description: item.item.description,
                         duration: item.item.duration,
                         assigenId: item.item.assigenId,
+                        assignedBy: item.item.assignedBy,
                         deviceToken: assigned.deviceToken
                       })}} >
                         <Card item={item.item} />

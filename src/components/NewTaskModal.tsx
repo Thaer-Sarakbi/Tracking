@@ -113,7 +113,8 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     searchTitle: title.toLowerCase(),
     status: 'Not Started',
     creationDate: new Date(),
-    assigenId: assigned?.id
+    assigenId: assigned?.id,
+    assignedBy: user.name
   }).then(async(res) => { 
 
     const notificationData = {
@@ -137,7 +138,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
     dispatch(addNotification({ notification: notificationData }))
 
-    NotificationService.sendSingleDeviceNotification({ notification: notificationData, token: assigned.deviceToken, message: `You have assigned a new task by ${user.name}` })
+    NotificationService.sendSingleDeviceNotification({ notification: notificationData, token: assigned?.deviceToken, message: `You have assigned a new task by ${user.name}` })
     changeModalVisible(false)
     dispatch(getTasks({id: user.id, admin: user.admin}))
   }).catch(err => {

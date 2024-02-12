@@ -7,7 +7,7 @@ import { TouchableOpacity, Modal, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Task, tasks } from '../types/types';
+import { Task, User, tasks } from '../types/types';
 import { RootStackParamsList } from './AppStack';
 import { StackScreenProps } from '@react-navigation/stack';
 import CompletedTaskScreen from '../screens/CompletedTaskScreen';
@@ -16,18 +16,22 @@ import { getUsers } from '../redux/usersSlice';
 import firestore from '@react-native-firebase/firestore'
 import { getTasks } from '../redux/tasksSlice';
 import { useIsFocused } from '@react-navigation/native';
+import InProgressTasksScreen from '../screens/InProgressTasksScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
 interface MyState {
-  tasks: tasks
+  tasks: tasks,
+  auth: {
+    user: User
+  }
 }
 
 export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const tasks = useSelector((state: MyState) => state.tasks?.data)
-  const user = useSelector((state: TasksState) => state.auth.user)
+  const user = useSelector((state: MyState) => state.auth.user)
 
   const [notifications, setNotifications] = useState([])
 
@@ -50,15 +54,16 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
       setNotifications(newData);
     })
 
-    dispatch(getTasks({id: user?.id, admin: user?.admin}))
+    // dispatch(getTasks({id: user?.id, admin: user?.admin}))
     dispatch(getUsers())
 
-  },[user, isFocused])
+  },[user])
 
   return (
     <>
       <Header navigation={navigation} notifications={notifications} tasks={tasks} user={user}/>
       <Tab.Navigator 
+      initialRouteName= "Not Started" 
         screenOptions={{
           // tabBarActiveTintColor: Colors.main,
           tabBarLabelStyle: { fontSize: 12 },
@@ -68,20 +73,25 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
         }}
       >
         <Tab.Screen 
-          name="Open" 
+          name="Not Started" 
           children={() => <TasksListScreen navigation={navigation} user={user} tasks={tasks} />} 
-          options={{
-            tabBarBadge:()=> { return (  
-              <View style={{ position: 'relative', top: 14, left: -45 }}>
-                <Text style={{ marginLeft: 20 }}>({
-                  tasks?.filter(task => {
-                    if(task?.status !== 'Completed'){
-                      return task
-                    }
-                  }).length
-                })</Text>
-              </View> ) }
-          }}
+          // options={{
+          //   tabBarBadge:()=> { return (  
+          //     <View style={{ position: 'relative', top: 14, left: -45 }}>
+          //       <Text style={{ marginLeft: 20 }}>({
+          //         tasks?.filter(task => {
+          //           if(task?.status !== 'Completed'){
+          //             return task
+          //           }
+          //         }).length
+          //       })</Text>
+          //     </View> ) }
+          // }}
+        />
+        <Tab.Screen 
+          name="In Progress" 
+          // component={InProgressTasksScreen} 
+          children={() => <InProgressTasksScreen navigation={navigation} user={user} tasks={tasks} />} 
         />
         <Tab.Screen 
           name="Completed" 

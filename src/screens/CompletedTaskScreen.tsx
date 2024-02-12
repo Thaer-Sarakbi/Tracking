@@ -9,6 +9,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 import PushNotification from 'react-native-push-notification';
 import AnimatedLottieView from 'lottie-react-native';
+import TasksLists from '../hoc/TasksListsComponents';
 
 interface MyState {
   tasks: tasks,
@@ -67,6 +68,8 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
                           status: item.item.status,
                           creationDate: item.item.creationDate,
                           title: item.item.title,
+                          latitude: item.item.latitude,
+                          longitude: item.item.longitude,
                           description: item.item.description,
                           duration: item.item.duration,
                           assigenId: item.item.assigenId

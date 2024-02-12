@@ -72,13 +72,13 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const id = route.params.taskId
   const assignedTo = route.params.assignedTo
+  const assignedBy = route.params.assignedBy
   const title = route.params?.title
   const description = route.params.description
   const duration = route.params.duration
   const assigenId = route.params?.assigenId
   const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
   const deviceToken = route.params.deviceToken
-
 
   useEffect(() => {
 
@@ -265,6 +265,10 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
         <HeaderDetails navigation={navigation} taskId={id} assigenId={assigenId} userId={user.id} admin={user.admin} />
         <View style={styles.container}>
           <Text style={styles.title}>{title}</Text>
+          <View style={[styles.card, { marginBottom: 10 }]}>
+              <Text style={{ fontSize: 17, marginBottom: 10 }}>Assign By:</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{assignedBy}</Text>
+            </View>
           <View style={[styles.card, { marginBottom: 10 }]}>
               <Text style={{ fontSize: 17, marginBottom: 10 }}>Assign To:</Text>
               <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{assignedTo}</Text>

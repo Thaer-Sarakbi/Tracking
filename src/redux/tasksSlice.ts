@@ -57,7 +57,7 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: stri
         )
       }
 
-      tasksList = usersDataWithTasks
+      tasksList = usersDataWithTasks.sort((a, b) => b.creationDate - a.creationDate)
     }
   } else {
     await firestore()
