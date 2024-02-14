@@ -14,6 +14,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { getTasks } from '../redux/tasksSlice';
 import NotificationService from '../services/NotificationService';
 import { addNotification } from '../redux/notificationsSlice';
+import PushNotification from 'react-native-push-notification';
+import messaging from '@react-native-firebase/messaging';
 
 interface MyState {
     users: {data: Array<User>},
@@ -95,14 +97,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
         return user
       }
     })
-
-    // const channelId = await notifee.createChannel({
-    //   id: 'newTask',
-    //   name: 'New Task',
-    // });
-    
-
-  
   
   await firestore().collection('users').doc(assigned?.id).collection('tasks').add({
     title, 
@@ -130,6 +124,7 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
       description,
       assignedTo,
       duration,
+      assignedBy: user.name,
       assigenId: assigned?.id,
       receiverId: assigned?.id,
       channelId: 'newTask',
@@ -138,7 +133,12 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
     dispatch(addNotification({ notification: notificationData }))
 
-    NotificationService.sendSingleDeviceNotification({ notification: notificationData, token: assigned?.deviceToken, message: `You have assigned a new task by ${user.name}` })
+    NotificationService.sendSingleDeviceNotification({ 
+      notification: notificationData, 
+      token: assigned?.deviceToken, 
+      message: `You have assigned a new task by ${user.name}` 
+    })
+
     changeModalVisible(false)
     dispatch(getTasks({id: user.id, admin: user.admin}))
   }).catch(err => {

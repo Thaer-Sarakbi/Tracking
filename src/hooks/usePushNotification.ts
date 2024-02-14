@@ -2,7 +2,6 @@ import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid, Platform} from 'react-native';
 import { navigate } from '../navigation/RootNavigation';
 import notifee from '@notifee/react-native';
-import { useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore'
 
 const usePushNotification = () => {
@@ -47,31 +46,6 @@ const usePushNotification = () => {
       console.log('Failed', 'No token received');
     }
   };
-
-  const listenToForegroundNotifications = async () => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log(
-        'A new message arrived! (FOREGROUND)',
-        JSON.stringify(remoteMessage),
-      );
-    // navigate(remoteMessage.data.screen, { ...remoteMessage.data })
-    DisplayNotification(remoteMessage);
-    });
-    return unsubscribe;
-  }
-
-  const listenToBackgroundNotifications = async () => {
-    const unsubscribe = messaging().setBackgroundMessageHandler(
-      async remoteMessage => {
-        console.log(
-          'A new message arrived! (BACKGROUND)',
-          JSON.stringify(remoteMessage),
-        );
-        DisplayNotification(remoteMessage);
-      },
-    );
-    return unsubscribe;
-  }
 
   const onNotificationOpenedAppFromBackground = async () => {
     const unsubscribe = messaging().onNotificationOpenedApp(
@@ -148,9 +122,7 @@ const usePushNotification = () => {
   return {
     requestUserPermission,
     getFCMToken,
-    listenToForegroundNotifications,
-    listenToBackgroundNotifications,
-    onNotificationOpenedAppFromBackground,
+    // onNotificationOpenedAppFromBackground,
     onNotificationOpenedAppFromQuit,
   };
 };

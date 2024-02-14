@@ -16,6 +16,8 @@ import SearchBox from "../components/SearchBox"
 import SearchScreen from "../screens/SearchScreen"
 import ReportDetailsScreen from "../screens/ReportDetails"
 import AttendanceDetailsScreen from "../screens/AttendanceDetailsScreen"
+import messaging from '@react-native-firebase/messaging';
+import notifee, { EventType } from '@notifee/react-native';
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -67,9 +69,9 @@ const AppStack = () => {
   const {
     requestUserPermission,
     getFCMToken,
-    listenToBackgroundNotifications,
-    listenToForegroundNotifications,
-    onNotificationOpenedAppFromBackground,
+    // listenToBackgroundNotifications,
+    // listenToForegroundNotifications,
+    // onNotificationOpenedAppFromBackground,
     onNotificationOpenedAppFromQuit,
   } = usePushNotification();
 
@@ -78,16 +80,84 @@ const AppStack = () => {
       getFCMToken(user);
       requestUserPermission();
       onNotificationOpenedAppFromQuit();
-      listenToBackgroundNotifications();
-      listenToForegroundNotifications();
-      onNotificationOpenedAppFromBackground();
+      // listenToBackgroundNotifications();
+      // listenToForegroundNotifications();
+      // onNotificationOpenedAppFromBackground();
     } catch (error) {
       console.log(error);
     }
   };
-  
+
   useEffect(() => {
     listenToNotifications();
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log(
+        'A new message arrived! (FOREGROUND)',
+        JSON.stringify(remoteMessage),
+      );
+    
+    DisplayNotification(remoteMessage);
+    });
+
+    const unsubscribeBackground = messaging().setBackgroundMessageHandler(async remoteMessage => {
+      DisplayNotification(remoteMessage);
+      console.log(
+        'A new message arrived! (BACKGROUND)',
+        JSON.stringify(remoteMessage),
+      );
+
+    notifee.onBackgroundEvent(async({type, detail}) => {
+        switch(type){
+          case EventType.PRESS:
+            console.log('User pressed notification', detail.notification)
+            break;
+          case EventType.DISMISSED:
+            console.log('User dismissed notification', detail.notification);
+        }
+      })
+    });
+    
+    const backgroundeventListener =  notifee.onBackgroundEvent(async({type, detail}) => {
+      switch(type){
+        case EventType.PRESS:
+          console.log('User pressed notification', detail.notification)
+          break;
+        case EventType.DISMISSED:
+          console.log('User dismissed notification', detail.notification);
+      }
+    })
+
+    const DisplayNotification = async (message) => {
+      // console.log('data ', JSON.stringify(message.data))
+      // console.log('notification ', JSON.stringify(message.notification))
+      // Create a channel
+      const channelId = await notifee.createChannel({
+        id: message.data.channelId,
+        name: message.data.channelName,
+        vibration: true,
+        vibrationPattern: [300, 500],
+      });
+  
+      console.log('channelId'  + JSON.stringify(channelId))
+      console.log('thaer2')
+      // Display a notification
+     await notifee.displayNotification({
+        title: message.notification.title,
+        body: message.notification.body,
+        data: message.data,
+        android:{
+          channelId
+        }
+      });
+    }
+
+    return () => {
+      unsubscribe()
+      unsubscribeBackground
+      backgroundeventListener
+      listenToNotifications()
+      // backgroundeventListener
+    };
   },[user])
 
   return(

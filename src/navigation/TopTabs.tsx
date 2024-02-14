@@ -41,8 +41,6 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   const dispatch = useDispatch<AppDispatch>()
 
-  const isFocused = useIsFocused();
-
   useEffect(() => {
     firestore()
     .collection('users')
