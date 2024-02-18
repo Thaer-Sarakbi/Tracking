@@ -34,7 +34,6 @@ interface MyState {
 }
 
 const AttendanceDetailsScreen = ({ route, navigation } : Props) => {
-    console.log(route.params.checkIn)
 //   const user = useSelector((state: MyState) => state.auth.user)
 
   const time = route.params.checkIn?.time

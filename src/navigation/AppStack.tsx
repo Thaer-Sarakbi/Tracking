@@ -18,6 +18,7 @@ import ReportDetailsScreen from "../screens/ReportDetails"
 import AttendanceDetailsScreen from "../screens/AttendanceDetailsScreen"
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
+import LeaveDetailsScreen from "../screens/LeaveDetailsScreen"
 
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -65,6 +66,7 @@ export type RootStackParamsList = {
 
 const AppStack = () => {
   const user = useSelector((state: MyState) => state.auth.user)
+  console.log(user)
 
   const {
     requestUserPermission,
@@ -88,6 +90,30 @@ const AppStack = () => {
     }
   };
 
+  const DisplayNotification = async (message) => {
+    console.log('id ', JSON.stringify(message.data.channelId))
+    //console.log('notification ', JSON.stringify(message.notification))
+    // Create a channel
+    const channelId = await notifee.createChannel({
+      id: message.data.id,
+      name: message.data.channelName,
+      vibration: true,
+      //vibrationPattern: [300, 500],
+    });
+
+    console.log('channelId'  + JSON.stringify(channelId))
+    console.log('thaer2')
+    // Display a notification
+   await notifee.displayNotification({
+      title: message.notification.title,
+      body: message.notification.body,
+      data: message.data,
+      android:{
+        channelId
+      }
+    });
+  }
+
   useEffect(() => {
     listenToNotifications();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -100,11 +126,12 @@ const AppStack = () => {
     });
 
     const unsubscribeBackground = messaging().setBackgroundMessageHandler(async remoteMessage => {
-      DisplayNotification(remoteMessage);
       console.log(
         'A new message arrived! (BACKGROUND)',
         JSON.stringify(remoteMessage),
       );
+
+      DisplayNotification(remoteMessage);
 
     notifee.onBackgroundEvent(async({type, detail}) => {
         switch(type){
@@ -117,44 +144,21 @@ const AppStack = () => {
       })
     });
     
-    const backgroundeventListener =  notifee.onBackgroundEvent(async({type, detail}) => {
-      switch(type){
-        case EventType.PRESS:
-          console.log('User pressed notification', detail.notification)
-          break;
-        case EventType.DISMISSED:
-          console.log('User dismissed notification', detail.notification);
-      }
-    })
-
-    const DisplayNotification = async (message) => {
-      // console.log('data ', JSON.stringify(message.data))
-      // console.log('notification ', JSON.stringify(message.notification))
-      // Create a channel
-      const channelId = await notifee.createChannel({
-        id: message.data.channelId,
-        name: message.data.channelName,
-        vibration: true,
-        vibrationPattern: [300, 500],
-      });
-  
-      console.log('channelId'  + JSON.stringify(channelId))
-      console.log('thaer2')
-      // Display a notification
-     await notifee.displayNotification({
-        title: message.notification.title,
-        body: message.notification.body,
-        data: message.data,
-        android:{
-          channelId
-        }
-      });
-    }
+    // const backgroundeventListener =  notifee.onBackgroundEvent(async({type, detail}) => {
+    //   console.log('huigi')
+    //   switch(type){
+    //     case EventType.PRESS:
+    //       console.log('User pressed notification', detail.notification)
+    //       break;
+    //     case EventType.DISMISSED:
+    //       console.log('User dismissed notification', detail.notification);
+    //   }
+    // })
 
     return () => {
       unsubscribe()
       unsubscribeBackground
-      backgroundeventListener
+      // backgroundeventListener
       listenToNotifications()
       // backgroundeventListener
     };
@@ -210,6 +214,11 @@ const AppStack = () => {
         <Stack.Screen
           name="ReportDetails"
           component={ReportDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="LeaveDetails"
+          component={LeaveDetailsScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

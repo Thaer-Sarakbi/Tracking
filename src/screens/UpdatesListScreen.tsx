@@ -17,42 +17,108 @@ interface Props {
 
 const UpdatesListScreen = ({ route, navigation }: Props) => {
   const updatesList = route.params.updatesList
-  const dailyReportsList = route.params.dailyReportsList
+  const dailyReport = route.params.dailyReport
+  const leaveReport = route.params.leaveReport
   const date = route.params.date
 
   const [checkIn, setCheckIn] = useState()
   const [checkOut, setCheckOut] = useState()
-  console.log(checkIn)
 
   const user = useSelector((state: notificationsState) => state.auth.user)
 
   const retreiveCheckIn = async () => {
-    await firestore().collection('users').doc(user.id).collection('checkIn').get()
-    .then((res) => {
-       res.docs.forEach(doc => {
-        // console.log(moment(doc.data().time.seconds * 1000).format('L'), moment(date).format('L')) 
-        if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
-          setCheckIn({
-            ...doc.data(),
-            time: new Date(doc.data().time.seconds * 1000)
-          })
+    if(user.admin){
+      const usersCollection = await firestore().collection('users')
+
+      const usersQuerySnapshot = await usersCollection.get()
+      let usersDataWithCheckIn = []
+    
+      for(const userDoc of usersQuerySnapshot.docs){
+        const usercheckInCollection = userDoc.ref.collection('checkIn')
+    
+        const checkInQuerySnapshot = await usercheckInCollection.get()
+    
+        const checkInData = checkInQuerySnapshot.docs.map((checkInDoc) => ({
+          id: checkInDoc.id,
+          ...checkInDoc.data()
+        }))
+    
+        if(checkInData[0]){
+          usersDataWithCheckIn.push(
+            ...checkInData
+          )
         }
-       })
-    })
+
+        usersDataWithCheckIn.forEach(doc => {
+          if(moment(doc.time.seconds * 1000).format('L') === moment(date).format('L')){
+            setCheckIn({
+              ...doc,
+              time: new Date(doc.time.seconds * 1000)
+            })
+          } 
+        })
+      }
+    } else {
+      await firestore().collection('users').doc(user.id).collection('checkIn').get()
+      .then((res) => {
+         res.docs.forEach(doc => {
+          // console.log(moment(doc.data().time.seconds * 1000).format('L'), moment(date).format('L')) 
+          if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
+            setCheckIn({
+              ...doc.data(),
+              time: new Date(doc.data().time.seconds * 1000)
+            })
+          }
+         })
+      })
+    }
   }
 
   const retreiveCheckOut = async () => {
-    await firestore().collection('users').doc(user.id).collection('checkOut').get()
-    .then((res) => {
-       res.docs.forEach(doc => {
-        if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
-          setCheckOut({
-            ...doc.data(),
-            time: new Date(doc.data().time.seconds * 1000)
-          })
+    if(user.admin){
+      const usersCollection = await firestore().collection('users')
+
+      const usersQuerySnapshot = await usersCollection.get()
+      let usersDataWithcheckOut = []
+    
+      for(const userDoc of usersQuerySnapshot.docs){
+        const usercheckOutCollection = userDoc.ref.collection('checkOut')
+    
+        const checkOutQuerySnapshot = await usercheckOutCollection.get()
+    
+        const checkOutData = checkOutQuerySnapshot.docs.map((checkOutDoc) => ({
+          id: checkOutDoc.id,
+          ...checkOutDoc.data()
+        }))
+    
+        if(checkOutData[0]){
+          usersDataWithcheckOut.push(
+            ...checkOutData
+          )
         }
-       })
-    })
+
+        usersDataWithcheckOut.forEach(doc => {
+          if(moment(doc.time.seconds * 1000).format('L') === moment(date).format('L')){
+            setCheckOut({
+              ...doc,
+              time: new Date(doc.time.seconds * 1000)
+            })
+          } 
+        })
+      }
+    } else {
+      await firestore().collection('users').doc(user.id).collection('checkOut').get()
+      .then((res) => {
+         res.docs.forEach(doc => {
+          if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
+            setCheckOut({
+              ...doc.data(),
+              time: new Date(doc.data().time.seconds * 1000)
+            })
+          }
+         })
+      })
+    }
   }
 
   useEffect(() => {
@@ -73,21 +139,14 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
         <Seperator />
         {checkOut && (<Text style={{ fontSize: 15 }}>Check Out: {moment(checkOut?.time).format('h:mm a')}</Text>)}
       </TouchableOpacity>
-      <Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold', marginTop: 20 }}>Daily Report</Text>
-      <FlatList
-        data={dailyReportsList}
-        renderItem={({item}) => {
-            return(
-              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ReportDetails', {
-                  ...item,
-                  time: moment(new Date(item.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
+      {dailyReport && (<><Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold', marginTop: 20 }}>Daily Report</Text>
+      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ReportDetails', {
+                  ...dailyReport,
+                  time: moment(new Date(dailyReport.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
                 } )}>
-                <Text style={{ color: Colors.titles, fontSize: 20 }}>{moment(new Date(item.time.seconds * 1000)).format('MMMM Do')}   Report</Text>
-                <Text style={{ color: Colors.texts, fontSize: 15 }}>{moment(new Date(item.time.seconds * 1000)).format('h:mm a')}</Text>
-              </TouchableOpacity>
-            )
-        }}
-      />
+                <Text style={{ color: Colors.titles, fontSize: 20 }}>{moment(new Date(dailyReport?.time.seconds * 1000)).format('MMMM Do')}   Report</Text>
+                <Text style={{ color: Colors.texts, fontSize: 15 }}>{moment(new Date(dailyReport?.time.seconds * 1000)).format('h:mm a')}</Text>
+              </TouchableOpacity></>)}
       <Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold', marginTop: 20 }}>Tasks Done</Text>
       <FlatList
         data={updatesList}
@@ -103,6 +162,14 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
             )
         }}
       />
+            {leaveReport && (<><Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold', marginTop: 20 }}>Leave Report</Text>
+      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('LeaveDetails', {
+                  ...leaveReport,
+                  time: moment(new Date(leaveReport.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
+                } )}>
+                <Text style={{ color: Colors.titles, fontSize: 20 }}>{moment(new Date(leaveReport?.time.seconds * 1000)).format('MMMM Do')}   Report</Text>
+                <Text style={{ color: Colors.texts, fontSize: 15 }}>{moment(new Date(leaveReport?.time.seconds * 1000)).format('h:mm a')}</Text>
+              </TouchableOpacity></>)}
     </View>
   );
 }

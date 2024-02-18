@@ -19,6 +19,7 @@ const CalendarScreen = ({ navigation }) => {
   const [date,setDate] = React.useState(new Date());
   const [updates, setUpdates] = useState([])
   const [dailyReports, setDailyReports] = useState([])
+  const [leaves, setLeaves] = useState([])
   const [selected, setSelected] = React.useState();
   const [data,setData] = React.useState([]);
 
@@ -61,12 +62,26 @@ const CalendarScreen = ({ navigation }) => {
     setDailyReports(dailyReportsList)
   }
 
+  const retreiveLeaves = async() => {
+    let leavesList = []
+    await firestore().collection('users').doc(selected).collection('leave').get()
+    .then((querySnapshot) => {
+      querySnapshot.docs.forEach((documentSnapshot) => {
+        documentSnapshot.data().id = documentSnapshot.id
+        leavesList.push(documentSnapshot.data() as tasks)
+      })
+    })
+
+    setLeaves(leavesList)
+  }
+
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // The screen is focused
       // Call any action
       retreiveUpdates()
       retreiveDailyReports()
+      retreiveLeaves()
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -76,6 +91,7 @@ const CalendarScreen = ({ navigation }) => {
   useEffect(() => {
     retreiveUpdates()
     retreiveDailyReports()
+    retreiveLeaves()
     dispatch(getUsers())
     
     if(users){
@@ -101,21 +117,23 @@ const CalendarScreen = ({ navigation }) => {
   let workDays = []
 
   updates.forEach(update => {
-    // console.log(new Date(update.time.seconds * 1000).getMonth() + 1, new Date(date).getMonth() + 1)
     if(new Date(update.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
-      // return moment(new Date(update.time.seconds * 1000)).format('L')
       workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
     }
-    // workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
   })
 
   dailyReports.forEach(dailyReport => {
-    // console.log(new Date(update.time.seconds * 1000).getMonth() + 1, new Date(date).getMonth() + 1)
     if(new Date(dailyReport.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
-      // return moment(new Date(update.time.seconds * 1000)).format('L')
       workDays.push(moment(new Date(dailyReport.time.seconds * 1000)).format('L'))
     }
-    // workDays.push(moment(new Date(update.time.seconds * 1000)).format('L'))
+  })
+
+  let leaveDays = []
+
+  leaves.forEach(leaveReport => {
+    if(new Date(leaveReport.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
+      leaveDays.push(moment(new Date(leaveReport.time.seconds * 1000)).format('L'))
+    }
   })
   
   const filteredWorksDays = [... new Set(workDays)]
@@ -124,7 +142,15 @@ const CalendarScreen = ({ navigation }) => {
   let day = today.clone().startOf('month');   //first day of month
   let customDatesStyles = [];
   while(day.add(1, 'day').isSame(today, 'month')) {
-    if(filteredWorksDays.includes(moment(day.clone()).format('L'))){
+    if(leaveDays.includes(moment(day.clone()).format('L'))){
+      customDatesStyles.push({
+        date: day.clone(),
+        style: {backgroundColor: '#0288D1'},
+        textStyle: {color: 'white'}, // sets the font color
+        containerStyle: [], // extra styling for day container
+        allowDisabled: true, // allow custom style to apply to disabled dates
+      });    
+    } else if(filteredWorksDays.includes(moment(day.clone()).format('L'))){
         customDatesStyles.push({
             date: day.clone(),
             style: {backgroundColor: 'green'},
@@ -151,12 +177,20 @@ const CalendarScreen = ({ navigation }) => {
         }
       })
 
-    const dailyReportsList = dailyReports.filter(dailyReport => {
+    const dailyReport = dailyReports.filter(dailyReport => {
         if(moment(new Date(dailyReport.time.seconds * 1000)).format('L') === moment(date).format('L')){
           return dailyReport
         }
-      })
-      navigation.navigate('UpdatesList', {updatesList, dailyReportsList, date})
+      })[0]
+
+      const leaveReport = leaves.filter(leave => {
+        if(moment(new Date(leave.time.seconds * 1000)).format('L') === moment(date).format('L')){
+          return leave
+        }
+      })[0]
+
+      // console.log(dailyReportsList)
+      navigation.navigate('UpdatesList', {updatesList, dailyReport, leaveReport, date})
   }
 
   return (
@@ -177,7 +211,7 @@ const CalendarScreen = ({ navigation }) => {
         />
 
         <View style={{ flex:  1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ alignSelf: 'center', fontSize: 20 }}>{filteredWorksDays.length} Days Working</Text>
+          <Text style={{ alignSelf: 'center', fontSize: 20 }}>{filteredWorksDays.length - leaveDays.length} Days Working</Text>
         </View>
   </View>
   );

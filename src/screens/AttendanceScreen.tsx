@@ -47,10 +47,6 @@ const AttendanceScreen = ({ navigation }) => {
     const [checkOutNote, setCheckOutNote] = useState('')
     const [showAlert, setShowAlert] = useState(false);
 
-    const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
-
-    const user = useSelector((state: notificationsState) => state.auth.user)
-
     const {
       control,
       handleSubmit,
@@ -59,9 +55,14 @@ const AttendanceScreen = ({ navigation }) => {
       reset
     } = useForm({
       defaultValues: {
+        reason: "",
         dailyReport: ""
       },
     })
+
+    // const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
+
+    const user = useSelector((state: notificationsState) => state.auth.user)
 
     const onCheckInReg = () => {
       firestore().collection('users').doc(user.id).collection('checkIn').get().then((res) =>{
@@ -166,15 +167,71 @@ const AttendanceScreen = ({ navigation }) => {
       })
   }
 
-    const renderMultiImages = images?.map((image, i) => {
+    const SubmitDailyReport = ({ onSubmit }) => {
+      const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
+
+      const {
+        control,
+        handleSubmit,
+        // formState: { errors },
+        watch
+      } = useForm({
+        defaultValues: {
+          dailyReport: ""
+        },
+      })
+      
       return(
-          <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image }}/> 
+        <View style={styles.card}>
+        <Text style={styles.titles}>Today Report</Text>
+        <Text style={{ fontSize: 18 }}>Tell us what did you do today</Text>
+        <Controller
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Report is required'
+          }
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style= {{ color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+            editable
+            multiline
+            numberOfLines={5}
+            textAlignVertical='top'
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+          />
+          )}
+            name="dailyReport"
+          />
+
+        {errors.dailyReport && <Text style={{ color: 'red', fontSize: 15 }}>{errors.dailyReport?.message}</Text>}
+
+        {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
+             
+          {images?.map((image, i) => {
+            return(
+              <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image }}/> 
+            )
+          })}
+           
+        </View>) : null}
+        <TouchableOpacity onPress={() => chooseFromGallery()} style = {{ width: 100, height: 100, backgroundColor: '#BDBDBD' , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+          <Icon name='camera-outline' color={'black'} size = {30} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleSubmit(onSubmit(watch(), images, uploadImage, resetImages))} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+          <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
+        </TouchableOpacity>
+      </View>
       )
-    })
+    }
 
-    const onSubmitReport = () => {
-      const { dailyReport } = watch()
-
+    const onSubmitReport = (watch, images, uploadImage, resetImages) => {
+      const { dailyReport } = watch
 
       firestore().collection('users').doc(user.id).collection('dailyReport').get()
       .then((res) => {
@@ -202,6 +259,107 @@ const AttendanceScreen = ({ navigation }) => {
           }).then(() => {
             uploadImage()
             console.log('report added successfully')
+            setShowAlert(true)
+            reset()
+            resetImages()
+          })
+        }
+    })
+    }
+
+    const SubmitLeaveForm = ({ onSubmit }) => {
+      const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
+
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        watch
+      } = useForm({
+        defaultValues: {
+          reason: ""
+        },
+      })
+
+      return(
+        <View style={styles.card}>
+        <Text style={styles.titles}>Leave</Text>
+        <Text style={{ fontSize: 18 }}>Tell us what the reason</Text>
+        <Controller
+        control={control}
+        rules={{
+          required: {
+            value: true,
+            message: 'Reason is required'
+          }
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style= {{ color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
+            editable
+            multiline
+            numberOfLines={5}
+            textAlignVertical='top'
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+          />
+          )}
+            name="reason"
+          />
+
+        {errors.reason && <Text style={{ color: 'red', fontSize: 15 }}>{errors.reason?.message}</Text>}
+
+        {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
+             
+          {images?.map((image, i) => {
+            return(
+              <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image }}/> 
+            )
+          })}
+           
+        </View>) : null}
+        <TouchableOpacity onPress={() => chooseFromGallery()} style = {{ width: 100, height: 100, backgroundColor: '#BDBDBD' , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+          <Icon name='camera-outline' color={'black'} size = {30} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleSubmit(onSubmit(watch(), images, uploadImage, resetImages))} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+          <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
+        </TouchableOpacity>
+      </View>
+      )
+    }
+
+    const onSubmitLeave = (watch, images, uploadImage, resetImages) => {
+      const { reason } = watch
+      console.log(reason)
+
+      firestore().collection('users').doc(user.id).collection('leave').get()
+      .then((res) => {
+        const arr =  res.docs.filter(snapShot => {
+          var dt = new Date();
+          return  moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
+        })
+        if (arr.length > 0) {
+          firestore().collection('users').doc(user.id).collection('leave').doc(arr[0].id).update({
+            reason,
+            images: images ? images : null,
+            time: new Date()
+          }).then(() => {
+            uploadImage()
+            console.log('leave report updated successfully')
+            setShowAlert(true)
+            reset()
+            resetImages()
+          })
+        } else {
+          firestore().collection('users').doc(user.id).collection('leave').add({
+            reason,
+            images: images ? images : null,
+            time: new Date()
+          }).then(() => {
+            uploadImage()
+            console.log('leave report added successfully')
             setShowAlert(true)
             reset()
             resetImages()
@@ -250,48 +408,8 @@ const AttendanceScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.titles}>Today Report</Text>
-          <Text style={{ fontSize: 18 }}>Tell us what did you do today</Text>
-          <Controller
-          control={control}
-          rules={{
-            required: {
-              value: true,
-              message: 'Report is required'
-            }
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style= {{ color: '#fff', backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-              editable
-              multiline
-              numberOfLines={5}
-              textAlignVertical='top'
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-            />
-            )}
-              name="dailyReport"
-            />
-
-          {errors.dailyReport && <Text style={{ color: 'red', fontSize: 15 }}>{errors.dailyReport?.message}</Text>}
-
-          {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
-               
-            {renderMultiImages}
-             
-          </View>) : null}
-          <TouchableOpacity onPress={() => chooseFromGallery()} style = {{ width: 100, height: 100, backgroundColor: '#BDBDBD' , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
-            <Icon name='camera-outline' color={'black'} size = {30} />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleSubmit(onSubmitReport)} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
-            <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-
+        <SubmitDailyReport onSubmit={onSubmitReport}/>
+        <SubmitLeaveForm onSubmit={onSubmitLeave} />
         {successfullyModal(showAlert, setShowAlert)}
       </ScrollView>
     )

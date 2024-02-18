@@ -14,8 +14,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { getTasks } from '../redux/tasksSlice';
 import NotificationService from '../services/NotificationService';
 import { addNotification } from '../redux/notificationsSlice';
-import PushNotification from 'react-native-push-notification';
-import messaging from '@react-native-firebase/messaging';
 
 interface MyState {
     users: {data: Array<User>},
