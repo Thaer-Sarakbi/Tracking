@@ -74,9 +74,15 @@ export default function useUploadImages(){
     }
 } 
 
+const removeImage = (index) => {
+  const newState = [...images]
+  newState.splice(index, 1)
+  setImages(newState)
+}
+
 const resetImages = () => {
   setImages([])
 }
 
-  return {images,chooseFromGallery, uploadImage, resetImages}
+  return {images,chooseFromGallery, uploadImage, removeImage, resetImages}
 }

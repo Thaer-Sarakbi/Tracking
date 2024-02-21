@@ -19,7 +19,7 @@ import AttendanceDetailsScreen from "../screens/AttendanceDetailsScreen"
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import LeaveDetailsScreen from "../screens/LeaveDetailsScreen"
-
+ 
 const Stack = createStackNavigator<RootStackParamsList>()
 
 interface MyState {

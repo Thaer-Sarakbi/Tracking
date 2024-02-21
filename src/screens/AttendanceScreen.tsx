@@ -47,21 +47,6 @@ const AttendanceScreen = ({ navigation }) => {
     const [checkOutNote, setCheckOutNote] = useState('')
     const [showAlert, setShowAlert] = useState(false);
 
-    const {
-      control,
-      handleSubmit,
-      formState: { errors },
-      watch,
-      reset
-    } = useForm({
-      defaultValues: {
-        reason: "",
-        dailyReport: ""
-      },
-    })
-
-    // const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
-
     const user = useSelector((state: notificationsState) => state.auth.user)
 
     const onCheckInReg = () => {
@@ -167,20 +152,59 @@ const AttendanceScreen = ({ navigation }) => {
       })
   }
 
-    const SubmitDailyReport = ({ onSubmit }) => {
-      const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
+    const SubmitDailyReport = () => {
+      const { images, chooseFromGallery, uploadImage, removeImage, resetImages } = useUploadImages() 
+      console.log(images)
 
       const {
         control,
         handleSubmit,
-        // formState: { errors },
+        formState: { errors },
+        reset,
         watch
       } = useForm({
         defaultValues: {
           dailyReport: ""
         },
       })
-      
+
+      const onSubmitReport = async () => {
+        const { dailyReport } = watch()
+  
+        await firestore().collection('users').doc(user.id).collection('dailyReport').get()
+        .then((res) => {
+          const arr =  res.docs.filter(snapShot => {
+            var dt = new Date();
+            return  moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
+          })
+          if (arr.length > 0) {
+            firestore().collection('users').doc(user.id).collection('dailyReport').doc(arr[0].id).update({
+              dailyReport,
+              images: images ? images : null,
+              time: new Date()
+            }).then(() => {
+              uploadImage()
+              console.log('report updated successfully')
+              setShowAlert(true)
+              reset()
+              resetImages()
+            })
+          } else {
+            firestore().collection('users').doc(user.id).collection('dailyReport').add({
+              dailyReport,
+              images: images ? images : null,
+              time: new Date()
+            }).then(() => {
+              uploadImage()
+              console.log('report added successfully')
+              setShowAlert(true)
+              reset()
+              resetImages()
+            })
+          }
+      })
+      }
+
       return(
         <View style={styles.card}>
         <Text style={styles.titles}>Today Report</Text>
@@ -210,11 +234,16 @@ const AttendanceScreen = ({ navigation }) => {
 
         {errors.dailyReport && <Text style={{ color: 'red', fontSize: 15 }}>{errors.dailyReport?.message}</Text>}
 
-        {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginVertical: 5 }}>
+        {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
              
           {images?.map((image, i) => {
             return(
-              <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image }}/> 
+              <View style={{ height: '100%', width: 100, justifyContent: 'center', alignItems: 'center' }}>
+                <ImageBackground key={i} resizeMode='center' style={{ width: '100%', height: '100%' }} source={{ uri: image }}/> 
+                <TouchableOpacity onPress={() => removeImage(i)}>
+                  <Text style={{ fontSize: 20 }}>x</Text>
+                </TouchableOpacity>
+              </View>
             )
           })}
            
@@ -223,63 +252,64 @@ const AttendanceScreen = ({ navigation }) => {
           <Icon name='camera-outline' color={'black'} size = {30} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => handleSubmit(onSubmit(watch(), images, uploadImage, resetImages))} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+        <TouchableOpacity onPress={handleSubmit(onSubmitReport)} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
           <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
         </TouchableOpacity>
       </View>
       )
     }
 
-    const onSubmitReport = (watch, images, uploadImage, resetImages) => {
-      const { dailyReport } = watch
-
-      firestore().collection('users').doc(user.id).collection('dailyReport').get()
-      .then((res) => {
-        const arr =  res.docs.filter(snapShot => {
-          var dt = new Date();
-          return  moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
-        })
-        if (arr.length > 0) {
-          firestore().collection('users').doc(user.id).collection('dailyReport').doc(arr[0].id).update({
-            dailyReport,
-            images: images ? images : null,
-            time: new Date()
-          }).then(() => {
-            uploadImage()
-            console.log('report updated successfully')
-            setShowAlert(true)
-            reset()
-            resetImages()
-          })
-        } else {
-          firestore().collection('users').doc(user.id).collection('dailyReport').add({
-            dailyReport,
-            images: images ? images : null,
-            time: new Date()
-          }).then(() => {
-            uploadImage()
-            console.log('report added successfully')
-            setShowAlert(true)
-            reset()
-            resetImages()
-          })
-        }
-    })
-    }
-
-    const SubmitLeaveForm = ({ onSubmit }) => {
+    const SubmitLeaveForm = () => {
       const { images, chooseFromGallery, uploadImage, resetImages } = useUploadImages() 
 
       const {
         control,
         handleSubmit,
         formState: { errors },
+        reset,
         watch
       } = useForm({
         defaultValues: {
           reason: ""
         },
       })
+
+      const onSubmitLeave = () => {
+        const { reason } = watch()
+  
+        firestore().collection('users').doc(user.id).collection('leave').get()
+        .then((res) => {
+          const arr =  res.docs.filter(snapShot => {
+            var dt = new Date();
+            return  moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
+          })
+          if (arr.length > 0) {
+            firestore().collection('users').doc(user.id).collection('leave').doc(arr[0].id).update({
+              reason,
+              images: images ? images : null,
+              time: new Date()
+            }).then(() => {
+              uploadImage()
+              console.log('leave report updated successfully')
+              setShowAlert(true)
+              reset()
+              resetImages()
+            })
+          } else {
+            firestore().collection('users').doc(user.id).collection('leave').add({
+              reason,
+              images: images ? images : null,
+              time: new Date()
+            }).then(() => {
+              uploadImage()
+              console.log('leave report added successfully')
+              setShowAlert(true)
+              reset()
+              resetImages()
+            })
+          }
+      })
+      }
 
       return(
         <View style={styles.card}>
@@ -323,49 +353,11 @@ const AttendanceScreen = ({ navigation }) => {
           <Icon name='camera-outline' color={'black'} size = {30} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => handleSubmit(onSubmit(watch(), images, uploadImage, resetImages))} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+        <TouchableOpacity onPress={handleSubmit(onSubmitLeave)} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
           <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
         </TouchableOpacity>
       </View>
       )
-    }
-
-    const onSubmitLeave = (watch, images, uploadImage, resetImages) => {
-      const { reason } = watch
-      console.log(reason)
-
-      firestore().collection('users').doc(user.id).collection('leave').get()
-      .then((res) => {
-        const arr =  res.docs.filter(snapShot => {
-          var dt = new Date();
-          return  moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
-        })
-        if (arr.length > 0) {
-          firestore().collection('users').doc(user.id).collection('leave').doc(arr[0].id).update({
-            reason,
-            images: images ? images : null,
-            time: new Date()
-          }).then(() => {
-            uploadImage()
-            console.log('leave report updated successfully')
-            setShowAlert(true)
-            reset()
-            resetImages()
-          })
-        } else {
-          firestore().collection('users').doc(user.id).collection('leave').add({
-            reason,
-            images: images ? images : null,
-            time: new Date()
-          }).then(() => {
-            uploadImage()
-            console.log('leave report added successfully')
-            setShowAlert(true)
-            reset()
-            resetImages()
-          })
-        }
-    })
     }
 
     return(
@@ -408,8 +400,8 @@ const AttendanceScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <SubmitDailyReport onSubmit={onSubmitReport}/>
-        <SubmitLeaveForm onSubmit={onSubmitLeave} />
+        <SubmitDailyReport />
+        <SubmitLeaveForm />
         {successfullyModal(showAlert, setShowAlert)}
       </ScrollView>
     )
