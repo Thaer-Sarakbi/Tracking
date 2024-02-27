@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, Text } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
@@ -11,6 +11,9 @@ import PushNotification from 'react-native-push-notification';
 import LottieView from "lottie-react-native";
 import firestore from '@react-native-firebase/firestore'
 import { useIsFocused } from '@react-navigation/native';
+import useCheckReuestPermissions from '../hooks/useCheckReuestPermissions';
+import notifee, { EventType } from '@notifee/react-native';
+import { PERMISSIONS, request } from 'react-native-permissions';
  
 const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
 
@@ -18,6 +21,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
   const users = useSelector((state: MyState) => state.users.data)
 
   const [isFetching, setIsFetching] = useState(false)
+  const { requestPermission, permissionStatus, checkNotificationPermission } = useCheckReuestPermissions()
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -29,13 +33,19 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
     setIsFetching(false)
   }
 
+  const rr = async () => {
+    await notifee.requestPermission().then((res) => console.log(res))
+  }
   useEffect(() => {
+    // checkNotificationPermission()
+    request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS)
     dispatch(getTasks({id: user?.id, admin: user?.admin}))
 
+    
     const interval = setInterval(() => {
-  
+      
       dispatch(getTasks({id: user?.id, admin: user?.admin}))
-    }, 60000);
+    }, 30000);
 
     return () => clearInterval(interval)
     
@@ -121,31 +131,30 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
               <FlatList
                 keyExtractor={(item) => item?.id.toString()}
                 data={tasks}
-                renderItem={(item) => {
-                  if(item.item?.status == 'Not Started'){
+                renderItem={({ item }) => {
+                  if(item?.status == 'Not Started'){
                     const assigned = users.find((user: User) => {
           
-                      if(user.value === item.item.assignedTo){
+                      if(user.value === item.assignedTo){
                         return user
                       }
                     })
-                    
                     return(
                       <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                        taskId: item.item.id,
-                        assignedTo: item.item.assignedTo,
-                        status: item.item.status,
-                        creationDate: item.item.creationDate,
-                        title: item.item.title,
-                        latitude: item.item.latitude,
-                        longitude: item.item.longitude,
-                        description: item.item.description,
-                        duration: item.item.duration,
-                        assigenId: item.item.assigenId,
-                        assignedBy: item.item.assignedBy,
+                        taskId: item.id,
+                        assignedTo: item.assignedTo,
+                        status: item.status,
+                        creationDate: item.creationDate,
+                        title: item.title,
+                        latitude: item.latitude,
+                        longitude: item.longitude,
+                        description: item.description,
+                        duration: item.duration,
+                        assigenId: item.assigenId,
+                        assignedBy: item.assignedBy,
                         deviceToken: assigned.deviceToken
                       })}} >
-                        <Card item={item.item} />
+                        <Card item={item} />
                       </TouchableOpacity>
                     )
                   } else {

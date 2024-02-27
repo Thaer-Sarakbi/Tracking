@@ -70,6 +70,7 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
                           title: item.item.title,
                           latitude: item.item.latitude,
                           longitude: item.item.longitude,
+                          assignedBy: item.item.assignedBy,
                           description: item.item.description,
                           duration: item.item.duration,
                           assigenId: item.item.assigenId

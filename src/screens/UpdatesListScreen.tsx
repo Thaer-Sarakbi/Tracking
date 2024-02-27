@@ -20,6 +20,7 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
   const dailyReport = route.params.dailyReport
   const leaveReport = route.params.leaveReport
   const date = route.params.date
+  const selected = route.params.selected
 
   const [checkIn, setCheckIn] = useState()
   const [checkOut, setCheckOut] = useState()
@@ -27,98 +28,32 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
   const user = useSelector((state: notificationsState) => state.auth.user)
 
   const retreiveCheckIn = async () => {
-    if(user.admin){
-      const usersCollection = await firestore().collection('users')
-
-      const usersQuerySnapshot = await usersCollection.get()
-      let usersDataWithCheckIn = []
-    
-      for(const userDoc of usersQuerySnapshot.docs){
-        const usercheckInCollection = userDoc.ref.collection('checkIn')
-    
-        const checkInQuerySnapshot = await usercheckInCollection.get()
-    
-        const checkInData = checkInQuerySnapshot.docs.map((checkInDoc) => ({
-          id: checkInDoc.id,
-          ...checkInDoc.data()
-        }))
-    
-        if(checkInData[0]){
-          usersDataWithCheckIn.push(
-            ...checkInData
-          )
+    await firestore().collection('users').doc(selected).collection('checkIn').get()
+    .then((res) => {
+       res.docs.forEach(doc => {
+        // console.log(moment(doc.data().time.seconds * 1000).format('L'), moment(date).format('L')) 
+        if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
+          setCheckIn({
+            ...doc.data(),
+            time: new Date(doc.data().time.seconds * 1000)
+          })
         }
-
-        usersDataWithCheckIn.forEach(doc => {
-          if(moment(doc.time.seconds * 1000).format('L') === moment(date).format('L')){
-            setCheckIn({
-              ...doc,
-              time: new Date(doc.time.seconds * 1000)
-            })
-          } 
-        })
-      }
-    } else {
-      await firestore().collection('users').doc(user.id).collection('checkIn').get()
-      .then((res) => {
-         res.docs.forEach(doc => {
-          // console.log(moment(doc.data().time.seconds * 1000).format('L'), moment(date).format('L')) 
-          if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
-            setCheckIn({
-              ...doc.data(),
-              time: new Date(doc.data().time.seconds * 1000)
-            })
-          }
-         })
-      })
-    }
+       })
+    })
   }
 
   const retreiveCheckOut = async () => {
-    if(user.admin){
-      const usersCollection = await firestore().collection('users')
-
-      const usersQuerySnapshot = await usersCollection.get()
-      let usersDataWithcheckOut = []
-    
-      for(const userDoc of usersQuerySnapshot.docs){
-        const usercheckOutCollection = userDoc.ref.collection('checkOut')
-    
-        const checkOutQuerySnapshot = await usercheckOutCollection.get()
-    
-        const checkOutData = checkOutQuerySnapshot.docs.map((checkOutDoc) => ({
-          id: checkOutDoc.id,
-          ...checkOutDoc.data()
-        }))
-    
-        if(checkOutData[0]){
-          usersDataWithcheckOut.push(
-            ...checkOutData
-          )
+    await firestore().collection('users').doc(selected).collection('checkOut').get()
+    .then((res) => {
+       res.docs.forEach(doc => {
+        if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
+          setCheckOut({
+            ...doc.data(),
+            time: new Date(doc.data().time.seconds * 1000)
+          })
         }
-
-        usersDataWithcheckOut.forEach(doc => {
-          if(moment(doc.time.seconds * 1000).format('L') === moment(date).format('L')){
-            setCheckOut({
-              ...doc,
-              time: new Date(doc.time.seconds * 1000)
-            })
-          } 
-        })
-      }
-    } else {
-      await firestore().collection('users').doc(user.id).collection('checkOut').get()
-      .then((res) => {
-         res.docs.forEach(doc => {
-          if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
-            setCheckOut({
-              ...doc.data(),
-              time: new Date(doc.data().time.seconds * 1000)
-            })
-          }
-         })
-      })
-    }
+       })
+    })
   }
 
   useEffect(() => {

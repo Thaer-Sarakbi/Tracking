@@ -7,6 +7,7 @@ export type Task = {
     duration: number,
     creationDate: string,
     assignedTo: string,
+    assignedBy: string,
     assigenId: string
 }
 

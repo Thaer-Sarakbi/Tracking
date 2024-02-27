@@ -51,6 +51,7 @@ function InProgressTasksScreen ({ navigation, tasks }){
                             longitude: item.item.longitude,
                             description: item.item.description,
                             duration: item.item.duration,
+                            assignedBy: item.item.assignedBy,
                             assigenId: item.item.assigenId
                           })}} >
                             <Card item={item.item} />

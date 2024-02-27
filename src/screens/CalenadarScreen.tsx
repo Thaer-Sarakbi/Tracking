@@ -190,7 +190,7 @@ const CalendarScreen = ({ navigation }) => {
       })[0]
 
       // console.log(dailyReportsList)
-      navigation.navigate('UpdatesList', {updatesList, dailyReport, leaveReport, date})
+      navigation.navigate('UpdatesList', {updatesList, dailyReport, leaveReport, date, selected})
   }
 
   return (

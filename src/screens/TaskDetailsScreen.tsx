@@ -43,6 +43,16 @@ interface MyState {
 
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
+  const id = route.params.taskId
+  const assignedTo = route.params.assignedTo
+  const assignedBy = route.params.assignedBy
+  const title = route.params?.title
+  const description = route.params.description
+  const duration = route.params.duration
+  const assigenId = route.params?.assigenId
+  const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
+  const deviceToken = route.params.deviceToken
+
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
   const [taskStatus, setTaskStatus] = useState<string>(route.params.status)
   const [showAlert, setShowAlert] = useState<boolean>(false)
@@ -69,16 +79,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   editUpadtes.sort((a, b) => b.date - a.date )
   const dispatch = useDispatch<AppDispatch>()
-
-  const id = route.params.taskId
-  const assignedTo = route.params.assignedTo
-  const assignedBy = route.params.assignedBy
-  const title = route.params?.title
-  const description = route.params.description
-  const duration = route.params.duration
-  const assigenId = route.params?.assigenId
-  const creationDate = moment(new Date(route.params.creationDate.seconds * 1000)).format('MMMM Do YYYY, h:ss a') 
-  const deviceToken = route.params.deviceToken
 
   useEffect(() => {
 

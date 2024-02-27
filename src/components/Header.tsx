@@ -25,15 +25,17 @@ const Header = ({ navigation, notifications, tasks, user } : Props) => {
       navigation.navigate('Notifications')
     } else if(name === 'search-outline'){
       navigation.navigate('Search', { tasks, user })
+    } else if(name === 'chatbubbles-outline'){
+      navigation.navigate('ChatList')
     }
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Icon name="menu-outline" size={40} color={'white'} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text style={styles.title}>Tasks</Text>
       </View>
       <View style={styles.right}>

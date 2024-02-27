@@ -19,6 +19,9 @@ import AttendanceDetailsScreen from "../screens/AttendanceDetailsScreen"
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import LeaveDetailsScreen from "../screens/LeaveDetailsScreen"
+import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions"
+import useCheckReuestPermissions from "../hooks/useCheckReuestPermissions"
+import ChatListScreen from "../screens/ChatListScreen"
  
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -224,6 +227,11 @@ const AppStack = () => {
         <Stack.Screen
           name="AttendanceDetails"
           component={AttendanceDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ChatList"
+          component={ChatListScreen}
           options={{ headerShown: false }}
         />
     </Stack.Navigator>
