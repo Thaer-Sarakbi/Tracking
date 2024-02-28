@@ -8,10 +8,11 @@ import { getUsers } from '../redux/usersSlice';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { Colors } from '../assets/Colors';
 import { AppDispatch } from '../redux/store';
+import { UserState } from '../types/types';
 
 const CalendarScreen = ({ navigation }) => {
-  const users = useSelector((state: MyState) => state.users.data)
-  const user = useSelector((state: TasksState) => state.auth.user)
+  const users = useSelector((state: UserState) => state.users.data)
+  const user = useSelector((state: UserState) => state.auth.user)
 
 
   const dispatch = useDispatch<AppDispatch>()

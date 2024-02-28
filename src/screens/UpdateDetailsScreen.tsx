@@ -15,21 +15,16 @@ import LottieView from 'lottie-react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { deleteUpdate } from '../redux/updatesSlice';
 import { AppDispatch } from '../redux/store';
-import { User, message } from '../types/types';
-import MapView, {Marker} from "react-native-maps";
+import { UserState, message } from '../types/types';
+import MapViewComponent from '../components/MapView';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
   ]);
-
   
 interface Props {
   route: RouteProp<RootStackParamsList, "UpdateDetails">
   navigation: StackNavigationProp<RootStackParamsList, "UpdateDetails">
-}
- 
-interface MyState {
-  auth: {user: User}
 }
 
 const UpdateDetailsScreen = ({ route, navigation } : Props) => {
@@ -39,7 +34,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const [comment, setComment] = useState('')
   const [showAlert, setShowAlert] = useState<boolean>(false)
 
-  const user = useSelector((state: MyState) => state.auth.user)
+  const user = useSelector((state: UserState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 
@@ -80,57 +75,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
   const onDeleteUpdate = () => {
     setShowAlert(false)
     dispatch(deleteUpdate({ id: updateId, taskId, assigenId  }))
-    // dispatch(getTasks({id: userId, admin}))
     navigation.goBack()
-  }
-
-  // const handleNotification = async(message, taskId, updateId, assigenId) => {
-  
-  //   let notificationData = {
-  //     data: {
-  //       screen: 'UpdateDetails',
-  //       taskId,
-  //       update:{id: updateId, images},
-  //       assigenId
-  //     },
-  //     title: 'Comment',
-  //     body: message,
-  //     token: deviceToken
-  //   };
-  
-  //   await NotificationService.sendSingleDeviceNotification(notificationData);
-  // }
-
-  const sendNotification = async() => {
-    const message = `${user.name} commented on you update`
-
-    // if(user.admin){
-    //   await firestore().collection('users').doc(assigenId).collection('notifications').add({
-    //     message,
-    //     read: false,
-    //     taskId,
-    //     updateId,
-    //     assigenId
-    // }).then(res => {
-    //   handleNotification(message, taskId, updateId, assigenId)
-    // }).catch(err => {
-    //   console.log(err)
-    // })
-    // } else {
-    //   await firestore().collection('users').doc('D7WNpRZb6d1j0WjuDtEJ').collection('notifications').add({
-    //     message,
-    //     read: false,
-    //     taskId,
-    //     updateId,
-    //     assigenId
-    // }).then(res => {
-    //   handleNotification(message, taskId, updateId, assigenId)
-    // }).catch(err => {
-    //   console.log(err)
-    // })
-    // }
-
-    // handleNotification(message, taskId, updateId, assigenId)
   }
 
   const onSubmitComment = async () => {
@@ -197,8 +142,6 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
     return( 
       `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.substring(image.lastIndexOf('/') + 1)}?alt=media&token=${user.deviceToken}`
     )
-    // console.log(`https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image.path.slice(64)}?alt=media&token=${user.deviceToken}`)
-   
   })
   
   const images2 = images?.map((image : string) => {
@@ -211,7 +154,6 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
     return (
       <>
         <ScrollView style={{ flex: 1, marginBottom: 60 }}>
-          {/* <HeaderDetails navigation={navigation}/> */}
           <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'space-between', paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-outline" size={35} color={'white'} />
@@ -248,26 +190,8 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
             onRequestClose={() => setIsVisible(false)}
             onImageIndexChange={(i) => setIndex(i)}
            />)}
-
-        <MapView
-          style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
-            initialRegion={{
-              longitude: longitude ? Number(longitude) : 0,
-              latitude: latitude ? Number(latitude) : 0,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-        >
-          <Marker
-            coordinate={{
-              longitude: longitude ? Number(longitude) : 0,
-              latitude: latitude ? Number(latitude) : 0
-            }}
-            pinColor={"red"}
-            title={title}
-            description={description}
-          />
-        </MapView>
+          
+           <MapViewComponent longitude={longitude} latitude={latitude} />
 
            {chat && (<Text style={{ color: Colors.titles, fontSize: 25, margin: 10 }}>Comments:</Text>)}
            {

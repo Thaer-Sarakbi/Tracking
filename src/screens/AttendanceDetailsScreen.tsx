@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, LogBox, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { StyleSheet, Keyboard } from 'react-native';
-import { SliderBox } from "react-native-image-slider-box";
+import React from 'react';
+import { Text, View, LogBox, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../assets/Colors';
-import ImageView from "react-native-image-viewing";
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useDispatch, useSelector } from 'react-redux';
-import firestore from '@react-native-firebase/firestore'
 import Icon from 'react-native-vector-icons/Ionicons';
-import { addNotification } from '../redux/notificationsSlice';
 import LottieView from 'lottie-react-native';
-import AwesomeAlert from 'react-native-awesome-alerts';
-import { deleteUpdate } from '../redux/updatesSlice';
-import { AppDispatch } from '../redux/store';
-import { User, message } from '../types/types';
 import MapView, {Marker} from "react-native-maps";
 import moment from 'moment';
+import MapViewComponent from '../components/MapView';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -25,16 +16,11 @@ LogBox.ignoreLogs([
 
   
 interface Props {
-  route: RouteProp<RootStackParamsList, "UpdateDetails">
-  navigation: StackNavigationProp<RootStackParamsList, "UpdateDetails">
-}
- 
-interface MyState {
-  auth: {user: User}
+  route: RouteProp<RootStackParamsList, "AttendanceDetails">
+  navigation: StackNavigationProp<RootStackParamsList, "AttendanceDetails">
 }
 
 const AttendanceDetailsScreen = ({ route, navigation } : Props) => {
-//   const user = useSelector((state: MyState) => state.auth.user)
 
   const time = route.params.checkIn?.time
   const latitude = route.params.checkIn?.latitude
@@ -57,58 +43,32 @@ const AttendanceDetailsScreen = ({ route, navigation } : Props) => {
 
           <View style={{ backgroundColor: 'white', margin: 10, borderRadius: 10, padding: 10 }}>
             <Text style={{ fontSize: 30, color: Colors.titles, fontWeight: 'bold' }}>Check In</Text>
-            {time && (<><Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold' }}>Time:</Text>
-            <Text>{moment(time).format('h:mm a')}</Text>
+            {time && (
+            <>
+              <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold' }}>Time:</Text>
+              <Text>{moment(time).format('h:mm a')}</Text>
 
-            <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Note:</Text>
-            <Text>{note}</Text>
+              <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Note:</Text>
+              <Text>{note}</Text>
 
-            <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Location:</Text>
-            <MapView
-            style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
-                initialRegion={{
-                longitude: longitude ? Number(longitude) : 0,
-                latitude: latitude ? Number(latitude) : 0,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-                }}
-            >
-            <Marker
-                coordinate={{
-                longitude: longitude ? Number(longitude) : 0,
-                latitude: latitude ? Number(latitude) : 0
-                }}
-                pinColor={"red"}
-            />
-            </MapView></>)}
+              <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Location:</Text>
+              <MapViewComponent longitude={longitude} latitude={latitude}/>
+            </>)}
         </View>
 
         <View style={{ backgroundColor: 'white', margin: 10, borderRadius: 10, padding: 10 }}>
             <Text style={{ fontSize: 30, color: Colors.titles, fontWeight: 'bold' }}>Check Out</Text>
-            {checkOutTime && (<><Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold' }}>Time:</Text>
-            <Text>{moment(checkOutTime).format('h:mm a')}</Text>
+            {checkOutTime && (
+            <>
+              <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold' }}>Time:</Text>
+              <Text>{moment(checkOutTime).format('h:mm a')}</Text>
 
-            <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Note:</Text>
-            <Text>{checkOutNote}</Text>
+              <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Note:</Text>
+              <Text>{checkOutNote}</Text>
 
-            <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Location:</Text>
-            <MapView
-            style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
-                initialRegion={{
-                longitude: checkOutLongitude ? Number(checkOutLongitude) : 0,
-                latitude: checkOutLatitude ? Number(checkOutLatitude) : 0,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-                }}
-            >
-            <Marker
-                coordinate={{
-                longitude: checkOutLongitude ? Number(checkOutLongitude) : 0,
-                latitude: checkOutLatitude ? Number(checkOutLatitude) : 0
-                }}
-                pinColor={"red"}
-            />
-            </MapView></>)}
+              <Text style={{ fontSize: 20, color: Colors.titles, fontWeight: 'bold', marginTop: 10 }}>Location:</Text>
+              <MapViewComponent longitude={checkOutLongitude} latitude={checkOutLatitude}/>
+            </>)}
         </View>
         </ScrollView>
       );

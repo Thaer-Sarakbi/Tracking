@@ -1,37 +1,32 @@
 import { createStackNavigator } from "@react-navigation/stack"
 import React, { useEffect } from "react"
-import TopTabs from "./TopTabs"
 import TaskDetailsScreen from "../screens/TaskDetailsScreen"
 import NotificationsScreen from "../screens/NotificationsScreen"
 import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
-import Header from "../components/Header"
-import HeaderDetails from "../components/HeaderDetails"
-import { Notification, Updates, User } from "../types/types"
+import { Updates, User, UserState, tasks } from "../types/types"
 import TasksListScreen from "../screens/TasksListScreen"
 import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
 import usePushNotification from "../hooks/usePushNotification"
 import { useSelector } from "react-redux"
-import SearchBox from "../components/SearchBox"
 import SearchScreen from "../screens/SearchScreen"
 import ReportDetailsScreen from "../screens/ReportDetails"
 import AttendanceDetailsScreen from "../screens/AttendanceDetailsScreen"
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import LeaveDetailsScreen from "../screens/LeaveDetailsScreen"
-import { PERMISSIONS, RESULTS, check, request } from "react-native-permissions"
-import useCheckReuestPermissions from "../hooks/useCheckReuestPermissions"
 import ChatListScreen from "../screens/ChatListScreen"
+import TopTabs from "./TopTabs"
  
 const Stack = createStackNavigator<RootStackParamsList>()
 
-interface MyState {
-  auth: {user: User}
-}
-
 export type RootStackParamsList = {
     BottomNavigator: undefined,
-    TasksList: undefined
+    TasksList: {
+      navigation: undefined, 
+      user: User, 
+      tasks: tasks[]
+    },
     TaskDetails: {
       taskId: string,
       // userId: string,
@@ -48,12 +43,9 @@ export type RootStackParamsList = {
       latitude: number,
       longitude: number,
       assignedBy: string,
-      deviceToken: string
+      deviceToken: string | undefined
     },
     Notifications: undefined,
-    // Header: {
-    //   notifications: Array<Notification>
-    // },
     HeaderDetails: {
       taskId: string, 
       assigenId: string, 
@@ -64,11 +56,36 @@ export type RootStackParamsList = {
     UpdatesList:{
       updatesList: Array<Updates>
       date: string
-    }
+    },
+    ReportDetails:{
+      dailyReport: string,
+      images: string[]
+    },
+    LeaveDetails:{
+      reason: string,
+      time: string,
+      images: string[]
+    },
+    AttendanceDetails:{
+      checkIn: {
+        time: string,
+        latitude: string,
+        longitude: string,
+        note: string
+      },
+      checkOut: {
+        time: string,
+        latitude: string,
+        longitude: string,
+        note: string
+      }
+    },
+    ChatList: undefined,
+    TopTabs: undefined
 }
 
 const AppStack = () => {
-  const user = useSelector((state: MyState) => state.auth.user)
+  const user = useSelector((state: UserState) => state.auth.user)
   console.log(user)
 
   const {
@@ -170,15 +187,20 @@ const AppStack = () => {
   return(
     <Stack.Navigator>
         <Stack.Screen
+          name="TopTabs"
+          component={TopTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="BottomNavigator"
           component={BottomNavigator}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="TasksList"
           component={TasksListScreen}
           options={{ headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
           name="TaskDetails"
           component={TaskDetailsScreen}

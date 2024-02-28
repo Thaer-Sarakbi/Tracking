@@ -52,7 +52,6 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
       setNotifications(newData);
     })
 
-    // dispatch(getTasks({id: user?.id, admin: user?.admin}))
     dispatch(getUsers())
 
   },[user])

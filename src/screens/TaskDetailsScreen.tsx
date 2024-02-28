@@ -6,7 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Colors } from '../assets/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { History, Task, Updates, User } from '../types/types';
+import { History, Task, Updates, User, UserState } from '../types/types';
 import StatusModal from '../components/StatusModal';
 import firestore from '@react-native-firebase/firestore'
 import { getTasks, updateTask } from '../redux/tasksSlice';
@@ -16,13 +16,13 @@ import { ScrollView } from 'react-native-virtualized-view'
 import { addNotification } from '../redux/notificationsSlice';
 import Timeline from 'react-native-timeline-flatlist';
 import UpdateModal from '../components/UpdateModal';
-import MapView, {Marker} from "react-native-maps";
 import moment from 'moment';
 import NotificationService from '../services/NotificationService';
 import Geolocation from '@react-native-community/geolocation';
 import LottieView from 'lottie-react-native';
 import HeaderDetails from '../components/HeaderDetails';
 import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
+import MapViewComponent from '../components/MapView';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -37,13 +37,9 @@ interface historyState {
   }
 }
 
-interface MyState {
-  auth: {user: User}
-}
-
 const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
-  const id = route.params.taskId
+  const id = route.params.id
   const assignedTo = route.params.assignedTo
   const assignedBy = route.params.assignedBy
   const title = route.params?.title
@@ -66,7 +62,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
 
-  const user = useSelector((state: MyState) => state.auth.user)
+  const user = useSelector((state: UserState) => state.auth.user)
   
   const editUpadtes = updates.map(update => {
     const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
@@ -121,27 +117,6 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
 
   const handleNotification = async (status: string) => {
     const message = `Status Updated to ${status} by ${user.name}`
-   
-    // const title = title
-
-    // PushNotification.localNotification({
-    //   channelId: "update-status",
-    //   title: "Update Status",
-    //   status: taskStatus,
-    //   message: message,
-    //   task: title,
-    //   vibrate: true, // (optional) default: true
-    //   vibration: 300,
-    //   screen: 'TaskDetails',
-    //   duration,
-    //   assignTo: userName,
-    //   description,
-    //   creationDate: new Date(route.params.creationDate.seconds * 1000)
-    // });
-
-    // PushNotification.popInitialNotification((notification) => {
-    //   console.log('Initial Notification', notification);
-    // });
 
     let notificationData = {
       screen: 'TaskDetails',
@@ -155,31 +130,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       creationDate: new Date(route.params.creationDate.seconds * 1000),
       channelId: 'updateTaskStatus',
       channelName: 'New update Status'
-
-      // title: 'Update Status',
-      // body: message,
-      // token: deviceToken
     };
-
-    // const notificationData = {
-    //   screen: 'TaskDetails',
-    //   message: `You have assigned a new task by ${user.name}`,
-    //   read: false,
-    //   task: title,
-    //   taskId: res.id,
-    //   status: 'Not Started',
-    //   creationDate: new Date(),
-    //   creationDateNotification: new Date(),
-    //   title,
-    //   description,
-    //   assignTo: assignedTo,
-    //   duration,
-    //   assigenId: assigned?.id,
-    //   receiverId: assigned?.id,
-    //   channelId: 'newTask',
-    //   channelName: 'New Task'
-    // }
-
    
     await NotificationService.sendSingleDeviceNotification( { notification: notificationData, token: deviceToken, message });
   }
@@ -360,25 +311,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           }
         </View>
 
-        <MapView
-          style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}
-            initialRegion={{
-              longitude: longitude ? Number(longitude) : 0,
-              latitude: latitude ? Number(latitude) : 0,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-        >
-          <Marker
-            coordinate={{
-              longitude: longitude ? Number(longitude) : 0,
-              latitude: latitude ? Number(latitude) : 0
-            }}
-            pinColor={"red"}
-            title={title}
-            description={description}
-          />
-        </MapView>
+        <MapViewComponent longitude={longitude} latitude={latitude}/>
 
           {status === 'loading' ? (
             <>

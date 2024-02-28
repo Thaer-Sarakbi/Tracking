@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
-import { TasksState, User } from '../types/types';
+import { Task, TasksState, User, UserState } from '../types/types';
 import Card from '../components/Card';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../navigation/AppStack';
-import PushNotification from 'react-native-push-notification';
 import LottieView from "lottie-react-native";
-import firestore from '@react-native-firebase/firestore'
-import { useIsFocused } from '@react-navigation/native';
-import useCheckReuestPermissions from '../hooks/useCheckReuestPermissions';
-import notifee, { EventType } from '@notifee/react-native';
-import { PERMISSIONS, request } from 'react-native-permissions';
  
-const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
+interface Props {
+  tasks: Task[],
+  user: User,
+  navigation: {navigate: (screen: string,task: Task) => void}
+}
+
+const TasksListScreen = ({ navigation, user, tasks } : Props) => {
 
   const status = useSelector((state: TasksState) => state.tasks.status)
-  const users = useSelector((state: MyState) => state.users.data)
+  const users = useSelector((state: UserState) => state.users.data)
 
   const [isFetching, setIsFetching] = useState(false)
-  const { requestPermission, permissionStatus, checkNotificationPermission } = useCheckReuestPermissions()
 
   const dispatch = useDispatch<AppDispatch>()
-
-  const isFocused = useIsFocused();
 
   const onRefresh = () => {
     setIsFetching(true)
@@ -33,12 +28,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
     setIsFetching(false)
   }
 
-  const rr = async () => {
-    await notifee.requestPermission().then((res) => console.log(res))
-  }
   useEffect(() => {
-    // checkNotificationPermission()
-    request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS)
     dispatch(getTasks({id: user?.id, admin: user?.admin}))
 
     
@@ -48,68 +38,6 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
     }, 30000);
 
     return () => clearInterval(interval)
-    
-    
-    // console.log(user)
-  //   if(user?.admin){
-  //     adminData()
-  //   } else {
-  //     firestore()
-  //     .collection('users')
-  //     .doc(user?.id)
-  //     .collection('tasks')
-  //     .orderBy('creationDate', "desc")
-  //     .onSnapshot(snapshot => {
-    
-  //       const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  //       setTasks(newData);
-  //     })
-  // }
-   
-
-  //   if(user.admin){
-  //     const usersCollection = await firestore().collection('users')
-  
-  //     const usersQuerySnapshot = await usersCollection.get()
-  //     let usersDataWithTasks = []
-    
-  //     for(const userDoc of usersQuerySnapshot.docs){
-  //       const userTasksCollection = userDoc.ref.collection('tasks')
-    
-  //       const tasksQuerySnapshot = await userTasksCollection.get()
-    
-  //       const tasksData = tasksQuerySnapshot.docs.map((taskDoc) => ({
-  //         id: taskDoc.id,
-  //         ...taskDoc.data()
-  //       }))
-    
-  //       if(tasksData[0]){
-  //         usersDataWithTasks.push(
-  //           // id: userDoc.id,
-  //           // userData: userDoc.data(),
-  //           ...tasksData
-  //         )
-  //       }
-  //       setTasks(usersDataWithTasks)
-  //     }
-  //   } else {
-  //   const unsubscribe = firestore()
-  //   .collection('users')
-  //   .doc(user.id)
-  //   .collection('tasks')
-  //   .orderBy('creationDate', "desc")
-  //   .onSnapshot(snapshot => {
-  //     const newData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  //     setTasks(newData);
-  //   })
-
-  // // Unsubscribe when component unmounts
-  // return () => unsubscribe();
-
-  // }
-
-
-    // createChannels()
   },[user])
 
   if(status === 'loading'){
@@ -141,7 +69,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
                     })
                     return(
                       <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                        taskId: item.id,
+                        id: item.id,
                         assignedTo: item.assignedTo,
                         status: item.status,
                         creationDate: item.creationDate,
@@ -152,7 +80,7 @@ const TasksListScreen = ({ navigation, user, tasks } : StackScreenProps<RootStac
                         duration: item.duration,
                         assigenId: item.assigenId,
                         assignedBy: item.assignedBy,
-                        deviceToken: assigned.deviceToken
+                        deviceToken: assigned?.deviceToken
                       })}} >
                         <Card item={item} />
                       </TouchableOpacity>

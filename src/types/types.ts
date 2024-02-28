@@ -1,6 +1,7 @@
 export type Task = {
-    id: string,
-    location: string,
+  id: string,
+  // taskId: string,
+    // location: string,
     title: string,
     description: string,
     status: string,
@@ -8,7 +9,10 @@ export type Task = {
     creationDate: string,
     assignedTo: string,
     assignedBy: string,
-    assigenId: string
+    assigenId: string,
+    latitude: string,
+    longitude: string,
+    deviceToken: string | undefined
 }
 
 export type User = {
@@ -96,19 +100,10 @@ export type Updates = {
   }, 
   title: string,
   updatedBy: string,
-  deviceToken: string
+  deviceToken: string,
+  latitude: string,
+  longitude: string
 }
-
-// export type UpdatesList = {
-//   assigenId: string, 
-//   description: string, 
-//   images: Array<string>, 
-//   taskId: string, 
-//   time: Date, 
-//   title: string, 
-//   updateId: string, 
-//   updatedBy: string
-// }
 
 export type message = {
   id: string,
@@ -117,4 +112,9 @@ export type message = {
   creationDate: {
     seconds: number
   }
+}
+
+export interface UserState {
+  users: {data: Array<User>},
+  auth: {user: User}
 }

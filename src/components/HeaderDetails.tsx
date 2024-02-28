@@ -22,7 +22,6 @@ const HeaderDetails = ({ navigation, taskId, assigenId, userId, admin } : Props)
   const [showAlert, setShowAlert] = useState<boolean>(false)
 
   const onDeleteTask = () => {
-    // console.log(taskId)
     setShowAlert(false)
     dispatch(deleteTask({id: taskId, assigenId }))
     dispatch(getTasks({id: userId, admin}))
@@ -54,7 +53,6 @@ const HeaderDetails = ({ navigation, taskId, assigenId, userId, admin } : Props)
             setShowAlert(false)
           }}
           onConfirmPressed={() => {
-            // dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name }))
             onDeleteTask()
           }}
           contentContainerStyle={{

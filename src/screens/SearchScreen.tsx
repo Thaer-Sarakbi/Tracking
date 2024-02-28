@@ -5,6 +5,7 @@ import Card from "../components/Card"
 import { getTasks } from "../redux/tasksSlice"
 import SearchBox from "../components/SearchBox"
 import firestore from '@react-native-firebase/firestore'
+import { UserState } from "../types/types"
 
 const SearchScreen = ({ navigation, route }) => {
     const [isFetching, setIsFetching] = useState(false)
@@ -12,7 +13,7 @@ const SearchScreen = ({ navigation, route }) => {
 
     const user = route.params.user
 
-    const users = useSelector((state: MyState) => state.users.data)
+    const users = useSelector((state: UserState) => state.users.data)
 
     const onChangeText = async(text) => {
         let filteredList = []

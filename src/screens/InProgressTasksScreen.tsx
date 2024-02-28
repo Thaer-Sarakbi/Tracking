@@ -1,30 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View } from 'react-native';
-import { getTasks } from '../redux/tasksSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { FlatList, Task, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import Card from '../components/Card';
 import AnimatedLottieView from 'lottie-react-native';
 
-function InProgressTasksScreen ({ navigation, tasks }){
-    // const tasks = useSelector((state: MyState) => state.tasks.data)
+interface Props {
+  tasks: Task[],
+  navigation: {navigate: (screen: string,task: Task) => void}
+}
+
+function InProgressTasksScreen ({ navigation, tasks } : Props){
     const status = useSelector((state: MyState) => state.tasks.status)
-    const user = useSelector((state: MyState) => state.auth.user)
   
     const [isFetching, setIsFetching] = useState(false)
-  
-    const dispatch = useDispatch<AppDispatch>()
-  
-    // const onRefresh = () => {
-    //   setIsFetching(true)
-    //   dispatch(getTasks({id: user?.id, admin: user?.admin}))
-    //   setIsFetching(false)
-    // }
-  
-    // useEffect(() => {
-    //   dispatch(getTasks({id: user?.id, admin: user?.admin}))
-  
-      // createChannels()
-    // },[])
 
     if(status === 'loading'){
       return (
@@ -38,23 +26,23 @@ function InProgressTasksScreen ({ navigation, tasks }){
             <FlatList
               keyExtractor={(item) => item.id.toString()}
               data={tasks}
-              renderItem={(item) => {
-                  if(item.item.status === 'In Progress'){
+              renderItem={({item}) => {
+                  if(item.status === 'In Progress'){
                       return(
                           <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                            taskId: item.item.id,
-                            assignedTo: item.item.assignedTo,
-                            status: item.item.status,
-                            creationDate: item.item.creationDate,
-                            title: item.item.title,
-                            latitude: item.item.latitude,
-                            longitude: item.item.longitude,
-                            description: item.item.description,
-                            duration: item.item.duration,
-                            assignedBy: item.item.assignedBy,
-                            assigenId: item.item.assigenId
+                            taskId: item.id,
+                            assignedTo: item.assignedTo,
+                            status: item.status,
+                            creationDate: item.creationDate,
+                            title: item.title,
+                            latitude: item.latitude,
+                            longitude: item.longitude,
+                            description: item.description,
+                            duration: item.duration,
+                            assignedBy: item.assignedBy,
+                            assigenId: item.assigenId
                           })}} >
-                            <Card item={item.item} />
+                            <Card item={item} />
                           </TouchableOpacity>
                       )
                   } else {

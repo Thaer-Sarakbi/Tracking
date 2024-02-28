@@ -7,18 +7,13 @@ import firestore from '@react-native-firebase/firestore'
 import { Colors } from '../assets/Colors';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { useDispatch, useSelector } from 'react-redux';
-import { User } from '../types/types';
+import { User, UserState } from '../types/types';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import { Controller, useForm } from 'react-hook-form';
 import { getTasks } from '../redux/tasksSlice';
 import NotificationService from '../services/NotificationService';
 import { addNotification } from '../redux/notificationsSlice';
-
-interface MyState {
-    users: {data: Array<User>},
-    auth: {user: User}
-}
 
 interface Props {
   changeModalVisible: (boole: boolean) => void
@@ -41,8 +36,8 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     },
   })
 
-  const users = useSelector((state: MyState) => state.users.data)
-  const user = useSelector((state: MyState) => state.auth.user)
+  const users = useSelector((state: UserState) => state.users.data)
+  const user = useSelector((state: UserState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
 

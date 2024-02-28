@@ -135,7 +135,6 @@ const tasksSlice = createSlice({
         state.data = payload
       })
       .addCase(getTasks.rejected, (state, action) => {
-        console.log(action)
         state.status = 'failed'
         state.error = action.error.message
       })
