@@ -1,7 +1,5 @@
 export type Task = {
-  id: string,
-  // taskId: string,
-    // location: string,
+    id: string,
     title: string,
     description: string,
     status: string,

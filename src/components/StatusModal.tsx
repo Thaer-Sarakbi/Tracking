@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
 
 interface Props {
   changeModalVisible: (boole: boolean) => void,

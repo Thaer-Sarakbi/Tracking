@@ -3,7 +3,7 @@ import React, { useEffect } from "react"
 import TaskDetailsScreen from "../screens/TaskDetailsScreen"
 import NotificationsScreen from "../screens/NotificationsScreen"
 import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
-import { Updates, User, UserState, tasks } from "../types/types"
+import { Task, Updates, User, UserState, tasks } from "../types/types"
 import TasksListScreen from "../screens/TasksListScreen"
 import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
@@ -28,9 +28,7 @@ export type RootStackParamsList = {
       tasks: tasks[]
     },
     TaskDetails: {
-      taskId: string,
-      // userId: string,
-      // userName: string,
+      id: string,
       status: string,
       creationDate: {
         seconds: number
@@ -54,8 +52,11 @@ export type RootStackParamsList = {
     },
     UpdateDetails: Updates,
     UpdatesList:{
-      updatesList: Array<Updates>
-      date: string
+      updatesList: Array<Updates>,
+      dailyReport: string,
+      leaveReport: string,
+      date: string,
+      selected: string
     },
     ReportDetails:{
       dailyReport: string,
@@ -72,7 +73,7 @@ export type RootStackParamsList = {
         latitude: string,
         longitude: string,
         note: string
-      },
+      } | undefined,
       checkOut: {
         time: string,
         latitude: string,
@@ -81,7 +82,11 @@ export type RootStackParamsList = {
       }
     },
     ChatList: undefined,
-    TopTabs: undefined
+    TopTabs: undefined,
+    search:{
+      user: User,
+      tasks: Task[]
+    }
 }
 
 const AppStack = () => {
@@ -187,13 +192,13 @@ const AppStack = () => {
   return(
     <Stack.Navigator>
         <Stack.Screen
-          name="TopTabs"
-          component={TopTabs}
+          name="BottomNavigator"
+          component={BottomNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="BottomNavigator"
-          component={BottomNavigator}
+          name="TopTabs"
+          component={TopTabs}
           options={{ headerShown: false }}
         />
         {/* <Stack.Screen

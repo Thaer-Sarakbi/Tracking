@@ -52,7 +52,7 @@ export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{ta
     //     console.log(error)
     //   });
 
-    const unsubscribe =  await firestore()
+    firestore()
     .collection('users')
     .doc(user.userId)
     .collection('tasks')
@@ -65,10 +65,7 @@ export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{ta
       // updatesList = updatesList1
     })
 
-    return {
-      unsubscribe,
-      updatesList
-    }
+    return updatesList
 })
 
 export const deleteUpdate = createAsyncThunk("tasks/deleteTask", async (update: { id: string, assigenId: string, taskId: string }) => {

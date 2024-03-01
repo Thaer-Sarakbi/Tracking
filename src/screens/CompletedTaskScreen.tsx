@@ -63,7 +63,7 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
                 if(item.item.status === 'Completed'){
                     return(
                         <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                          taskId: item.item.id,
+                          id: item.item.id,
                           assignedTo: item.item.assignedTo,
                           status: item.item.status,
                           creationDate: item.item.creationDate,

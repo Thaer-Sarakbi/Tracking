@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../assets/Colors';
-import ImagePicker from 'react-native-image-crop-picker';
-import ImageResizer from '@bam.tech/react-native-image-resizer';
 import Icon from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore'
 import { useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 import { Controller, useForm } from 'react-hook-form';
-import storage from '@react-native-firebase/storage';
 import { promptForEnableLocationIfNeeded, isLocationEnabled } from 'react-native-android-location-enabler';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import moment from 'moment';
 import useUploadImages from '../hooks/useUploadImages';
+import { UserState } from '../types/types';
 
-const successfullyModal = (showAlert, setShowAlert) => (
+interface Props{
+  showAlert: boolean,
+  setShowAlert: () => void
+}
+
+const successfullyModal = (showAlert, setShowAlert: Props) => (
   <AwesomeAlert
   show={showAlert}
   showProgress={false}
@@ -22,7 +25,6 @@ const successfullyModal = (showAlert, setShowAlert) => (
   message="Registered Successfully"
   closeOnTouchOutside={true}
   closeOnHardwareBackPress={false}
-  // showCancelButton={true}
   showConfirmButton={true}
   cancelText="No, cancel"
   confirmText="Ok" 
@@ -42,12 +44,12 @@ const successfullyModal = (showAlert, setShowAlert) => (
 />
 )
 
-const AttendanceScreen = ({ navigation }) => {
-    const [checkInNote, setCheckInNote] = useState('')
-    const [checkOutNote, setCheckOutNote] = useState('')
-    const [showAlert, setShowAlert] = useState(false);
+const AttendanceScreen = () => {
+    const [checkInNote, setCheckInNote] = useState<string>('')
+    const [checkOutNote, setCheckOutNote] = useState<string>('')
+    const [showAlert, setShowAlert] = useState<boolean>(false);
 
-    const user = useSelector((state: notificationsState) => state.auth.user)
+    const user = useSelector((state: UserState) => state.auth.user)
 
     const onCheckInReg = () => {
       firestore().collection('users').doc(user.id).collection('checkIn').get().then((res) =>{
@@ -372,7 +374,6 @@ const AttendanceScreen = ({ navigation }) => {
             numberOfLines={5}
             textAlignVertical='top'
             onChangeText={setCheckInNote}
-            // onBlur={onBlur}
             value={checkInNote}
           />
 
@@ -391,7 +392,6 @@ const AttendanceScreen = ({ navigation }) => {
             numberOfLines={5}
             textAlignVertical='top'
             onChangeText={setCheckOutNote}
-            // onBlur={onBlur}
             value={checkOutNote}
           />
 

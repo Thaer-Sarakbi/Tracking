@@ -5,15 +5,13 @@ import firestore from '@react-native-firebase/firestore'
 import { getUpdates } from '../redux/updatesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
-import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { addNotification } from '../redux/notificationsSlice';
 import { User } from '../types/types';
 import Geolocation from '@react-native-community/geolocation';
-import { promptForEnableLocationIfNeeded, isLocationEnabled } from 'react-native-android-location-enabler';
+import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 import useUploadImages from '../hooks/useUploadImages';
 
 interface Props {
@@ -110,7 +108,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
         })
         }
         changeModalVisible(false)
-        dispatch(getUpdates({taskId: id, userId, admin}))
+        dispatch(getUpdates({taskId: id, userId}))
       }).catch(err => {
         changeModalVisible(false)
         console.log(err)
@@ -133,40 +131,6 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
       }
   }) 
   } 
-
-  // const chooseFromGallery = () => {
-  //   ImagePicker.openPicker({
-  //     width: 400,
-  //     height: 300,
-  //     multiple: true
-  //   }).then(images => {
-  //     // setImages(images)
-  //     {images.map((image) => (
-  //       compressAndResizeImage(image)
-  //     ))}
-  //   }).catch((error) => {
-  //     console.log(error)
-  //   })
-  // }
-
-
-// const compressAndResizeImage = async (originalUri: {path: string}) => {
-
-//   try {
-//     const resizedImage = await ImageResizer.createResizedImage(
-//       originalUri.path,
-//       800, // New width
-//       600, // New height
-//       'JPEG', // Compression format
-//       80, // Compression quality (0-100)
-//       0, // Rotation angle (0, 90, 180, 270)
-//     );
-
-//     setImages(oldArray => [...oldArray, resizedImage.uri]);
-//   } catch (error) {
-//     console.error('Error compressing image:', error);
-//   }
-// };
 
   const renderMultiImages = images?.map((image, i) => {
     return(

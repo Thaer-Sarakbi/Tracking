@@ -1,22 +1,28 @@
 import React, { useState } from "react"
 import { FlatList, TouchableOpacity, View } from "react-native"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import Card from "../components/Card"
-import { getTasks } from "../redux/tasksSlice"
 import SearchBox from "../components/SearchBox"
 import firestore from '@react-native-firebase/firestore'
-import { UserState } from "../types/types"
+import { Task, UserState, tasks } from "../types/types"
+import { RouteProp } from "@react-navigation/native"
+import { RootStackParamsList } from "../navigation/AppStack"
+import { StackNavigationProp } from "@react-navigation/stack"
 
-const SearchScreen = ({ navigation, route }) => {
-    const [isFetching, setIsFetching] = useState(false)
+interface Props{
+  route: RouteProp<RootStackParamsList, "search">
+  navigation: StackNavigationProp<RootStackParamsList, "search">
+}
+
+const SearchScreen = ({ navigation, route } : Props) => {
     const [tasksList, setTasksList] = useState(route.params.tasks)
 
     const user = route.params.user
 
     const users = useSelector((state: UserState) => state.users.data)
 
-    const onChangeText = async(text) => {
-        let filteredList = []
+    const onChangeText = async(text: string) => {
+        let filteredList: Task[] = []
 
       if(user.admin){
         const usersCollection = await firestore().collection('users')
@@ -104,7 +110,6 @@ const SearchScreen = ({ navigation, route }) => {
               return null
             }
           }}
-          refreshing={isFetching}
         />
     </View>
     )

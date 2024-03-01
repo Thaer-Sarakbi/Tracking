@@ -6,7 +6,7 @@ import AnimatedLottieView from 'lottie-react-native';
 
 interface Props {
   tasks: Task[],
-  navigation: {navigate: (screen: string,task: Task) => void}
+  navigation: {navigate: (screen: string, task: Task) => void}
 }
 
 function InProgressTasksScreen ({ navigation, tasks } : Props){
@@ -30,7 +30,7 @@ function InProgressTasksScreen ({ navigation, tasks } : Props){
                   if(item.status === 'In Progress'){
                       return(
                           <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                            taskId: item.id,
+                            id: item.id,
                             assignedTo: item.assignedTo,
                             status: item.status,
                             creationDate: item.creationDate,

@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View }
 import { useDispatch, useSelector } from 'react-redux';
 import { Notification, notificationsState } from '../types/types';
 import { AppDispatch } from '../redux/store';
-import { getNotifications, updateNotifications } from '../redux/notificationsSlice';
+import { updateNotifications } from '../redux/notificationsSlice';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 import firestore from '@react-native-firebase/firestore'
@@ -16,7 +16,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
 
   const user = useSelector((state: notificationsState) => state.auth.user)
 
-  const [notifications, setNotifications] = useState()
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [limit, setLimit] = useState(10)
   const [footerLoading, setFooterLoading] = useState(true)
   
@@ -90,7 +90,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                                 time: moment(new Date(item.time?.seconds * 1000)).format('MMM Do[\n]h:ss a')
                               })
                               dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
-                              dispatch(getNotifications(user.id))
+                              // dispatch(getNotifications(user.id))
                             }}>
                             <Text style={styles.title}>{item.task}</Text>
                             <Text style={styles.message}>{item.message}</Text>

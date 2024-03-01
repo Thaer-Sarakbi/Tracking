@@ -7,7 +7,6 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import 'moment/locale/en-gb'
 import firestore from '@react-native-firebase/firestore'
-import { useSelector } from 'react-redux';
 import Seperator from '../components/Seperator';
 
 interface Props {
@@ -25,13 +24,10 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
   const [checkIn, setCheckIn] = useState()
   const [checkOut, setCheckOut] = useState()
 
-  const user = useSelector((state: notificationsState) => state.auth.user)
-
   const retreiveCheckIn = async () => {
     await firestore().collection('users').doc(selected).collection('checkIn').get()
     .then((res) => {
        res.docs.forEach(doc => {
-        // console.log(moment(doc.data().time.seconds * 1000).format('L'), moment(date).format('L')) 
         if(moment(doc.data().time.seconds * 1000).format('L') === moment(date).format('L')){
           setCheckIn({
             ...doc.data(),
