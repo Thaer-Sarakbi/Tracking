@@ -6,7 +6,6 @@ import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LottieView from 'lottie-react-native';
-import MapView, {Marker} from "react-native-maps";
 import moment from 'moment';
 import MapViewComponent from '../components/MapView';
 
@@ -22,7 +21,7 @@ interface Props {
 
 const AttendanceDetailsScreen = ({ route, navigation } : Props) => {
 
-  const time = route.params.checkIn?.time
+  const time = route.params.checkIn.time
   const latitude = route.params.checkIn?.latitude
   const longitude = route.params.checkIn?.longitude
   const note = route.params.checkIn?.note

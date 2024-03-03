@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { FlatList, Task, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { FlatList, TouchableOpacity, View } from 'react-native';
 import Card from '../components/Card';
-import AnimatedLottieView from 'lottie-react-native';
+import { ListsProps, User } from '../types/types';
+import LottieView from 'lottie-react-native';
 
-interface Props {
-  tasks: Task[],
-  navigation: {navigate: (screen: string, task: Task) => void}
-}
-
-function InProgressTasksScreen ({ navigation, tasks } : Props){
-    const status = useSelector((state: MyState) => state.tasks.status)
-  
-    const [isFetching, setIsFetching] = useState(false)
+const InProgressTasksScreen = ({ navigation, tasks, status, users } : ListsProps) => {
 
     if(status === 'loading'){
       return (
-        <View style={{ flex: 1 , justifyContent: 'center', alignItems: 'center'}}>
-          <AnimatedLottieView source={require('../assets/loading.json')} autoPlay loop />
-        </View>
+        <>
+          <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />
+        </>
       )
     } else if(status === 'succeeded'){
       return (
@@ -26,8 +18,14 @@ function InProgressTasksScreen ({ navigation, tasks } : Props){
             <FlatList
               keyExtractor={(item) => item.id.toString()}
               data={tasks}
-              renderItem={({item}) => {
+              renderItem={({ item }) => {
                   if(item.status === 'In Progress'){
+                    const assigned = users.find((user: User) => {
+          
+                      if(user.value === item.assignedTo){
+                        return user
+                      }
+                    })
                       return(
                           <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
                             id: item.id,
@@ -39,8 +37,10 @@ function InProgressTasksScreen ({ navigation, tasks } : Props){
                             longitude: item.longitude,
                             description: item.description,
                             duration: item.duration,
+                            assigenId: item.assigenId,
                             assignedBy: item.assignedBy,
-                            assigenId: item.assigenId
+                            location: item.location,
+                            deviceToken: assigned?.deviceToken
                           })}} >
                             <Card item={item} />
                           </TouchableOpacity>
@@ -49,12 +49,10 @@ function InProgressTasksScreen ({ navigation, tasks } : Props){
                       return null
                   }
               }}
-              // onRefresh= {() => onRefresh()}
-              refreshing={isFetching}
             />
         </View>
       );
     }
 }
 
-export default InProgressTasksScreen
+export default InProgressTasksScreen;

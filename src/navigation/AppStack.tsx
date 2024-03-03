@@ -4,7 +4,7 @@ import TaskDetailsScreen from "../screens/TaskDetailsScreen"
 import NotificationsScreen from "../screens/NotificationsScreen"
 import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
 import { Task, Updates, User, UserState, tasks } from "../types/types"
-import TasksListScreen from "../screens/TasksListScreen"
+import TasksListScreen from "../screens/NotStartedScreen"
 import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
 import usePushNotification from "../hooks/usePushNotification"
@@ -69,15 +69,15 @@ export type RootStackParamsList = {
     },
     AttendanceDetails:{
       checkIn: {
-        time: string,
-        latitude: string,
-        longitude: string,
+        time: Date,
+        latitude: number,
+        longitude: number,
         note: string
-      } | undefined,
+      },
       checkOut: {
-        time: string,
-        latitude: string,
-        longitude: string,
+        time: Date,
+        latitude: number,
+        longitude: number,
         note: string
       }
     },

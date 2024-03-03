@@ -21,8 +21,8 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
   const date = route.params.date
   const selected = route.params.selected
 
-  const [checkIn, setCheckIn] = useState()
-  const [checkOut, setCheckOut] = useState()
+  const [checkIn, setCheckIn] = useState<{time: Date}>()
+  const [checkOut, setCheckOut] = useState<{time: Date}>()
 
   const retreiveCheckIn = async () => {
     await firestore().collection('users').doc(selected).collection('checkIn').get()

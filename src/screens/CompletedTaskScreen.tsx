@@ -1,57 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, Text } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../redux/store';
-import { getTasks } from '../redux/tasksSlice';
-import { TasksState, User, tasks } from '../types/types';
+import React from 'react';
+import { View, FlatList, TouchableOpacity } from 'react-native';
+import { ListsProps, User } from '../types/types';
 import Card from '../components/Card';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../navigation/AppStack';
-import PushNotification from 'react-native-push-notification';
-import AnimatedLottieView from 'lottie-react-native';
-import TasksLists from '../hoc/TasksListsComponents';
+import LottieView from 'lottie-react-native';
 
-interface MyState {
-  tasks: tasks,
-  auth: {user: User}
-}
-
-const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsList, 'TasksList'>) => {
-  const tasks = useSelector((state: MyState) => state.tasks.data)
-  const status = useSelector((state: MyState) => state.tasks.status)
-  const user = useSelector((state: MyState) => state.auth.user)
-
-  const [isFetching, setIsFetching] = useState(false)
-
-  const dispatch = useDispatch<AppDispatch>()
-
-  const onRefresh = () => {
-    setIsFetching(true)
-    dispatch(getTasks({id: user?.id, admin: user?.admin}))
-    setIsFetching(false)
-  }
-
-  useEffect(() => {
-    dispatch(getTasks({id: user?.id, admin: user?.admin}))
-
-    // createChannels()
-  },[])
-
-  const createChannels = () => {
-    PushNotification.createChannel(
-      {
-          channelId: "update-status", // (required)
-          channelName: "update status", // (required)
-      },
-      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
-  );
-  }
+const CompletedTaskScreen = ({ navigation, tasks, status, users } : ListsProps) => {
 
   if(status === 'loading'){
     return (
-      <View style={{ flex: 1 , justifyContent: 'center', alignItems: 'center'}}>
-        <AnimatedLottieView source={require('../assets/loading.json')} autoPlay loop />
-      </View>
+      <>
+        <LottieView source={require("../assets/loading.json")} style={{flex: 1}} autoPlay loop />
+      </>
     )
   } else if(status === 'succeeded'){
     return (
@@ -59,31 +18,38 @@ const CompletedTaskScreen = ({ navigation } : StackScreenProps<RootStackParamsLi
           <FlatList
             keyExtractor={(item) => item.id.toString()}
             data={tasks}
-            renderItem={(item) => {
-                if(item.item.status === 'Completed'){
+            renderItem={({ item }) => {
+                if(item.status === 'Completed'){
+                  const assigned = users.find((user: User) => {
+          
+                    if(user.value === item.assignedTo){
+                      return user
+                    }
+                  })
+
                     return(
                         <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                          id: item.item.id,
-                          assignedTo: item.item.assignedTo,
-                          status: item.item.status,
-                          creationDate: item.item.creationDate,
-                          title: item.item.title,
-                          latitude: item.item.latitude,
-                          longitude: item.item.longitude,
-                          assignedBy: item.item.assignedBy,
-                          description: item.item.description,
-                          duration: item.item.duration,
-                          assigenId: item.item.assigenId
+                          id: item.id,
+                          assignedTo: item.assignedTo,
+                          status: item.status,
+                          creationDate: item.creationDate,
+                          title: item.title,
+                          latitude: item.latitude,
+                          longitude: item.longitude,
+                          description: item.description,
+                          duration: item.duration,
+                          assigenId: item.assigenId,
+                          assignedBy: item.assignedBy,
+                          location: item.location,
+                          deviceToken: assigned?.deviceToken
                         })}} >
-                          <Card item={item.item} />
+                          <Card item={item} />
                         </TouchableOpacity>
                     )
                 } else {
                     return null
                 }
             }}
-            onRefresh= {() => onRefresh()}
-            refreshing={isFetching}
           />
       </View>
     );

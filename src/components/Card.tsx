@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Task } from '../types/types';
 import moment from 'moment';
 
-const Card = ({item}: { item: Task }  ) => {
+const Card = ({item}: { item: Task }) => {
 
   const getStyle = (status: string) => {
     if(status === 'In Progress'){

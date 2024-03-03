@@ -10,7 +10,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import { AppDispatch } from '../redux/store';
 
 interface Props {
-  navigation: StackNavigationProp<RootStackParamsList, "HeaderDetails">
+  navigation: { goBack: () => void }
   taskId: string,
   assigenId: string,
   userId: string,

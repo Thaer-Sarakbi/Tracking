@@ -1,7 +1,7 @@
 import React from 'react';
 import MapView, {Marker} from "react-native-maps";
 
-const MapViewComponent = ({ longitude, latitude }: { longitude: string | undefined, latitude: string | undefined }) => (
+const MapViewComponent = ({ longitude, latitude }: { longitude: number | undefined, latitude: number | undefined }) => (
     <>
       <MapView
         style={{ width: '100%', height: 300, marginVertical: 10, borderRadius: 5 }}

@@ -3,20 +3,13 @@ import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { getTasks } from '../redux/tasksSlice';
-import { Task, TasksState, User, UserState } from '../types/types';
+import { ListsProps, User, UserState } from '../types/types';
 import Card from '../components/Card';
 import LottieView from "lottie-react-native";
- 
-interface Props {
-  tasks: Task[],
-  user: User,
-  navigation: {navigate: (screen: string,task: Task) => void}
-}
 
-const TasksListScreen = ({ navigation, user, tasks } : Props) => {
+const NotStartedScreen = ({ navigation, users, tasks, status } : ListsProps) => {
 
-  const status = useSelector((state: TasksState) => state.tasks.status)
-  const users = useSelector((state: UserState) => state.users.data)
+  const user = useSelector((state: UserState) => state.auth.user)
 
   const [isFetching, setIsFetching] = useState(false)
 
@@ -30,7 +23,6 @@ const TasksListScreen = ({ navigation, user, tasks } : Props) => {
 
   useEffect(() => {
     dispatch(getTasks({id: user?.id, admin: user?.admin}))
-
     
     const interval = setInterval(() => {
       
@@ -80,6 +72,7 @@ const TasksListScreen = ({ navigation, user, tasks } : Props) => {
                         duration: item.duration,
                         assigenId: item.assigenId,
                         assignedBy: item.assignedBy,
+                        location: item.location,
                         deviceToken: assigned?.deviceToken
                       })}} >
                         <Card item={item} />
@@ -97,4 +90,4 @@ const TasksListScreen = ({ navigation, user, tasks } : Props) => {
   }
 }
 
-export default TasksListScreen;
+export default NotStartedScreen;

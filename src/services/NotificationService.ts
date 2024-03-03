@@ -1,6 +1,6 @@
 const server_key = 'AAAAmy4HlUs:APA91bF8iJqOhOtJGfs3DiqJP5DWF-NgGbGpNtZ11ObDBrq6eyGfBH4xH5f2vDyRfidyWZnZbJy9qnX6to495_fJ_Yy91Li48qNx8o952kUjsUy_eY2Uua7JV-i1hrC_7-rh2iz5LOoH'
 
-const sendSingleDeviceNotification = (data) => {
+const sendSingleDeviceNotification = (data: { notification: {description: string}, message: string, token: string }) => {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append(

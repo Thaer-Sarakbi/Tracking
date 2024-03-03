@@ -3,13 +3,16 @@ import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Notification, notificationsState } from '../types/types';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamsList } from '../navigation/AppStack';
+import { Notification, Task, User } from '../types/types';
 
 interface Props {
-  // navigation: StackNavigationProp<RootStackParamsList, "Header">,
-  notifications: Array<Notification>
+  notifications: Array<Notification>,
+  navigation: {navigate: (screen: string, data: {
+    tasks: Task[] | undefined,
+    user: User | undefined
+  }) => void},
+  tasks: Task[],
+  user: User
 }
 
 const Header = ({ navigation, notifications, tasks, user } : Props) => {
@@ -22,11 +25,11 @@ const Header = ({ navigation, notifications, tasks, user } : Props) => {
 
   const handleNav = (name: string) => {
     if(name === 'notifications-outline'){
-      navigation.navigate('Notifications')
+      navigation.navigate('Notifications', {tasks: undefined, user: undefined})
     } else if(name === 'search-outline'){
       navigation.navigate('Search', { tasks, user })
     } else if(name === 'chatbubbles-outline'){
-      navigation.navigate('ChatList')
+      navigation.navigate('ChatList', {tasks: undefined, user: undefined})
     }
   }
 
@@ -43,7 +46,7 @@ const Header = ({ navigation, notifications, tasks, user } : Props) => {
           icons.map((icon, i) => (
             <TouchableOpacity key={i} onPress={() => handleNav(icon.name)}>
               {icon.name === 'notifications-outline' && (
-                <View style={{ backgroundColor: 'red', position: 'absolute', top: -5, left: 15, zIndex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+                <View style={styles.notificationIconBadge}>
                   <Text style={{ color: 'white', margin: 2 }}>{notifications.filter(notification => {
                     if(notification.read === false){
                       return notification
@@ -86,6 +89,16 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         marginHorizontal: 15
+    },
+    notificationIconBadge: { 
+      backgroundColor: 'red', 
+      position: 'absolute', 
+      top: -5, 
+      left: 15, 
+      zIndex: 1, 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      borderRadius: 10 
     }
 })
 

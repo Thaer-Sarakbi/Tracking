@@ -4,12 +4,15 @@ export type Task = {
     description: string,
     status: string,
     duration: number,
-    creationDate: string,
+    creationDate: {
+      _seconds: number
+    }, 
     assignedTo: string,
     assignedBy: string,
     assigenId: string,
     latitude: string,
     longitude: string,
+    location: string,
     deviceToken: string | undefined
 }
 
@@ -57,7 +60,7 @@ export type historyList = {
 }
 
 export type Notification = {
-  item : {
+
     id: string,
     taskId: string,
     read: boolean,
@@ -68,7 +71,6 @@ export type Notification = {
       seconds: number
     },
     screen: string
-  }
 }
 
 export type notificationsList = {
@@ -115,4 +117,11 @@ export type message = {
 export interface UserState {
   users: {data: Array<User>},
   auth: {user: User}
+}
+
+export interface ListsProps {
+  tasks: Task[],
+  status: string,
+  users: User[],
+  navigation: {navigate: (screen: string, task: Task) => void}
 }

@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
+import React from 'react';
+import { Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../assets/Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Notification, notificationsState } from '../types/types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from '../navigation/AppStack';
 
-const ChatListScreen = ({ navigation }) => {
+interface Props {
+  navigation: StackNavigationProp<RootStackParamsList, "ChatList">
+}
+
+const ChatListScreen = ({ navigation }: Props) => {
  
   return (
     <View>

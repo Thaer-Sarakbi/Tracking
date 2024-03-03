@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import TasksListScreen from '../screens/TasksListScreen';
+import TasksListScreen from '../screens/NotStartedScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Header from '../components/Header';
 import { Colors } from '../assets/Colors';
-import { TouchableOpacity, Modal, View, Text } from 'react-native';
+import { TouchableOpacity, Modal, View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Task, User, tasks } from '../types/types';
+import { User, tasks } from '../types/types';
 import { RootStackParamsList } from './AppStack';
 import { StackScreenProps } from '@react-navigation/stack';
 import CompletedTaskScreen from '../screens/CompletedTaskScreen';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import firestore from '@react-native-firebase/firestore'
-import { getTasks } from '../redux/tasksSlice';
-import { useIsFocused } from '@react-navigation/native';
 import InProgressTasksScreen from '../screens/InProgressTasksScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
 interface MyState {
   tasks: tasks,
+  users: {
+    data: User[]
+  },
   auth: {
     user: User
   }
@@ -31,6 +32,8 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const tasks = useSelector((state: MyState) => state.tasks?.data)
+  const status = useSelector((state: MyState) => state.tasks?.status)
+  const users = useSelector((state: MyState) => state.users.data)
   const user = useSelector((state: MyState) => state.auth.user)
 
   const [notifications, setNotifications] = useState([])
@@ -58,44 +61,29 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
 
   return (
     <>
-      <Header navigation={navigation} notifications={notifications} tasks={tasks} user={user}/>
+      <Header navigation={navigation} notifications={notifications} tasks={tasks} user={user} />
       <Tab.Navigator 
       initialRouteName= "Not Started" 
         screenOptions={{
-          // tabBarActiveTintColor: Colors.main,
           tabBarLabelStyle: { fontSize: 12 },
-          // tabBarStyle: { backgroundColor: 'powderblue' },
           tabBarIndicatorStyle: { backgroundColor: Colors.main },
          
         }}
       >
         <Tab.Screen 
           name="Not Started" 
-          children={() => <TasksListScreen navigation={navigation} user={user} tasks={tasks} />} 
-          // options={{
-          //   tabBarBadge:()=> { return (  
-          //     <View style={{ position: 'relative', top: 14, left: -45 }}>
-          //       <Text style={{ marginLeft: 20 }}>({
-          //         tasks?.filter(task => {
-          //           if(task?.status !== 'Completed'){
-          //             return task
-          //           }
-          //         }).length
-          //       })</Text>
-          //     </View> ) }
-          // }}
+          children={() => <TasksListScreen navigation={navigation} users={users} tasks={tasks} status={status} />} 
         />
         <Tab.Screen 
           name="In Progress" 
-          // component={InProgressTasksScreen} 
-          children={() => <InProgressTasksScreen navigation={navigation} user={user} tasks={tasks} />} 
+          children={() => <InProgressTasksScreen navigation={navigation} tasks={tasks} status={status} users={users} />} 
         />
         <Tab.Screen 
           name="Completed" 
-          component={CompletedTaskScreen} 
+          children={() => <CompletedTaskScreen navigation={navigation} tasks={tasks} status={status} users={users} />} 
         />
       </Tab.Navigator>
-      {user?.admin && (<TouchableOpacity onPress={() => changeModalVisible(true)} style={{ backgroundColor: Colors.main, position: 'absolute', bottom: 20, right: 20, width: 60, height: 60, borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}>
+      {user?.admin && (<TouchableOpacity onPress={() => changeModalVisible(true)} style={styles.addButton}>
         <Icon name="add-outline" size={35} color={'white'} />
       </TouchableOpacity>)}
       <Modal 
@@ -103,10 +91,7 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
            animationType= 'slide'
            visible= {isModalVisible}
          >
-           {/* <ShareModal 
-             changeModalVisible= {changeModalVisible}
-           /> */}
-           <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+           <View style={styles.newTaskModal}>
              <NewTaskModal 
                changeModalVisible= {changeModalVisible}
              />
@@ -115,3 +100,23 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  addButton: { 
+    backgroundColor: Colors.main, 
+    position: 'absolute', 
+    bottom: 20, 
+    right: 20, 
+    width: 60, 
+    height: 60, 
+    borderRadius: 50, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  newTaskModal: { 
+    flex: 1, 
+    backgroundColor: 'white', 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  }
+})
