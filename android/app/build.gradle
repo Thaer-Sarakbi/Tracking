@@ -146,6 +146,8 @@ dependencies {
     implementation project(':react-native-android-location-enabler')
 
     implementation("com.google.firebase:firebase-crashlytics-ndk")
+
+    implementation project(':react-native-splash-screen')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

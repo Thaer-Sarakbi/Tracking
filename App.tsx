@@ -4,15 +4,14 @@ import { Provider } from 'react-redux'
 import { store } from './src/redux/store';
 import { navigationRef } from './src/navigation/RootNavigation';
 import AppContainer from './src/AppContainer';
+import SplashScreen from 'react-native-splash-screen'
 
 const App = () => {
 
-  // useEffect(() => {
-  //   messaging().setBackgroundMessageHandler(async remoteMessage => {
-  //     console.log('State Notification ', remoteMessage)
-  // })
+  useEffect(() => {
+    SplashScreen.hide();
+  },[])
   
-  // },[])
   return (
     <Provider store={store}>
       <NavigationContainer ref={navigationRef}>
