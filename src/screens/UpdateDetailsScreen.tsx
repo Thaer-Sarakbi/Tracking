@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, LogBox, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { StyleSheet, Keyboard } from 'react-native';
-import { SliderBox } from "react-native-image-slider-box";
 import { Colors } from '../assets/Colors';
-import ImageView from "react-native-image-viewing";
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamsList } from '../navigation/AppStack';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -15,8 +13,9 @@ import LottieView from 'lottie-react-native';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { deleteUpdate } from '../redux/updatesSlice';
 import { AppDispatch } from '../redux/store';
-import { UserState, message } from '../types/types';
+import { UserState, Message } from '../types/types';
 import MapViewComponent from '../components/MapView';
+import ImagesSlider from '../components/ImagesSlider';
 
 LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
@@ -28,9 +27,7 @@ interface Props {
 }
 
 const UpdateDetailsScreen = ({ route, navigation } : Props) => {
-  const [isVisible, setIsVisible] = useState(false)
-  const [index, setIndex] = useState(0)
-  const [chat, setChat] = useState<message[]>()
+  const [chat, setChat] = useState<Message[]>()
   const [comment, setComment] = useState('')
   const [showAlert, setShowAlert] = useState<boolean>(false)
 
@@ -137,18 +134,6 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
       console.log(error)
     });
   }
-
-  const images1 = images?.map((image: string) => {
-    return( 
-      `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.substring(image.lastIndexOf('/') + 1)}?alt=media&token=${user.deviceToken}`
-    )
-  })
-  
-  const images2 = images?.map((image : string) => {
-    return(
-        { uri: `https://firebasestorage.googleapis.com/v0/b/tracking-6569e.appspot.com/o/${image?.substring(image.lastIndexOf('/') + 1)}?alt=media&token=${user.deviceToken}`}
-    )
-  }) 
  
   if(route){
     return (
@@ -173,23 +158,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
             </View>       
           </View>
 
-          {images && (<SliderBox
-            images={images1}
-            sliderBoxHeight={400}
-            firstItem={index}
-            onCurrentImagePressed={(index: number) => {
-              setIsVisible(true)
-              setIndex(index)
-            }}
-           />)}
-
-          {images && (<ImageView
-            images={images2}
-            imageIndex={index}
-            visible={isVisible}
-            onRequestClose={() => setIsVisible(false)}
-            onImageIndexChange={(i) => setIndex(i)}
-           />)}
+          {images && <ImagesSlider images={images} user={user} />}
           
            <MapViewComponent longitude={longitude} latitude={latitude} />
 

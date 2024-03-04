@@ -101,12 +101,12 @@ export type Updates = {
   title: string,
   updatedBy: string,
   deviceToken: string,
-  latitude: string,
-  longitude: string
+  latitude: number,
+  longitude: number
 }
 
-export type message = {
-  id: string,
+export interface Message  {
+  id?: any,
   comment: string,
   commenter: string,
   creationDate: {
