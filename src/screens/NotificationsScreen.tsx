@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { Notification, notificationsState } from '../types/types';
+import { notificationsState } from '../types/types';
 import { AppDispatch } from '../redux/store';
 import { updateNotifications } from '../redux/notificationsSlice';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -16,7 +16,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
 
   const user = useSelector((state: notificationsState) => state.auth.user)
 
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<any>([])
   const [limit, setLimit] = useState(10)
   const [footerLoading, setFooterLoading] = useState(true)
   
@@ -82,7 +82,7 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                 <View style={styles.container}>
                     <FlatList
                         data={notifications}
-                        renderItem={({item}: Notification) => {
+                        renderItem={({item}: any) => {
                           return(
                             <TouchableOpacity style={[styles.card, item.read ? { backgroundColor: 'white'  } : { backgroundColor: '#BDBDBD' }]} onPress={() => { 
                               navigation.navigate(item.screen, {

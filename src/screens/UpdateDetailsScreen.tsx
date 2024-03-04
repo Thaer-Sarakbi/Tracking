@@ -27,7 +27,7 @@ interface Props {
 }
 
 const UpdateDetailsScreen = ({ route, navigation } : Props) => {
-  const [chat, setChat] = useState<Message[]>()
+  const [chat, setChat] = useState<any>()
   const [comment, setComment] = useState('')
   const [showAlert, setShowAlert] = useState<boolean>(false)
 
@@ -164,7 +164,7 @@ const UpdateDetailsScreen = ({ route, navigation } : Props) => {
 
            {chat && (<Text style={{ color: Colors.titles, fontSize: 25, margin: 10 }}>Comments:</Text>)}
            {
-            chat?.map((message) => (
+            chat?.map((message: Message) => (
               <View key={message.id} style={{ marginHorizontal: 10, borderRadius: 10, borderTopColor: 'black', marginVertical: 5, padding: 5, backgroundColor: 'white' }}>
                 <Text style={{ color: Colors.titles, fontSize: 20 }}>{message.commenter}</Text>
                 <Text style={{ color: Colors.texts, fontSize: 15 }}>{message.comment}</Text>

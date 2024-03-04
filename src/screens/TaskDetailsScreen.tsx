@@ -57,14 +57,14 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   const [longitude, setLongitude] = useState<number>(route.params.longitude)
   const [statusLoading, setStatusLoading] = useState<boolean>(false)
 
-  const [updates, setUpdates] = useState<Updates[]>([])
+  const [updates, setUpdates] = useState<any>([])
 
   const history = useSelector((state: historyState) => state.history.data)
   const status = useSelector((state: historyState) => state.history.status)
 
   const user = useSelector((state: UserState) => state.auth.user)
   
-  const editUpadtes = updates.map(update => {
+  const editUpadtes = updates.map((update: Updates) => {
     const time = moment(new Date(update.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
     return{
       ...update,

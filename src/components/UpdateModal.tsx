@@ -6,7 +6,6 @@ import { getUpdates } from '../redux/updatesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import Icon from 'react-native-vector-icons/Ionicons';
-import storage from '@react-native-firebase/storage';
 import { Controller, useForm } from 'react-hook-form';
 import { addNotification } from '../redux/notificationsSlice';
 import { User } from '../types/types';
@@ -29,11 +28,9 @@ interface MyState {
 }
 
 const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId, admin, updaterName } : Props) => {
-    // const [images, setImages] = useState<string[]>([])
-    const [transferred, setTransferred] = useState(0);
     const [modalLoading, setModalStatusLoading] = useState<boolean>(false)
     const user = useSelector((state: MyState) => state.auth.user)
-    const { images, chooseFromGallery } = useUploadImages() 
+    const { images, chooseFromGallery, uploadImage } = useUploadImages() 
 
     const {
       control,
@@ -50,7 +47,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
 
     const dispatch = useDispatch<AppDispatch>()
 
-   const submit = async () => {
+    const submit = async () => {
 
     const { title, description } = watch()
 
@@ -137,35 +134,6 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
         <ImageBackground key={i} resizeMode='center' style={{ flex: 1, width: '100%', height: '100%' }} source={{ uri: image }}/> 
     )
   })
-
-  const uploadImage = async () => {
-    {
-        images?.map(async(image) => {
-            // const { path } = image;
-            const filename = image.substring(image.lastIndexOf('/') + 1);
-            // console.log(filename)
-            const uploadUri = Platform.OS === 'ios' ? image.replace('file://', '') : image;
-            // console.log(uploadUri)
-            // setUploading(true);
-            setTransferred(0);
-            const task = storage()
-              .ref(filename)
-              .putFile(uploadUri);
-              console.log(task)
-            // set progress state
-            task.on('state_changed', snapshot => {
-              setTransferred(
-                Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 10000
-              );
-            });
-            try {
-              await task;
-            } catch (e) {
-              console.error(e);
-            }
-        })
-    }
-} 
 
     return (
       <View

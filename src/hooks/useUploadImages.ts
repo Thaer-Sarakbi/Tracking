@@ -8,10 +8,6 @@ export default function useUploadImages(){
   const [images, setImages] = useState<string[]>([])
   const [transferred, setTransferred] = useState(0);
 
-  // useEffect(() => {
-  //   chooseFromGallery()
-  // },[])
-
   const chooseFromGallery = () => {
     ImagePicker.openPicker({
       width: 400,
@@ -74,7 +70,7 @@ export default function useUploadImages(){
     }
 } 
 
-const removeImage = (index) => {
+const removeImage = (index: number) => {
   const newState = [...images]
   newState.splice(index, 1)
   setImages(newState)

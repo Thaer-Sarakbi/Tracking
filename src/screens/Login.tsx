@@ -11,15 +11,13 @@ import { useForm, Controller } from "react-hook-form"
 import { StackScreenProps } from '@react-navigation/stack';
 import { AuthStackParamsList } from '../navigation/AuthStack';
 import packageJson from '../../package.json';
+import useShowPassword from '../hooks/useShowPassword';
 
 const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) => {
 
   const [backendError, setBackendError] = useState('')
-  const [showPassword, setShowPassword] = useState(false); 
 
-  const toggleShowPassword = () => { 
-    setShowPassword(!showPassword); 
-  }; 
+  const { showPassword, toggleShowPassword } = useShowPassword() 
 
   const {
     control,
@@ -130,13 +128,12 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
                 <Text style={[styles.textSign, { color: '#fff' }]}>Sign In</Text>
               </TouchableOpacity>
             </LinearGradient>
-         
 
           <TouchableOpacity onPress={() => navigation.navigate('Signup')} style={[styles.signIn, { borderColor: Colors.main, borderWidth: 1, marginTop: 15 }]}>
             <Text style={[styles.textSign, { color: Colors.main }]}>Sign Up</Text>
           </TouchableOpacity>
         </View>
-        <Text style={{ alignSelf: 'center', fontSize: 15, marginVertical: 10 }}>Version: {packageJson.version}</Text>
+        <Text style={{ alignSelf: 'center', fontSize: 15, marginVertical: 10 }}>version: {packageJson.version}</Text>
       </Animatable.View>
     </View>
   );

@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
-// import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore'
 import { Colors } from '../assets/Colors';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { useDispatch, useSelector } from 'react-redux';
-import { User, UserState } from '../types/types';
+import { UserState } from '../types/types';
 import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import { Controller, useForm } from 'react-hook-form';
@@ -40,46 +39,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
   const user = useSelector((state: UserState) => state.auth.user)
 
   const dispatch = useDispatch<AppDispatch>()
-
-  // const handleNotification = async(message, title, duration, description, assignedTo, assigned) => {
-  //   PushNotification.localNotification({
-  //     channelId: "update-status",
-  //     title: "New Task",
-  //     status: 'Not Started',
-  //     message: message,
-  //     task: title,
-  //     vibrate: true, // (optional) default: true
-  //     vibration: 300,
-  //     screen: 'TaskDetails',
-  //     duration,
-  //     assignTo: assignedTo,
-  //     description,
-  //     creationDate: new Date(),
-  //   });
-  
-  //   // PushNotification.popInitialNotification((notification) => {
-  //   //   console.log('Initial Notification', notification);
-  //   // });
-  
-  //   let notificationData = {
-  //     data: {
-  //       screen: 'TaskDetails',
-  //       title,
-  //       duration,
-  //       status: 'Not Started',
-  //       message,
-  //       task: title,
-  //       userName: assignedTo,
-  //       description,
-  //       creationDate: new Date()
-  //     },
-  //     title: 'New Task',
-  //     body: message,
-  //     token: assigned.deviceToken
-  //   };
-  
-  //   await NotificationService.sendSingleDeviceNotification(notificationData);
-  // }
 
   const onSubmit = async () => {
     const { title, description, assignedTo, duration, location } = watch()
@@ -139,11 +98,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
     console.log(err)
   })
   }
-
-// const handleNotification = async (status: string) => {
-
-  // addNotification(message, title)
-// }
 
   useEffect(() => {
     dispatch(getUsers())
@@ -230,11 +184,6 @@ const NewTaskModal = ({ changeModalVisible }: Props) => {
 
       <Text style = {{ fontSize: 20, color: Colors.titles, marginTop: 20 }}>Duration</Text>
       <View style = {{ flexDirection: 'row', alignItems: 'center' }}>
-        {/* <TextInput
-          style= {{  marginRight: 10, color: '#fff', width: '40%', height: 50, backgroundColor: '#BDBDBD', marginTop: 5, borderRadius: 10, fontSize: 15 }}
-          onChangeText={(text) => setDuration(text)}
-          keyboardType="numeric"
-        /> */}
 
       <Controller
         control={control}

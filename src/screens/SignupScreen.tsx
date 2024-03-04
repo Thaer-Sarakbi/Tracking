@@ -1,28 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Dimensions, TextInput, Image, TouchableOpacity, Platform, StatusBar, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, Platform, StatusBar, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import LinearGradient from 'react-native-linear-gradient'
 import * as Animatable from 'react-native-animatable'
 import { useForm, Controller } from "react-hook-form"
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamsList } from '../navigation/AppStack';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'
-import { User } from '../types/types';
 import { Colors } from '../assets/Colors';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { AuthStackParamsList } from '../navigation/AuthStack';
+import useShowPassword from '../hooks/useShowPassword';
 
 const SignUpScreen = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Signup'>) => {
 
   const [message, setMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
-  const [showPassword, setShowPassword] = useState(false); 
 
-  const toggleShowPassword = () => { 
-    setShowPassword(!showPassword); 
-  }; 
+  const { showPassword, toggleShowPassword } = useShowPassword() 
 
   useEffect(() => {
     if(message !== ''){

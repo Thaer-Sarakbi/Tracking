@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ImageSlider } from "react-native-image-slider-banner";
 import ImageView from "react-native-image-viewing";
+import { User } from '../types/types';
 
-const ImagesSlider = ({images, user}) => {
+const ImagesSlider = ({images, user}: {images: any, user: User}) => {
     const [isVisible, setIsVisible] = useState(false)
     const [index, setIndex] = useState(0)
 

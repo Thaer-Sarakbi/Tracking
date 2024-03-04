@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Image, Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Seperator from '../components/Seperator';
 import { Colors } from '../assets/Colors';
@@ -8,6 +8,8 @@ import auth from '@react-native-firebase/auth';
 import { User } from '../types/types';
 import moment from 'moment';
 import packageJson from '../../package.json';
+import useShowPassword from '../hooks/useShowPassword';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -18,7 +20,8 @@ interface ProfileState {
 function ProfileScreen(): JSX.Element {
   const user = useSelector((state: ProfileState) => state.auth.user)
 
-  console.log(packageJson.version)
+  const { showPassword, toggleShowPassword } = useShowPassword() 
+
   const onSignOut = async() => {
     await auth().signOut().then(function() {
       console.log('Signed Out');
@@ -30,7 +33,7 @@ function ProfileScreen(): JSX.Element {
     const  feilds = [
       {title: 'Email', value: user?.email},
       {title: 'Mobile Number', value: user?.mobile},
-      {title: 'Password', value: '*******'}
+      {title: 'Password', value: showPassword ? user?.password : '*******'}
     ]
 
     return (
@@ -53,6 +56,13 @@ function ProfileScreen(): JSX.Element {
                   <Text style = {{ color: Colors.titles, marginTop: 10, fontSize: 15 }}>{feild.title}</Text>
                   <Text style = {{ color: Colors.texts, fontSize: 15 }}>{feild.value}</Text>
 
+                  {feild.title === 'Password' && (<MaterialIcons 
+                    name={showPassword ? 'visibility-off' : 'visibility'} 
+                    size={25} 
+                    color="#aaa"
+                    style={{marginRight: 10}} 
+                    onPress={toggleShowPassword} 
+                  />)} 
                   <Seperator />
                 </View>
               ))
@@ -101,7 +111,7 @@ function ProfileScreen(): JSX.Element {
               <Text style = {{ color: 'red', fontWeight: 'bold' }}>Log Out</Text>
             </TouchableOpacity>
 
-            <Text style={{ alignSelf: 'center', fontSize: 15, marginVertical: 10 }}>Version: {packageJson.version}</Text>
+            <Text style={{ alignSelf: 'center', fontSize: 15, marginVertical: 10 }}>version: {packageJson.version}</Text>
           </View>
         </View>
       </ScrollView>
