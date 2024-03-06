@@ -36,7 +36,7 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
   const users = useSelector((state: MyState) => state.users.data)
   const user = useSelector((state: MyState) => state.auth.user)
 
-  const [notifications, setNotifications] = useState([])
+  const [notifications, setNotifications] = useState<any>([])
 
   const changeModalVisible = (bool: boolean) => {
     setIsModalVisible(bool)

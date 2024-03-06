@@ -5,7 +5,14 @@ import TopTabs from './TopTabs';
 import CalendarScreen from '../screens/CalenadarScreen';
 import AttendanceScreen from '../screens/AttendanceScreen';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<BottomNavigatorParamsList>();
+
+export type BottomNavigatorParamsList = {
+  Home: undefined,
+  Attendance: undefined,
+  Calendar: undefined,
+  Profile: undefined
+}
 
 const BottomNavigator = () => {
   return (
@@ -24,7 +31,6 @@ const BottomNavigator = () => {
       <Tab.Screen 
         name="Attendance" 
         options={{ 
-            // headerShown: false, 
             tabBarLabelStyle: { display: 'none'},
             tabBarIcon: ({ focused, color, size }) => (
                <Icon name="document-attach-outline" size={30} color={focused ? "#4F8EF7" : "#919191"} />

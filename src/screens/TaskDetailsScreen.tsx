@@ -73,7 +73,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
     }
   })
 
-  editUpadtes.sort((a, b) => b.date - a.date )
+  editUpadtes.sort((a: any, b: any) => b.date - a.date )
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {

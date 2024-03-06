@@ -80,8 +80,8 @@ android {
         applicationId "com.ark.tracking"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 18
-        versionName "1.4.7"
+        versionCode 20
+        versionName "1.4.9"
     }
     signingConfigs {
         release {

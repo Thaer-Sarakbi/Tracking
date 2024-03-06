@@ -51,7 +51,7 @@ export const updateNotifications = createAsyncThunk("notifications/updateNotific
   }
 })
 
-export const addNotification = createAsyncThunk("notifications/updateNotification", async(notification:{notification}) => {
+export const addNotification = createAsyncThunk("notifications/updateNotification", async(notification:{notification: Notification}) => {
     await firestore().collection('users').doc(notification.notification.receiverId).collection('notifications').add(
     notification.notification
   ).then(res => {
