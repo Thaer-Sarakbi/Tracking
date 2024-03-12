@@ -13,7 +13,6 @@ LogBox.ignoreLogs([
     'Non-serializable values were found in the navigation state',
   ]);
 
-  
 interface Props {
   route: RouteProp<RootStackParamsList, "AttendanceDetails">
   navigation: StackNavigationProp<RootStackParamsList, "AttendanceDetails">

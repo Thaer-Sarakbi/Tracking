@@ -1,6 +1,6 @@
 {
   "name": "Tracking",
-  "version": "1.4.9",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -32,6 +32,7 @@
     "react-native": "0.72.6",
     "react-native-android-location-enabler": "^2.0.1",
     "react-native-animatable": "^1.4.0",
+    "react-native-app-link": "^1.0.1",
     "react-native-awesome-alerts": "^2.0.0",
     "react-native-calendar-picker": "^7.1.4",
     "react-native-dropdown-select-list": "^2.0.5",
@@ -49,6 +50,7 @@
     "react-native-safe-area-context": "^4.7.4",
     "react-native-screens": "^3.27.0",
     "react-native-splash-screen": "^3.3.0",
+    "react-native-store-version": "^1.4.1",
     "react-native-tab-view": "^3.5.2",
     "react-native-timeline-flatlist": "^0.8.0",
     "react-native-vector-icons": "^10.0.1",
@@ -69,6 +71,7 @@
     "@types/eslint": "^8.44.7",
     "@types/prettier": "^2.7.3",
     "@types/react": "^18.0.24",
+    "@types/react-native-app-link": "~1.0.2",
     "@types/react-native-calendar-picker": "^7.0.6",
     "@types/react-native-push-notification": "^8.1.4",
     "@types/react-native-vector-icons": "^6.4.17",

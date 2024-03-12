@@ -23,6 +23,7 @@ import LottieView from 'lottie-react-native';
 import HeaderDetails from '../components/HeaderDetails';
 import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 import MapViewComponent from '../components/MapView';
+import ModalComponent from '../components/Modal';
 
 interface Props {
   route: RouteProp<RootStackParamsList, "TaskDetails">
@@ -290,7 +291,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                 <Text style={{ fontSize: 20, color: 'white' }}>Add Update</Text>
               </TouchableOpacity>
 
-              <Modal
+              {/* <Modal
                 transparent= {true}
                 animationType= 'fade'
                 visible= {updateModalVisible}
@@ -305,7 +306,22 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
                   admin={user.admin}
                   updaterName= {user.name}
                 />
-              </Modal>
+              </Modal> */}
+
+              <ModalComponent
+                modalVisible={updateModalVisible}
+                onChange={onAddUpdate}
+              >
+                <UpdateModal 
+                  changeModalVisible= {onAddUpdate}
+                  isModalVisible={updateModalVisible}
+                  id={id}
+                  userId={user.id}
+                  assigenId={assigenId}
+                  admin={user.admin}
+                  updaterName= {user.name}
+                />
+              </ModalComponent>
             </>
             )
           }
@@ -341,7 +357,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           
         </View>
 
-          <Modal
+          {/* <Modal
             transparent= {true}
             animationType= 'fade'
             visible= {isModalVisible}
@@ -352,7 +368,18 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
               isModalVisible={isModalVisible}
               setData={setTaskStatus}
             />
-          </Modal>
+          </Modal> */}
+
+         <ModalComponent
+           modalVisible={isModalVisible}
+           onChange={changeModalVisible}
+         >
+            <StatusModal
+              changeModalVisible= {changeModalVisible}
+              isModalVisible={isModalVisible}
+              setData={setTaskStatus}
+            />
+          </ModalComponent>
         <View>
 
         <AwesomeAlert

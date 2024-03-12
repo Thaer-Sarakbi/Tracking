@@ -60,13 +60,22 @@ export type historyList = {
 }
 
 export type Notification = {
-
     id: string,
     taskId: string,
     read: boolean,
     title: string,
     message: string,
     task: string,
+    time: Date,
+    updateId: String,
+    images: string[],
+    description: string,
+    updatedBy: string,
+    assigenId: string,
+    receiverId: string,
+    latitude: number,
+    longitude: number,
+    creationDateNotification: Date,
     creationDate: {
       seconds: number
     },
@@ -95,9 +104,7 @@ export type Updates = {
   description: string, 
   images: Array<string>, 
   taskId: string, 
-  time: {
-    seconds: number
-  }, 
+  time: any,
   title: string,
   updatedBy: string,
   deviceToken: string,
@@ -124,4 +131,23 @@ export interface ListsProps {
   status: string,
   users: User[],
   navigation: {navigate: (screen: string, task: Task) => void}
+}
+
+export interface dailyReport {
+  dailyReport: string, 
+  id: string, 
+  images: Array<string>, 
+  time: {
+    nanoseconds: number, 
+    seconds: number
+  }
+}
+
+export interface leaveReport{
+  reason: string,
+  time: {
+    nanoseconds: number, 
+    seconds: number
+  }
+  images: string[]
 }

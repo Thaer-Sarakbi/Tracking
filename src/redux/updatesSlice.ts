@@ -2,6 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import firestore from '@react-native-firebase/firestore'
 import { Updates } from '../types/types';
 
+interface UpdatesState {
+  data: Updates,
+  status: string,
+  error: string | undefined
+}
+
 export const getUpdates = createAsyncThunk("updates/getUpdates", async (user:{taskId: string, userId: string}) => {
     let updatesList: Array<Updates> = []
 
@@ -89,8 +95,8 @@ const updatesSlice = createSlice({
   initialState: {
     data: [],
     status: '',
-    error: undefined
-  } as Updates,
+    error: ''
+  } as UpdatesState,
   reducers: {
 
   },

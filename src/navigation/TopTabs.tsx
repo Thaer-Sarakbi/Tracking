@@ -3,7 +3,7 @@ import TasksListScreen from '../screens/NotStartedScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Header from '../components/Header';
 import { Colors } from '../assets/Colors';
-import { TouchableOpacity, Modal, View, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Modal, View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTaskModal from '../components/NewTaskModal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,10 @@ import { AppDispatch } from '../redux/store';
 import { getUsers } from '../redux/usersSlice';
 import firestore from '@react-native-firebase/firestore'
 import InProgressTasksScreen from '../screens/InProgressTasksScreen';
+import ModalComponent from '../components/Modal';
+import NewVersionModal from '../components/NewVersionModal';
+import checkVersion from 'react-native-store-version';
+import packageJson from '../../package.json';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -30,6 +34,7 @@ interface MyState {
 
 export default function TopTabs({ navigation }: StackScreenProps<RootStackParamsList, 'TopTabs'>) {
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [newVersionModalVisible, setNewVersionModalVisible] = useState<boolean>(false)
 
   const tasks = useSelector((state: MyState) => state.tasks?.data)
   const status = useSelector((state: MyState) => state.tasks?.status)
@@ -42,9 +47,33 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
     setIsModalVisible(bool)
   }
 
+  const changeNewVersionModalVisible = (bool: boolean) => {
+    setNewVersionModalVisible(bool)
+  }
+
   const dispatch = useDispatch<AppDispatch>()
 
+  const onVersionCheck = async () => {
+    try {
+      const check = await checkVersion({
+        version: packageJson.version, // app local version
+        iosStoreURL: 'ios app store url',
+        androidStoreURL: 'https://play.google.com/store/apps/details?id=com.ark.tracking',
+        country: 'my', // default value is 'jp'
+      });
+
+      console.log(check)
+      if(check.result === 'new'){
+        changeNewVersionModalVisible(true)
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
+    onVersionCheck();
+
     firestore()
     .collection('users')
     .doc(user?.id)
@@ -96,7 +125,18 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
                changeModalVisible= {changeModalVisible}
              />
            </View>
-         </Modal>
+      </Modal>
+
+      <ModalComponent
+        modalVisible={newVersionModalVisible}
+        onChange={changeNewVersionModalVisible}
+      >
+        <NewVersionModal 
+          changeModalVisible= {changeNewVersionModalVisible}
+          isModalVisible={newVersionModalVisible}
+          // setData={setTaskStatus}
+        />
+      </ModalComponent>
     </>
   );
 }

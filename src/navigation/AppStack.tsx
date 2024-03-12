@@ -3,8 +3,7 @@ import React, { useEffect } from "react"
 import TaskDetailsScreen from "../screens/TaskDetailsScreen"
 import NotificationsScreen from "../screens/NotificationsScreen"
 import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
-import { Task, Updates, User, UserState, tasks } from "../types/types"
-import TasksListScreen from "../screens/NotStartedScreen"
+import { Task, Updates, User, UserState, dailyReport, leaveReport, tasks } from "../types/types"
 import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
 import usePushNotification from "../hooks/usePushNotification"
@@ -53,19 +52,20 @@ export type RootStackParamsList = {
     UpdateDetails: Updates,
     UpdatesList:{
       updatesList: Array<Updates>,
-      dailyReport: string,
-      leaveReport: string,
+      dailyReport: dailyReport,
+      leaveReport: leaveReport,
       date: string,
       selected: string
     },
     ReportDetails:{
-      dailyReport: string,
-      images: string[]
+        dailyReport: string, 
+        id: string, 
+        images: Array<string>, 
+        time: string
     },
     LeaveDetails:{
       reason: string,
-      time: string,
-      images: string[]
+      images: string[] 
     },
     AttendanceDetails:{
       checkIn: {
@@ -83,7 +83,7 @@ export type RootStackParamsList = {
     },
     ChatList: undefined,
     TopTabs: undefined,
-    search:{
+    Search:{
       user: User,
       tasks: Task[]
     }
@@ -115,7 +115,7 @@ const AppStack = () => {
     }
   };
 
-  const DisplayNotification = async (message) => {
+  const DisplayNotification = async (message: { notification: { title: string , body: string },data: { id: string, channelName: string, channelId: string } }) => {
     console.log('id ', JSON.stringify(message.data.channelId))
     //console.log('notification ', JSON.stringify(message.notification))
     // Create a channel
@@ -127,7 +127,6 @@ const AppStack = () => {
     });
 
     console.log('channelId'  + JSON.stringify(channelId))
-    console.log('thaer2')
     // Display a notification
    await notifee.displayNotification({
       title: message.notification.title,
@@ -140,6 +139,7 @@ const AppStack = () => {
   }
 
   useEffect(() => {
+
     listenToNotifications();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log(

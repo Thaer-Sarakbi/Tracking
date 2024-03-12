@@ -26,7 +26,7 @@ const ReportDetailsScreen = ({ route, navigation } : Props) => {
 
   const dailyReport = route.params.dailyReport
   const images = route.params.images
- 
+
   if(route){
     return (
         <ScrollView style={{ flex: 1, marginBottom: 60 }}>

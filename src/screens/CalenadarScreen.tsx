@@ -8,9 +8,15 @@ import { getUsers } from '../redux/usersSlice';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { Colors } from '../assets/Colors';
 import { AppDispatch } from '../redux/store';
-import { UserState } from '../types/types';
+import { Updates, UserState, dailyReport, leaveReport } from '../types/types';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { BottomNavigatorParamsList } from '../navigation/BottomNavigator';
 
-const CalendarScreen = ({ navigation }) => {
+interface Props {
+  navigation: StackNavigationProp<BottomNavigatorParamsList, "Calendar">
+}
+
+const CalendarScreen = ({ navigation } : Props) => {
   const users = useSelector((state: UserState) => state.users.data)
   const user = useSelector((state: UserState) => state.auth.user)
 
@@ -18,9 +24,9 @@ const CalendarScreen = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [date,setDate] = React.useState(new Date());
-  const [updates, setUpdates] = useState([])
-  const [dailyReports, setDailyReports] = useState([])
-  const [leaves, setLeaves] = useState([])
+  const [updates, setUpdates] = useState<Updates[]>([])
+  const [dailyReports, setDailyReports] = useState<dailyReport[]>([])
+  const [leaves, setLeaves] = useState<leaveReport[]>([])
   const [selected, setSelected] = React.useState();
   const [data,setData] = React.useState([]);
 
@@ -29,14 +35,14 @@ const CalendarScreen = ({ navigation }) => {
     const usersCollection = await firestore().collection('users').doc(selected).collection('tasks')
 
     const usersQuerySnapshot = await usersCollection.get()
-    let usersDataWithUpdates = []
+    let usersDataWithUpdates: Updates[] = []
   
     for(const userDoc of usersQuerySnapshot.docs){
       const userUpdatesCollection = userDoc.ref.collection('updates')
   
       const updatesQuerySnapshot = await userUpdatesCollection.get()
   
-      const updatesData = updatesQuerySnapshot.docs.map((updateDoc) => ({
+      const updatesData: any = updatesQuerySnapshot.docs.map((updateDoc) => ({
         updateId: updateDoc.id,
         ...updateDoc.data()
       }))
@@ -51,12 +57,12 @@ const CalendarScreen = ({ navigation }) => {
   }
 
   const retreiveDailyReports = async () => {
-    let dailyReportsList = []
+    let dailyReportsList: dailyReport[] = []
     await firestore().collection('users').doc(selected).collection('dailyReport').get()
     .then((querySnapshot) => {
       querySnapshot.docs.forEach((documentSnapshot) => {
         documentSnapshot.data().id = documentSnapshot.id
-        dailyReportsList.push(documentSnapshot.data() as tasks)
+        dailyReportsList.push(documentSnapshot.data() as dailyReport)
       })
     })
 
@@ -64,12 +70,12 @@ const CalendarScreen = ({ navigation }) => {
   }
 
   const retreiveLeaves = async() => {
-    let leavesList = []
+    let leavesList: leaveReport[] = []
     await firestore().collection('users').doc(selected).collection('leave').get()
     .then((querySnapshot) => {
       querySnapshot.docs.forEach((documentSnapshot) => {
         documentSnapshot.data().id = documentSnapshot.id
-        leavesList.push(documentSnapshot.data() as tasks)
+        leavesList.push(documentSnapshot.data() as leaveReport)
       })
     })
 
@@ -97,7 +103,7 @@ const CalendarScreen = ({ navigation }) => {
     
     if(users){
 
-        let newArray = []
+        let newArray: {key: string, value: string}[] = []
           if(user.admin){
             users.forEach((item) => {
               newArray.push({key: item.id, value: item.value})
@@ -190,7 +196,6 @@ const CalendarScreen = ({ navigation }) => {
         }
       })[0]
 
-      // console.log(dailyReportsList)
       navigation.navigate('UpdatesList', {updatesList, dailyReport, leaveReport, date, selected})
   }
 

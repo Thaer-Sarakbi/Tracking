@@ -62,14 +62,14 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
     <View style={styles.container}>
       <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>{moment(date).format('L')}</Text>
       <Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold' }}>Attendance</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('AttendanceDetails', {
+      {(checkIn || checkOut) && (<TouchableOpacity onPress={() => navigation.navigate('AttendanceDetails', {
         checkIn,
         checkOut
       })} style={styles.card}>
         {checkIn && (<Text style={{ fontSize: 15 }}>Check In: {moment(checkIn?.time).format('h:mm a')}</Text>)}
         <Seperator />
         {checkOut && (<Text style={{ fontSize: 15 }}>Check Out: {moment(checkOut?.time).format('h:mm a')}</Text>)}
-      </TouchableOpacity>
+      </TouchableOpacity>)}
       {dailyReport && (<><Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold', marginTop: 20 }}>Daily Report</Text>
       <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ReportDetails', {
                   ...dailyReport,
