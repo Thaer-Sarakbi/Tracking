@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore'
 import { History, historyList } from '../types/types';
 
 export const getHistory = createAsyncThunk("history/getHistory", async (user:{taskId: string, userId: string, admin:boolean}) => {
-  let historyList: Array<History> = []
+  let historyList: any = []
 
   if(user.admin){
     const usersCollection = await firestore().collection('users')

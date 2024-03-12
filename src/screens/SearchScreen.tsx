@@ -10,8 +10,8 @@ import { RootStackParamsList } from "../navigation/AppStack"
 import { StackNavigationProp } from "@react-navigation/stack"
 
 interface Props{
-  route: RouteProp<RootStackParamsList, "search">
-  navigation: StackNavigationProp<RootStackParamsList, "search">
+  route: RouteProp<RootStackParamsList, "Search">
+  navigation: StackNavigationProp<RootStackParamsList, "Search">
 }
 
 const SearchScreen = ({ navigation, route } : Props) => {
@@ -22,7 +22,7 @@ const SearchScreen = ({ navigation, route } : Props) => {
     const users = useSelector((state: UserState) => state.users.data)
 
     const onChangeText = async(text: string) => {
-        let filteredList: Task[] = []
+        let filteredList: any = []
 
       if(user.admin){
         const usersCollection = await firestore().collection('users')
@@ -43,8 +43,6 @@ const SearchScreen = ({ navigation, route } : Props) => {
           console.log(tasksData)
           if(tasksData){
             usersDataWithTasks.push(
-              // id: userDoc.id,
-              // userData: userDoc.data(),
               ...tasksData
             )
           }
@@ -64,7 +62,7 @@ const SearchScreen = ({ navigation, route } : Props) => {
         .then(querySnapshot => { 
             querySnapshot.docs.forEach((documentSnapshot) => {
               documentSnapshot.data().id = documentSnapshot.id
-              filteredList.push(documentSnapshot.data() as tasks)
+              filteredList.push(documentSnapshot.data() as any)
             })
         });
       }
@@ -80,30 +78,32 @@ const SearchScreen = ({ navigation, route } : Props) => {
         <FlatList
           keyExtractor={(item) => item?.id.toString()}
           data={tasksList}
-          renderItem={(item) => {
-            if(item.item?.status !== 'Completed'){
+          renderItem={({ item }) => {
+            if(item?.status !== 'Completed'){
               const assigned = users.find(user => {
     
-                if(user.value === item.item.assignedTo){
+                if(user.value === item.assignedTo){
                   return user
                 }
               })
               
               return(
                 <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
-                  taskId: item.item.id,
-                  assignedTo: item.item.assignedTo,
-                  status: item.item.status,
-                  creationDate: item.item.creationDate,
-                  title: item.item.title,
-                  latitude: item.item.latitude,
-                  longitude: item.item.longitude,
-                  description: item.item.description,
-                  duration: item.item.duration,
-                  assigenId: item.item.assigenId,
-                  deviceToken: assigned.deviceToken
+                  id: item.id,
+                  assignedTo: item.assignedTo,
+                  status: item.status,
+                  creationDate: item.creationDate,
+                  title: item.title,
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                  description: item.description,
+                  duration: item.duration,
+                  assigenId: item.assigenId,
+                  assignedBy: item.assignedBy,
+                  location: item.location,
+                  deviceToken: assigned?.deviceToken
                 })}} >
-                  <Card item={item.item} />
+                  <Card item={item} />
                 </TouchableOpacity>
               )
             } else {

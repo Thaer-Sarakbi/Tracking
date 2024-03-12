@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import CalendarPicker from 'react-native-calendar-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore'
@@ -9,11 +9,12 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { Colors } from '../assets/Colors';
 import { AppDispatch } from '../redux/store';
 import { Updates, UserState, dailyReport, leaveReport } from '../types/types';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { BottomNavigatorParamsList } from '../navigation/BottomNavigator';
 
 interface Props {
-  navigation: StackNavigationProp<BottomNavigatorParamsList, "Calendar">
+  navigation: {
+    navigate: (screen: string, {}) => void,
+    addListener:(name: string,fun: ()=> void) => void
+  }
 }
 
 const CalendarScreen = ({ navigation } : Props) => {
@@ -23,12 +24,12 @@ const CalendarScreen = ({ navigation } : Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
-  const [date,setDate] = React.useState(new Date());
+  const [date,setDate] = React.useState<any>(new Date());
   const [updates, setUpdates] = useState<Updates[]>([])
   const [dailyReports, setDailyReports] = useState<dailyReport[]>([])
   const [leaves, setLeaves] = useState<leaveReport[]>([])
-  const [selected, setSelected] = React.useState();
-  const [data,setData] = React.useState([]);
+  const [selected, setSelected] = React.useState<string>();
+  const [data,setData] = React.useState<{key: string, value: string}[]>([]);
 
   const retreiveUpdates = async() =>{
 
@@ -121,7 +122,7 @@ const CalendarScreen = ({ navigation } : Props) => {
       }
   },[selected])
   
-  let workDays = []
+  let workDays: any = []
 
   updates.forEach(update => {
     if(new Date(update.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
@@ -135,7 +136,7 @@ const CalendarScreen = ({ navigation } : Props) => {
     }
   })
 
-  let leaveDays = []
+  let leaveDays: any = []
 
   leaves.forEach(leaveReport => {
     if(new Date(leaveReport.time.seconds * 1000).getMonth() + 1 === new Date(date).getMonth() + 1){
@@ -147,7 +148,7 @@ const CalendarScreen = ({ navigation } : Props) => {
 
   let today = moment(date);
   let day = today.clone().startOf('month');   //first day of month
-  let customDatesStyles = [];
+  let customDatesStyles: any = [];
   while(day.add(1, 'day').isSame(today, 'month')) {
     if(leaveDays.includes(moment(day.clone()).format('L'))){
       customDatesStyles.push({
@@ -174,10 +175,9 @@ const CalendarScreen = ({ navigation } : Props) => {
             allowDisabled: true, // allow custom style to apply to disabled dates
           });
     }
-
   }
 
-  const filterUpdatesByDates = (date) => {
+  const filterUpdatesByDates = (date: any) => {
     const updatesList = updates.filter(update => {
         if(moment(new Date(update.time.seconds * 1000)).format('L') === moment(date).format('L')){
           return update
@@ -203,10 +203,8 @@ const CalendarScreen = ({ navigation } : Props) => {
     <View style={styles.container}>
         <Text style={{ color: Colors.titles, fontWeight: 'bold', fontSize: 30, alignSelf: 'center' }}>Calendar</Text>
         <SelectList 
-          setSelected={(val) => setSelected(val)} 
+          setSelected={(val: string) => setSelected(val)} 
           data={data} 
-        //   save="value"
-        //   value={value}
           boxStyles={{ marginHorizontal: 10, marginVertical: 10, height: 50, alignItems: 'center' }}
         />
           

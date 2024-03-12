@@ -6,10 +6,9 @@ import { Colors } from '../assets/Colors';
 interface Props {
   changeModalVisible: (boole: boolean) => void,
   isModalVisible: boolean,
-  setData: (data: string) => void
 }
 
-const NewVersionModal = ({ changeModalVisible, isModalVisible, setData } : Props) => {
+const NewVersionModal = ({ changeModalVisible, isModalVisible } : Props) => {
 
    const containerStyle = {
      ...styles.container,
@@ -63,9 +62,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 50,
         borderRadius: 10
-        // marginHorizontal: 10
-        // height: 150,
-        // borderBottomWidth: 1
     }
 })
 

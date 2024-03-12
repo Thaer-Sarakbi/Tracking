@@ -67,14 +67,14 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
   } else {
     if(notifications.length === 0){
       return(
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.loadingContainer}>
           <Text style={{ fontSize: 15 }}>No Notifications yet</Text>
         </View>
       )
     } else {
         return (
             <View style={{ paddingBottom: 110 }}>
-                <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'center', paddingLeft: 10 }}>
+                <View style={styles.header}>
                   <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back-outline" size={30} color={'white'} />
                   </TouchableOpacity>
@@ -90,7 +90,6 @@ const NotificationsScreen = ({ navigation } :  StackScreenProps<RootStackParamsL
                                 time: moment(new Date(item.time?.seconds * 1000)).format('MMM Do[\n]h:ss a')
                               })
                               dispatch(updateNotifications({notificationId: item.id, userId: user.id, read: item.read}))
-                              // dispatch(getNotifications(user.id))
                             }}>
                             <Text style={styles.title}>{item.task}</Text>
                             <Text style={styles.message}>{item.message}</Text>
@@ -110,9 +109,19 @@ const styles = StyleSheet.create({
       paddingHorizontal: 10,
       paddingTop: 10
     },
+    loadingContainer: { 
+      flex: 1, 
+      justifyContent: 'center', 
+      alignItems: 'center' 
+    },
+    header: { 
+      backgroundColor: Colors.main, 
+      width: '100%', 
+      height: 50, 
+      justifyContent: 'center', 
+      paddingLeft: 10 
+    },
     card:{
-      // backgroundColor: 'white',
-      // height: 170,
       borderRadius: 5,
       padding: 10,
       marginVertical: 5

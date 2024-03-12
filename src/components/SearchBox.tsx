@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../assets/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const SearchBox = ({ navigation, onChangeText }) => {
+interface Props {
+  onChangeText: (text: string) => void,
+  navigation: {
+    goBack:() => void
+  },
+}
+
+const SearchBox = ({ navigation, onChangeText }: Props) => {
 
     return (
       <View style={styles.container}>
@@ -14,7 +21,6 @@ const SearchBox = ({ navigation, onChangeText }) => {
       </View>
       <View style={styles.right}>
         <TextInput
-          // value={search}
           onChangeText={(text) => onChangeText(text)}
           autoFocus={true}
           style={{ flex: 1, backgroundColor: 'white', borderRadius: 10, marginVertical: 5, marginRight: 5, fontSize: 15 }}
@@ -31,9 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: Colors.main,
     paddingHorizontal: 10,
-    // height: 80,
     alignItems: 'center',
-    // paddingBottom: 10
   },
   right:{
       flexDirection: 'row',
@@ -44,7 +48,6 @@ const styles = StyleSheet.create({
   left:{
       flexDirection: 'row',
       alignItems: 'center',
-      // flex: 2
   },
   title:{
       color: 'white',

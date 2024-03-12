@@ -9,7 +9,7 @@ interface MyState {
 }
 
 export const getUsers = createAsyncThunk("users/getUsers", async () => {
-  let usersList: Array<User> = []
+  let usersList: any = []
 
   await firestore().collection('users').get()
   .then(querySnapshot => { 

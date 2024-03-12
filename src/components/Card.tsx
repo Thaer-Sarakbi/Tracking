@@ -27,7 +27,7 @@ const Card = ({item}: { item: Task }) => {
 
     return(
       <View style ={styles.container}>
-        <Text style={styles.date}>{moment(new Date(item.creationDate?._seconds * 1000)).format('MMMM Do YYYY, h:ss a')}</Text>
+        <Text style={styles.date}>{moment(new Date(item.creationDate?.seconds * 1000)).format('MMMM Do YYYY, h:ss a')}</Text>
         <View style={styles.seperator}/>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.title}>{item.title}</Text>
@@ -35,15 +35,15 @@ const Card = ({item}: { item: Task }) => {
             <Text style={[styles.statusText, getStyle(item?.status)]}>{item.status}</Text>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+        <View style={styles.info}>
           <Icon name="person-outline" size={20} color={'#BDBDBD'} />
           <Text style={{ fontSize: 15, marginLeft: 5 }}>{item.assignedTo}</Text>
         </View>
-        <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+        <View style={styles.info}>
           <Icon name="hourglass-outline" size={20} color={'#BDBDBD'} />
           <Text style={{ fontSize: 15, marginLeft: 5 }}>{item.duration} Days</Text>
         </View>
-        <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+        <View style={styles.info}>
           <Icon name="location-outline" size={20} color={'#BDBDBD'} />
           <Text style={{ fontSize: 15, marginLeft: 5 }}>{item.location}</Text>
         </View>
@@ -79,7 +79,6 @@ const Card = ({item}: { item: Task }) => {
     status: {
       flex: 1,
       borderWidth: 2,
-      // borderColor: '#5C6BC0',
       paddingHorizontal: 5,
       borderRadius: 5,
       alignItems: 'center',
@@ -90,6 +89,10 @@ const Card = ({item}: { item: Task }) => {
     statusText:{
       color: '#5C6BC0',
       fontSize: 15
+    },
+    info:{ 
+      flexDirection: 'row', 
+      marginVertical: 5 
     }
   })
 export default Card;

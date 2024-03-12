@@ -5,13 +5,13 @@ export type Task = {
     status: string,
     duration: number,
     creationDate: {
-      _seconds: number
+      seconds: number
     }, 
     assignedTo: string,
     assignedBy: string,
     assigenId: string,
-    latitude: string,
-    longitude: string,
+    latitude: number,
+    longitude: number,
     location: string,
     deviceToken: string | undefined
 }

@@ -3,6 +3,7 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import { navigate } from '../navigation/RootNavigation';
 import notifee from '@notifee/react-native';
 import firestore from '@react-native-firebase/firestore'
+import { User } from '../types/types';
 
 const usePushNotification = () => {
 
@@ -25,7 +26,7 @@ const usePushNotification = () => {
     }
   }
 
-  const getFCMToken = async (user) => {
+  const getFCMToken = async (user: User) => {
     await messaging().registerDeviceForRemoteMessages();
 
     const fcmToken = await messaging().getToken();
@@ -49,7 +50,7 @@ const usePushNotification = () => {
 
   const onNotificationOpenedAppFromBackground = async () => {
     const unsubscribe = messaging().onNotificationOpenedApp(
-      async remoteMessage => {
+      async (remoteMessage: any) => {
         console.log(
           'App opened from BACKGROUND by tapping notification:',
           JSON.stringify(remoteMessage),
@@ -69,7 +70,7 @@ const usePushNotification = () => {
     }
   };
  
-  const DisplayNotification = async (message) => {
+  const DisplayNotification = async (message: any) => {
     // Create a channel
     const channelId = await notifee.createChannel({
       id: message.data.channelId,

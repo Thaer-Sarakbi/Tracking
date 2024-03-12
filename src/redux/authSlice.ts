@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore'
 import { User } from '../types/types';
 
 interface MyState {
-  user: User | null
+  user: User | undefined
   status: string
 }
 
@@ -39,12 +39,7 @@ const authSlice = createSlice({
     status: ''
   } as MyState,
   reducers: {
-    // setUser: (state, action) => {
-    //   state.user = action.payload
-    // },
-    // setUserLoading: (state, action) => {
-    //     state.userLoading = action.payload
-    // }
+
   },
   extraReducers: (builder) => {
     builder

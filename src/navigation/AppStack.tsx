@@ -40,6 +40,7 @@ export type RootStackParamsList = {
       latitude: number,
       longitude: number,
       assignedBy: string,
+      location: string,
       deviceToken: string | undefined
     },
     Notifications: undefined,
@@ -82,7 +83,9 @@ export type RootStackParamsList = {
       }
     },
     ChatList: undefined,
-    TopTabs: undefined,
+    TopTabs: {
+      navigation: undefined
+    },
     Search:{
       user: User,
       tasks: Task[]
@@ -115,7 +118,7 @@ const AppStack = () => {
     }
   };
 
-  const DisplayNotification = async (message: { notification: { title: string , body: string },data: { id: string, channelName: string, channelId: string } }) => {
+  const DisplayNotification = async (message: any) => {
     console.log('id ', JSON.stringify(message.data.channelId))
     //console.log('notification ', JSON.stringify(message.notification))
     // Create a channel
@@ -201,26 +204,11 @@ const AppStack = () => {
           component={TopTabs}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="TasksList"
-          component={TasksListScreen}
-          options={{ headerShown: false }}
-        /> */}
         <Stack.Screen
           name="TaskDetails"
           component={TaskDetailsScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="Header"
-          component={Header}
-          options={{ headerShown: false }}
-        /> */}
-        {/* <Stack.Screen
-          name="HeaderDetails"
-          component={HeaderDetails}
-          options={{ headerShown: false }}
-        /> */}
         <Stack.Screen
           name="Notifications"
           component={NotificationsScreen}

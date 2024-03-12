@@ -29,7 +29,7 @@ export const updateTask = createAsyncThunk("tasks/updateTask", async (task: { id
 
 export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: string, admin: boolean }) => {
 
-  let tasksList: Array<Task> = []
+  let tasksList: any = []
 
   if(user.admin){
    
@@ -37,7 +37,7 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: stri
     const usersCollection = await firestore().collection('users')
 
     const usersQuerySnapshot = await usersCollection.get()
-    let usersDataWithTasks = []
+    let usersDataWithTasks: any = []
   
     for(const userDoc of usersQuerySnapshot.docs){
       const userTasksCollection = userDoc.ref.collection('tasks').orderBy('creationDate', "desc")
@@ -57,7 +57,7 @@ export const getTasks = createAsyncThunk("tasks/getTasks", async (user:{id: stri
         )
       }
 
-      tasksList = usersDataWithTasks.sort((a, b) => b.creationDate - a.creationDate)
+      tasksList = usersDataWithTasks.sort((a: any, b: any) => b.creationDate - a.creationDate)
     }
   } else {
     await firestore()
@@ -93,7 +93,7 @@ export const deleteTask = createAsyncThunk("tasks/deleteTask", async (task: { id
 })
 
 export const searchTask = createAsyncThunk("tasks/searchTask", async (task: { title: string, userId: string}) => {
-  let moviesList: Array<Movie> = []
+  //let moviesList: Array<Movie> = []
   
   // await firestore()
   // .collection('users')
@@ -110,7 +110,7 @@ export const searchTask = createAsyncThunk("tasks/searchTask", async (task: { ti
   //   })
   // });
   
-    return moviesList
+    //return moviesList
   })
 
 const tasksSlice = createSlice({

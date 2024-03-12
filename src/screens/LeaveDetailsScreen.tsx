@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, LogBox, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, LogBox, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Colors } from '../assets/Colors';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamsList } from '../navigation/AppStack';
@@ -29,14 +29,14 @@ const LeaveDetailsScreen = ({ route, navigation } : Props) => {
  
   if(route){
     return (
-        <ScrollView style={{ flex: 1, marginBottom: 60 }}>
-          <View style={{ backgroundColor: Colors.main, width: '100%', height: 50, justifyContent: 'space-between', paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }}>
+        <ScrollView style={styles.container}>
+          <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-outline" size={35} color={'white'} />
             </TouchableOpacity>
           </View>
 
-          <Text style={{ margin: 10, fontSize: 20 }}>{reason}</Text>
+          <Text style={styles.text}>{reason}</Text>
 
           {images && <ImagesSlider images={images} user={user} />}
         </ScrollView>
@@ -49,5 +49,25 @@ const LeaveDetailsScreen = ({ route, navigation } : Props) => {
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: { 
+    flex: 1, 
+    marginBottom: 60 
+  },
+  header: { 
+    backgroundColor: Colors.main, 
+    width: '100%', 
+    height: 50, 
+    justifyContent: 'space-between', 
+    paddingLeft: 10, 
+    flexDirection: 'row', 
+    alignItems: 'center' 
+  },
+  text:{ 
+    margin: 10, 
+    fontSize: 20 
+  }
+});
 
 export default LeaveDetailsScreen;
