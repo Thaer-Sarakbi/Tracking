@@ -56,17 +56,22 @@ export type RootStackParamsList = {
       dailyReport: dailyReport,
       leaveReport: leaveReport,
       date: string,
-      selected: string
+      selected: string,
+      assigned: {
+        value: string
+      }
     },
     ReportDetails:{
         dailyReport: string, 
         id: string, 
         images: Array<string>, 
-        time: string
+        time: string,
+        name: string
     },
     LeaveDetails:{
       reason: string,
-      images: string[] 
+      images: string[] ,
+      time: string
     },
     AttendanceDetails:{
       checkIn: {
@@ -74,13 +79,13 @@ export type RootStackParamsList = {
         latitude: number,
         longitude: number,
         note: string
-      },
+      } | any,
       checkOut: {
         time: Date,
         latitude: number,
         longitude: number,
         note: string
-      }
+      } | any
     },
     ChatList: undefined,
     TopTabs: {

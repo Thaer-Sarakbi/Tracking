@@ -20,6 +20,7 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
   const leaveReport = route.params.leaveReport
   const date = route.params.date
   const selected = route.params.selected
+  const name = route.params.assigned.value
 
   const [checkIn, setCheckIn] = useState<{time: Date}>()
   const [checkOut, setCheckOut] = useState<{time: Date}>()
@@ -73,6 +74,7 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
       {dailyReport && (<><Text style={{ fontSize: 19, color: Colors.titles, fontWeight: 'bold', marginTop: 20 }}>Daily Report</Text>
       <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ReportDetails', {
                   ...dailyReport,
+                  name,
                   time: moment(new Date(dailyReport.time.seconds * 1000)).format('MMM Do[\n]h:ss a')
                 } )}>
                 <Text style={{ color: Colors.titles, fontSize: 20 }}>{moment(new Date(dailyReport?.time.seconds * 1000)).format('MMMM Do')}   Report</Text>

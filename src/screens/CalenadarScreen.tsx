@@ -31,6 +31,12 @@ const CalendarScreen = ({ navigation } : Props) => {
   const [selected, setSelected] = React.useState<string>();
   const [data,setData] = React.useState<{key: string, value: string}[]>([]);
 
+  const assigned = users.find(user => {
+    if(user.id === selected){
+      return user
+    }
+  })
+
   const retreiveUpdates = async() =>{
 
     const usersCollection = await firestore().collection('users').doc(selected).collection('tasks')
@@ -196,7 +202,7 @@ const CalendarScreen = ({ navigation } : Props) => {
         }
       })[0]
 
-      navigation.navigate('UpdatesList', {updatesList, dailyReport, leaveReport, date, selected})
+      navigation.navigate('UpdatesList', {updatesList, dailyReport, leaveReport, date, selected, assigned})
   }
 
   return (

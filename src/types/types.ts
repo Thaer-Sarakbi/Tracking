@@ -99,6 +99,7 @@ export interface notificationsState {
 }
 
 export type Updates = {
+  event: string,
   updateId: string,
   assigenId: string, 
   description: string, 

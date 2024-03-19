@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../assets/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,7 +14,7 @@ import { UserState } from '../types/types';
 
 interface Props{
   showAlert: boolean,
-  setShowAlert: () => void
+  setShowAlert: (showAlert: boolean) => void
 }
 
 const successfullyModal = (showAlert, setShowAlert: Props) => (
@@ -155,8 +155,7 @@ const AttendanceScreen = () => {
   }
 
     const SubmitDailyReport = () => {
-      const { images, chooseFromGallery, uploadImage, removeImage, resetImages } = useUploadImages() 
-      console.log(images)
+      const { images, outputFilename, chooseFromGallery, uploadImage, resetImages, removeImage, uploadPdf } = useUploadImages() 
 
       const {
         control,
@@ -183,9 +182,13 @@ const AttendanceScreen = () => {
             firestore().collection('users').doc(user.id).collection('dailyReport').doc(arr[0].id).update({
               dailyReport,
               images: images ? images : null,
+              pdf: outputFilename,
               time: new Date()
             }).then(() => {
-              uploadImage()
+              if(images.length > 0){
+                uploadImage()
+                uploadPdf()
+              }
               console.log('report updated successfully')
               setShowAlert(true)
               reset()
@@ -195,9 +198,13 @@ const AttendanceScreen = () => {
             firestore().collection('users').doc(user.id).collection('dailyReport').add({
               dailyReport,
               images: images ? images : null,
+              pdf: outputFilename,
               time: new Date()
             }).then(() => {
-              uploadImage()
+              if(images.length > 0){
+                uploadImage()
+                uploadPdf()
+              }
               console.log('report added successfully')
               setShowAlert(true)
               reset()
@@ -240,7 +247,7 @@ const AttendanceScreen = () => {
              
           {images?.map((image, i) => {
             return(
-              <View style={{ height: '100%', width: 100, justifyContent: 'center', alignItems: 'center' }}>
+              <View key={i} style={{ height: '100%', width: 100, justifyContent: 'center', alignItems: 'center' }}>
                 <ImageBackground key={i} resizeMode='center' style={{ width: '100%', height: '100%' }} source={{ uri: image }}/> 
                 <TouchableOpacity onPress={() => removeImage(i)}>
                   <Text style={{ fontSize: 20 }}>x</Text>
@@ -421,6 +428,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 25,
     color: 'black'
-  }
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#32a9d9',
+    padding: 10,
+    borderRadius: 10,
+  },
+
 })
 export default AttendanceScreen;
