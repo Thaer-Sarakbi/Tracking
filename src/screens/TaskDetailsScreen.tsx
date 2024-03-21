@@ -137,7 +137,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
   }
 
   const onUpdateTask = () => {
-    Geolocation.getCurrentPosition(info => {
+    Geolocation.getCurrentPosition((info: any) => {
       dispatch(updateTask({ id, status: taskStatus, userId: assigenId, updaterName: user.name, latitude: info.coords.latitude, longitude: info.coords.longitude })).then(() => {
         if(user.admin){
           dispatch(addNotification({notification:{
@@ -185,7 +185,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
       handleNotification(taskStatus)
       setLatitude(info.coords.latitude)
       setLongitude(info.coords.longitude)
-    }, async(err) => {
+    }, async(err: string) => {
       if (Platform.OS === 'android') {
         try {
           const enableResult = await promptForEnableLocationIfNeeded();
@@ -197,7 +197,7 @@ const TaskDetailsScreen = ({ route, navigation } : Props) => {
           console.log('error')
         }
       }
-    }); 
+    },{}); 
   }
 
   const changeModalVisible = (bool: boolean) => {

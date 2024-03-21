@@ -29,7 +29,6 @@ const ReportDetailsScreen = ({ route, navigation } : Props) => {
   const dailyReport = route.params.dailyReport
   const images = route.params.images
   const name = route.params.name
-  console.log(images)
 
   if(route){
     return (

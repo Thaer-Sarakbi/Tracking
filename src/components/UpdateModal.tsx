@@ -126,7 +126,7 @@ const UpdateModal = ({ changeModalVisible, isModalVisible, id, userId, assigenId
           console.log('error')
         }
       }
-  }) 
+  },{}) 
   } 
 
   const renderMultiImages = images?.map((image, i) => {

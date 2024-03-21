@@ -11,13 +11,9 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import moment from 'moment';
 import useUploadImages from '../hooks/useUploadImages';
 import { UserState } from '../types/types';
+import useGetLocation from '../hooks/useGetLocation';
 
-interface Props{
-  showAlert: boolean,
-  setShowAlert: (showAlert: boolean) => void
-}
-
-const successfullyModal = (showAlert, setShowAlert: Props) => (
+const successfullyModal = (showAlert: boolean, setShowAlert: (showAlert: boolean) => void) => (
   <AwesomeAlert
   show={showAlert}
   showProgress={false}
@@ -47,8 +43,9 @@ const successfullyModal = (showAlert, setShowAlert: Props) => (
 const AttendanceScreen = () => {
     const [checkInNote, setCheckInNote] = useState<string>('')
     const [checkOutNote, setCheckOutNote] = useState<string>('')
-    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [showAlert, setShowAlert] = useState(false);
 
+    const {latitude, longitude} = useGetLocation();
     const user = useSelector((state: UserState) => state.auth.user)
 
     const onCheckInReg = () => {
@@ -59,7 +56,7 @@ const AttendanceScreen = () => {
           return moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
         })
         if (arr.length > 0) {
-            Geolocation.getCurrentPosition(info => {
+            Geolocation.getCurrentPosition((info: {coords:{latitude: number, longitude: number}}) => {
               firestore().collection('users').doc(user.id).collection('checkIn').doc(arr[0].id).update({
                 time: new Date(),
                 latitude: info.coords.latitude, 
@@ -72,7 +69,7 @@ const AttendanceScreen = () => {
               }).catch((err) => {
                 console.log(err)
               })
-            }, async(err) => {
+            }, async(err: string) => {
 
               if (Platform.OS === 'android') {
                 try {
@@ -84,9 +81,9 @@ const AttendanceScreen = () => {
                   console.log('error')
                 }
               }
-            })
+            }, {})
         } else {
-          Geolocation.getCurrentPosition(info => {
+          Geolocation.getCurrentPosition((info: {coords:{latitude: number, longitude: number}}) => {
             firestore().collection('users').doc(user.id).collection('checkIn').add({
             time: new Date(),
             latitude: info.coords.latitude, 
@@ -97,7 +94,9 @@ const AttendanceScreen = () => {
             setCheckInNote('')
             setShowAlert(true)
           })
-         })
+         }, (err: string) => {
+
+         }, {})
         }
       })
     }
@@ -106,12 +105,11 @@ const AttendanceScreen = () => {
       firestore().collection('users').doc(user.id).collection('checkOut').get().then((res) =>{
         
         const arr =  res.docs.filter(snapShot => {
-
           var dt = new Date();
           return  moment(snapShot.data().time.seconds * 1000).format('L') === moment(dt).format('L')
         })
         if (arr.length > 0) {
-            Geolocation.getCurrentPosition(info => {
+            Geolocation.getCurrentPosition((info: {coords:{latitude: number, longitude: number}}) => {
               firestore().collection('users').doc(user.id).collection('checkOut').doc(arr[0].id).update({
                 time: new Date(),
                 latitude: info.coords.latitude, 
@@ -124,7 +122,7 @@ const AttendanceScreen = () => {
               }).catch((err) => {
                 console.log(err)
               })
-            }, async(err) => {
+            }, async(err: string) => {
 
               if (Platform.OS === 'android') {
                 try {
@@ -136,9 +134,10 @@ const AttendanceScreen = () => {
                   console.log('error')
                 }
               }
-            })
+            },{})
+
         } else {
-          Geolocation.getCurrentPosition(info => {
+          Geolocation.getCurrentPosition((info: {coords:{latitude: number, longitude: number}}) => {
             firestore().collection('users').doc(user.id).collection('checkOut').add({
             time: new Date(),
             latitude: info.coords.latitude, 
@@ -149,7 +148,9 @@ const AttendanceScreen = () => {
             setCheckOutNote('')
             setShowAlert(true)
           })
-         })
+         }, (err: string) => {
+
+         }, {})
         }
       })
   }

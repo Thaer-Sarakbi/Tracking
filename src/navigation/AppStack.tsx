@@ -16,6 +16,7 @@ import notifee, { EventType } from '@notifee/react-native';
 import LeaveDetailsScreen from "../screens/LeaveDetailsScreen"
 import ChatListScreen from "../screens/ChatListScreen"
 import TopTabs from "./TopTabs"
+import useGetLocation from "../hooks/useGetLocation"
  
 const Stack = createStackNavigator<RootStackParamsList>()
 
@@ -147,7 +148,6 @@ const AppStack = () => {
   }
 
   useEffect(() => {
-
     listenToNotifications();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log(

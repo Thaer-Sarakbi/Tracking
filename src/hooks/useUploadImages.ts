@@ -29,10 +29,9 @@ export default function useUploadImages(){
   const outputFilename = parts.join('-') + '.pdf';
 
   const chooseFromGallery = () => {
-    console.log('lolo')
     ImagePicker.openPicker({
-      width: 400,
-      height: 300,
+      width: 800,
+      height: 1200,
       multiple: true
     }).then(images => {
       // setImages(images)
@@ -50,8 +49,8 @@ export default function useUploadImages(){
     try {
       const resizedImage = await ImageResizer.createResizedImage(
         originalUri.path,
-        800, // New width
-        600, // New height
+        600, // New width
+        1000, // New height
         'JPEG', // Compression format
         80, // Compression quality (0-100)
         0, // Rotation angle (0, 90, 180, 270)

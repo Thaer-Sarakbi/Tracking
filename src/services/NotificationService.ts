@@ -17,7 +17,7 @@ const sendSingleDeviceNotification = (data: { notification: {description: string
       to: data.token
     });
   
-    var requestOptions = {
+    var requestOptions: any = {
       method: 'POST',
       headers: myHeaders,
       body: raw,
@@ -30,7 +30,7 @@ const sendSingleDeviceNotification = (data: { notification: {description: string
       .catch(error => console.log('error', error));
   };
   
-  const sendMultiDeviceNotification = data => {
+  const sendMultiDeviceNotification = (data: { body: string, title: string, token: string }) => {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append(
@@ -47,7 +47,7 @@ const sendSingleDeviceNotification = (data: { notification: {description: string
       registration_ids: data.token,
     });
   
-    var requestOptions = {
+    var requestOptions: any = {
       method: 'POST',
       headers: myHeaders,
       body: raw,

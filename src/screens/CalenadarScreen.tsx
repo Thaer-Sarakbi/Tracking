@@ -118,7 +118,6 @@ const CalendarScreen = ({ navigation } : Props) => {
           } else {
             users.forEach(item => {
               if(item.value === user.name){
-                // console.log(item.id, item.value)
                 newArray.push({key: item.id, value: item.value})  
               }
             })
