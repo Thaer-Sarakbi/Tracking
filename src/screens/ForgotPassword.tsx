@@ -19,7 +19,8 @@ const ForgotPassword = ({ navigation } : StackScreenProps<AuthStackParamsList, '
         control,
         handleSubmit,
         formState: { errors },
-        watch
+        watch,
+        resetField
     } = useForm({
         defaultValues: {
           email: ""
@@ -33,10 +34,12 @@ const ForgotPassword = ({ navigation } : StackScreenProps<AuthStackParamsList, '
         .then((res) => {
             setShowAlert(true)
             setMessage('Check Your Email')
+            resetField('email')
         })
         .catch(error => {
           setShowAlert(true)
           setMessage(error.code);
+          resetField('email')
         });
       }
 
