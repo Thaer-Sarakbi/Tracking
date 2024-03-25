@@ -118,6 +118,10 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
             /> 
         </View>
         {errors.password && <Text style={{ color: 'red', fontSize: 15 }}>{errors.password?.message}</Text>}
+        <TouchableOpacity style={{ marginTop: 10 }} onPress={() => navigation.navigate('ForgotPassword')}>
+            <Text>Forgot my password</Text>
+        </TouchableOpacity>
+        
 
         <Text style={{ color: 'red', fontSize: 15 }}>{backendError}</Text>
 
