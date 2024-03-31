@@ -6,12 +6,12 @@ import firestore from '@react-native-firebase/firestore'
 import { useSelector } from 'react-redux';
 import Geolocation from '@react-native-community/geolocation';
 import { Controller, useForm } from 'react-hook-form';
-import { promptForEnableLocationIfNeeded, isLocationEnabled } from 'react-native-android-location-enabler';
+import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import moment from 'moment';
 import useUploadImages from '../hooks/useUploadImages';
-import { UserState } from '../types/types';
-import useGetLocation from '../hooks/useGetLocation';
+import { DocFile, UserState } from '../types/types';
+import useUploadDocument from '../hooks/useUploadDocument';
 
 const successfullyModal = (showAlert: boolean, setShowAlert: (showAlert: boolean) => void) => (
   <AwesomeAlert
@@ -45,7 +45,6 @@ const AttendanceScreen = () => {
     const [checkOutNote, setCheckOutNote] = useState<string>('')
     const [showAlert, setShowAlert] = useState(false);
 
-    const {latitude, longitude} = useGetLocation();
     const user = useSelector((state: UserState) => state.auth.user)
 
     const onCheckInReg = () => {
@@ -157,6 +156,7 @@ const AttendanceScreen = () => {
 
     const SubmitDailyReport = () => {
       const { images, outputFilename, chooseFromGallery, uploadImage, resetImages, removeImage, uploadPdf } = useUploadImages() 
+      const { pickFile, uploadFile, removeFile, selectedFile } = useUploadDocument()
 
       const {
         control,
@@ -184,32 +184,76 @@ const AttendanceScreen = () => {
               dailyReport,
               images: images ? images : null,
               pdf: outputFilename,
+              files: selectedFile ? selectedFile : null,
               time: new Date()
-            }).then(() => {
-              if(images.length > 0){
-                uploadImage()
-                uploadPdf()
+            }).then(async() => {
+              if(images?.length > 0 && selectedFile.length === 0){
+                const uploadedWell = await uploadImage()
+                const uploadPdfWell = await uploadPdf()
+                if(uploadedWell && uploadPdfWell){
+                  console.log('report updated successfully')
+                  setShowAlert(true)
+                }
+              } else if(selectedFile?.length > 0 && images.length === 0){
+                const uploadedWell = await uploadFile()
+                if(uploadedWell){
+                  console.log('report updated successfully')
+                  setShowAlert(true)
+                }
+              } else if(selectedFile?.length > 0 && images?.length > 0){
+                const uploadedWell = await uploadImage()
+                const uploadPdfWell = await uploadPdf()
+                const uploadedFileWell = await uploadFile()
+                if(uploadedWell && uploadPdfWell && uploadedFileWell){
+                  console.log('report updated successfully')
+                  setShowAlert(true)
+                }
+              } else {
+                console.log('report updated successfully')
+                setShowAlert(true)
               }
-              console.log('report updated successfully')
-              setShowAlert(true)
+              
               reset()
               resetImages()
+              //resetFiles()
             })
           } else {
             firestore().collection('users').doc(user.id).collection('dailyReport').add({
               dailyReport,
               images: images ? images : null,
               pdf: outputFilename,
+              files: selectedFile ? selectedFile : null,
               time: new Date()
-            }).then(() => {
-              if(images.length > 0){
-                uploadImage()
-                uploadPdf()
+            }).then(async() => {
+              if(images?.length > 0 && selectedFile.length === 0){
+                const uploadedWell = await uploadImage()
+                const uploadPdfWell = await uploadPdf()
+                if(uploadedWell && uploadPdfWell){
+                  console.log('report updated successfully')
+                  setShowAlert(true)
+                }
+              } else if(selectedFile?.length > 0 && images.length === 0){
+                const uploadedWell = await uploadFile()
+                if(uploadedWell){
+                  console.log('report updated successfully')
+                  setShowAlert(true)
+                }
+              } else if(selectedFile?.length > 0 && images?.length > 0){
+                const uploadedWell = await uploadImage()
+                const uploadPdfWell = await uploadPdf()
+                const uploadedFileWell = await uploadFile()
+                if(uploadedWell && uploadPdfWell && uploadedFileWell){
+                  console.log('report updated successfully')
+                  setShowAlert(true)
+                }
+              } else {
+                console.log('report updated successfully')
+                setShowAlert(true)
               }
-              console.log('report added successfully')
-              setShowAlert(true)
+              
               reset()
               resetImages()
+              //resetFiles()
             })
           }
       })
@@ -244,6 +288,15 @@ const AttendanceScreen = () => {
 
         {errors.dailyReport && <Text style={{ color: 'red', fontSize: 15 }}>{errors.dailyReport?.message}</Text>}
 
+        {selectedFile?.map((doc: DocFile, i: number) => {
+          return <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text key={i} style={{ marginVertical: 5 }}>{doc.name}</Text>
+            <TouchableOpacity onPress={() => removeFile(i)}>
+              <Icon name='close-circle-outline' color={'black'} size = {20} />
+            </TouchableOpacity>
+          </View>
+        })}
+
         {images.length !== 0 ? (<View style = {{ width: '100%', height: 100, borderRadius: 10, justifyContent: 'center', flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
              
           {images?.map((image, i) => {
@@ -258,13 +311,19 @@ const AttendanceScreen = () => {
           })}
            
         </View>) : null}
-        <TouchableOpacity onPress={() => chooseFromGallery()} style = {{ width: 100, height: 100, backgroundColor: '#BDBDBD' , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
-          <Icon name='camera-outline' color={'black'} size = {30} />
-        </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSubmit(onSubmitReport)} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
-          <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => chooseFromGallery()} style = {{ width: 100, height: 100, backgroundColor: '#BDBDBD' , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5, marginRight: 10 }}>
+            <Icon name='camera-outline' color={'black'} size = {30} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => pickFile()} style = {{ width: 100, height: 100, backgroundColor: '#BDBDBD' , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+            <Icon name='cloud-upload-outline' color={'black'} size = {30} />
+          </TouchableOpacity>
+        </View>
+
+          <TouchableOpacity onPress={handleSubmit(onSubmitReport)} style = {{ width: '100%', height: 60, backgroundColor: Colors.main , borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 5 }}>
+            <Text style={{ color: 'white', fontSize: 19 }}>Submit</Text>
+          </TouchableOpacity>
       </View>
       )
     }

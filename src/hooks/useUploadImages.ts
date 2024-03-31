@@ -63,6 +63,7 @@ export default function useUploadImages(){
   };
 
   const uploadImage = async () => {
+    let bool
     {
         images?.map(async(image) => {
             // const { path } = image;
@@ -83,12 +84,15 @@ export default function useUploadImages(){
               );
             });
             try {
+              bool = true
               await task;
             } catch (e) {
+              bool = false
               console.error(e);
             }
         })
     }
+    return bool
 } 
 
 const convertImgToPdf = async (pdfImages: { path: string }[]) => {
@@ -120,6 +124,7 @@ const convertImgToPdf = async (pdfImages: { path: string }[]) => {
 };
 
 const uploadPdf = async () => {
+  let bool 
   try{
       const filename = uri.substring(uri.lastIndexOf('/') + 1);
       const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
@@ -127,10 +132,13 @@ const uploadPdf = async () => {
       .ref(filename)
       .putFile(uploadUri);
       console.log(task)
+      bool = true
       await task;
   } catch(e){
+      bool = false
       console.log(e)
   }
+  return bool
 } 
 
 const downloadPdf = async(name: string) => {

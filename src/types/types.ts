@@ -141,7 +141,8 @@ export interface dailyReport {
   time: {
     nanoseconds: number, 
     seconds: number
-  }
+  },
+  files: DocFile[]
 }
 
 export interface leaveReport{
@@ -151,4 +152,12 @@ export interface leaveReport{
     seconds: number
   }
   images: string[]
+}
+
+export interface DocFile {
+  fileCopyUri: string,
+  name: string,
+  size: number,
+  type: string,
+  uri: string
 }

@@ -1,6 +1,6 @@
 {
   "name": "Tracking",
-  "version": "1.5.3",
+  "version": "1.6.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -35,6 +35,7 @@
     "react-native-app-link": "^1.0.1",
     "react-native-awesome-alerts": "^2.0.0",
     "react-native-calendar-picker": "^7.1.4",
+    "react-native-document-picker": "^9.1.1",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-gesture-handler": "^2.13.4",
     "react-native-gifted-chat": "^2.4.0",

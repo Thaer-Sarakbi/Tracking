@@ -3,7 +3,7 @@ import React, { useEffect } from "react"
 import TaskDetailsScreen from "../screens/TaskDetailsScreen"
 import NotificationsScreen from "../screens/NotificationsScreen"
 import UpdateDetailsScreen from "../screens/UpdateDetailsScreen"
-import { Task, Updates, User, UserState, dailyReport, leaveReport, tasks } from "../types/types"
+import { DocFile, Task, Updates, User, UserState, dailyReport, leaveReport, tasks } from "../types/types"
 import BottomNavigator from "./BottomNavigator"
 import UpdatesListScreen from "../screens/UpdatesListScreen"
 import usePushNotification from "../hooks/usePushNotification"
@@ -67,7 +67,8 @@ export type RootStackParamsList = {
         id: string, 
         images: Array<string>, 
         time: string,
-        name: string
+        name: string,
+        files: DocFile[]
     },
     LeaveDetails:{
       reason: string,
