@@ -109,7 +109,6 @@ const UpdatesListScreen = ({ route, navigation }: Props) => {
 
 const styles = StyleSheet.create({
     container:{
-      // flex: 1,
       paddingHorizontal: 10,
       paddingVertical: 15,
       borderRadius: 5

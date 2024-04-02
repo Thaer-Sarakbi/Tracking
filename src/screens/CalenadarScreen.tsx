@@ -211,6 +211,7 @@ const CalendarScreen = ({ navigation } : Props) => {
           setSelected={(val: string) => setSelected(val)} 
           data={data} 
           boxStyles={{ marginHorizontal: 10, marginVertical: 10, height: 50, alignItems: 'center' }}
+          defaultOption={{ key: user.id, value: user.name }}
         />
           
         <CalendarPicker
