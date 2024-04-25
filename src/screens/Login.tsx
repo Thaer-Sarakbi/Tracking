@@ -12,6 +12,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AuthStackParamsList } from '../navigation/AuthStack';
 import packageJson from '../../package.json';
 import useShowPassword from '../hooks/useShowPassword';
+import firestore from '@react-native-firebase/firestore'
 
 const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) => {
 
@@ -31,11 +32,47 @@ const Login = ({ navigation } : StackScreenProps<AuthStackParamsList, 'Login'>) 
     },
   })
   
+  const findDocumentByEmail = async (email: string, password: string) => {
+    try {
+        const snapshot = await firestore()
+            .collection('users')
+            .where('email', '==', email)
+            .get();
+
+            if(password !== snapshot.docs[0].data().password){
+              await firestore()
+              .collection('users')
+              .doc(snapshot.docs[0].id)
+              .update({
+                password
+              })
+              .then(() => {
+                console.log('updated')
+              }).catch((e) => {
+                console.log(e)
+              });
+            }
+
+        if (snapshot.empty) {
+            console.log('No matching documents.');
+            return null;
+        }
+
+        // Assuming there's only one document matching the email
+        // You can loop through snapshot.docs if you expect multiple documents
+        const document = snapshot.docs[0].data();
+        return document;
+    } catch (error) {
+        console.log('Error finding document by email:', error);
+        return null;
+    }
+};
+
   const onSubmit = async() => {
     const { email, password } = watch()
 
     await auth().signInWithEmailAndPassword(email, password).then((res) => {
-      console.log(res)
+      findDocumentByEmail(email, password)
     }).catch((e) => {
       setBackendError(e.code)
       console.log(e.code)

@@ -58,7 +58,15 @@ const Card = ({item}: { item: Task }) => {
       marginHorizontal: 10,
       paddingHorizontal: 10,
       paddingVertical: 15,
-      borderRadius: 5
+      borderRadius: 10,
+      shadowColor: "#000000",
+      shadowOffset: {
+        width: 0,
+        height: 5,
+      },
+      shadowOpacity:  0.20,
+      shadowRadius: 5.62,
+      elevation: 7
     },
     date:{
       fontSize: 17,

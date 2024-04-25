@@ -95,21 +95,20 @@ export default function TopTabs({ navigation }: StackScreenProps<RootStackParams
       initialRouteName= "Not Started" 
         screenOptions={{
           tabBarLabelStyle: { fontSize: 12 },
-          tabBarIndicatorStyle: { backgroundColor: Colors.main },
-         
+          tabBarIndicatorStyle: { backgroundColor: Colors.main }
         }}
       >
         <Tab.Screen 
           name="Not Started" 
-          children={() => <TasksListScreen navigation={navigation} users={users} tasks={tasks} status={status} />} 
+          children={() => <TasksListScreen navigation={navigation} users={users} tasks={tasks.filter(task => task.status === 'Not Started')} status={status} />} 
         />
         <Tab.Screen 
           name="In Progress" 
-          children={() => <InProgressTasksScreen navigation={navigation} tasks={tasks} status={status} users={users} />} 
+          children={() => <InProgressTasksScreen navigation={navigation} tasks={tasks.filter(task => task.status === 'In Progress')} status={status} users={users} />} 
         />
         <Tab.Screen 
           name="Completed" 
-          children={() => <CompletedTaskScreen navigation={navigation} tasks={tasks} status={status} users={users} />} 
+          children={() => <CompletedTaskScreen navigation={navigation} tasks={tasks.filter(task => task.status === 'Completed')} status={status} users={users} />} 
         />
       </Tab.Navigator>
       {user?.admin && (<TouchableOpacity onPress={() => changeModalVisible(true)} style={styles.addButton}>

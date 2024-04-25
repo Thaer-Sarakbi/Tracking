@@ -14,20 +14,21 @@ const InProgressTasksScreen = ({ navigation, tasks, status, users } : ListsProps
       )
     } else if(status === 'succeeded'){
       return (
-        <View style={{ flex: 1 }}>
+        <View>
             <FlatList
               keyExtractor={(item) => item.id.toString()}
               data={tasks}
-              renderItem={({ item }) => {
-                  if(item.status === 'In Progress'){
+              renderItem={({ item, index }) => {
                     const assigned = users.find((user: User) => {
           
                       if(user.value === item.assignedTo){
                         return user
                       }
                     })
+
+                      const isEnd = index === tasks.length - 1;
                       return(
-                          <TouchableOpacity onPress={() => { navigation.navigate('TaskDetails', {
+                          <TouchableOpacity style={{ marginBottom: isEnd ? 10 : 0 }} onPress={() => { navigation.navigate('TaskDetails', {
                             id: item.id,
                             assignedTo: item.assignedTo,
                             status: item.status,
@@ -45,9 +46,6 @@ const InProgressTasksScreen = ({ navigation, tasks, status, users } : ListsProps
                             <Card item={item} />
                           </TouchableOpacity>
                       )
-                  } else {
-                      return null
-                  }
               }}
             />
         </View>
